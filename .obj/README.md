@@ -1,0 +1,1 @@
+This directory holds .o files produced during compilation. These files are ignored by git, and so are not included in the repository. The program cannot be recompiled without these files, do NOT delete this directory.
