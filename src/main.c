@@ -1,25 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "state.h"
+#include <string.h>
+#include "cmd.h"
 
-int main(int argc, char *argv) {
-    char *abbr;
-    State state;
-    if(argc != 2) {
+struct {
+    char *cmd;
+    int (*f)(int, char*[]); //function ptr
+}cmds[] = {
+    { "execTest", processGeoJSON }
+};
+
+
+int main(int argc, char *argv[]) {
+    char *cmd;
+    int reslt;
+    if(argc < 2) {
         goto abort;
     }
 
-    abbr = argv[1];
+    cmd = argv[1];
 
-    for(int i = 0; i < STATE_CNT; i++) {
-        if(strcmp(abbr, stateAbbrs[i]) == 0) {
-            state = getState(abbr);
-            buildPrecincts(state);
-            //todo generate
+    for(int i = 0; i < NUM_CMDS; i++) {
+        if(strcmp(cmd, cmds[i].cmd) == 0) {
+            reslt = cmds[i].f(argc - 2, &argv[2]);
+            exit(reslt);
         }
     }
 
 abort:
-    printf("Usage: BARDS <state abbr.>");
+    printf("Usage: BARDS <CMD> <params>\n");
     exit(0);
 }
