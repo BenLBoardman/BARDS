@@ -7,7 +7,7 @@ struct {
     char *cmd;
     int (*f)(int, char*[]); //function ptr
 }cmds[] = {
-    { "execTest", processGeoJSON }
+    { "process", processGeoJSON }
 };
 
 

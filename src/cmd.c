@@ -12,10 +12,15 @@ int processGeoJSON(int argc, char *argv[]) {
 
     strcpy(&pyName[strlen(pyName)], PROC_NAME);
 
+    if(argc != 2) {
+        fprintf(stderr, "Usage: ./bards.exe process <state abbr.> <year>\n");
+        return -1;    
+    }
 
-    if(execlp("python3", "python3", pyName, NULL) == -1) {
+
+    if(execlp("python3", "python3", pyName, argv[0], argv[1], NULL) == -1) {
         fprintf(stderr, "Error entering python");
         return -1;
     }
-    return 0;
+    return 0;    
 }

@@ -3,7 +3,7 @@
 
     #define NUM_CMDS 1
     #define PROC_PATH "src/proc/"
-    #define PROC_NAME "test.py"
+    #define PROC_NAME "processor.py"
 
     int processGeoJSON(int argc, char *argv[]);
 
