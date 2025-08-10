@@ -8,14 +8,20 @@ OBJPATH = .obj/
 bards: obj main
 
 main: $(OBJPATH)main.o $(OBJPATH)cmd.o
-	$(CC) $(CFLAGS) $(OBJPATH)main.o $(OBJPATH)cmd.o -o bards.exe
+	$(CC) $(CFLAGS) $(OBJPATH)main.o $(OBJPATH)cmd.o $(OBJPATH)io.o \
+    $(OBJPATH)redistrict.o $(OBJPATH)state.o \
+	-o bards.exe
 
 obj: $(SRCPATH)main.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)main.c -o $(OBJPATH)main.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)cmd.c -o $(OBJPATH)cmd.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)io.c -o $(OBJPATH)io.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)state.c -o $(OBJPATH)state.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)redistrict.c -o $(OBJPATH)redistrict.o
 
 cmd: $(SRCPATH)cmd.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)cmd.c -o $(OBJPATH)cmd.o
+
 
 clean:
 	rm $(OBJPATH)*

@@ -1,0 +1,9 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "cmd.h"
+
+#define MKDIST_FLAG_NUMDIST 0x01
+#define MKDIST_FLAG_NAME 0x02
+
+int makeDists(redistrict_input_t, __uint8_t);

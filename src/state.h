@@ -1,27 +1,34 @@
-#include "precinct.h"
+#ifndef STATE_DEF
+    #define STATE_DEF
 
-typedef struct State {
-    char abbr[3];
-    char *name;
-    int nameLen;
-    int pop;
-    int tgt_pop;
+    #define STATE_CNT 1
+
+    typedef struct District {
+
+    } District;
+
+    typedef struct precinct_t {
+        char *id;
+        int idLen;
+        struct precinct_t **neighbors;
+        int neighborCnt;
+        int pop;
+    } Precinct;
+
+    typedef struct state_t {
+        char abbr[3];
+        char *name;
+        int nameLen;
+        int pop;
+        int tgt_pop;
 
 
-    int precinctCt;
-    Precinct *precincts;
+        int precinctCt;
+        Precinct *precincts;
 
 
-    int distCt;
-    District *districts;
-} State;
+        int distCt;
+        District *districts;
+    } State;
 
-typedef struct District {
-
-};
-
-#define STATE_CNT 1
-
-char *stateAbbrs[3] = {
-    "NH\0"
-};
+#endif
