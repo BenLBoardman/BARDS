@@ -1,0 +1,12 @@
+A BARDS Archive file (*.brd) is structured in the following way.
+Individual precincts will be formed in single lines, with the first line holding statewide data, which will hereafter be referred to as a "header". 
+As of Aug. 10, 2025, a .brd file is structured as follows:
+
+<State Name>|<State Pop>|<Number of Precincts>
+<Pct 1 Index>|<Pct 1 Name>|<Pct 1 County>|<Pct 1 Pop>|<Pct 1 number of neighbors>|<Pct 1 neighbor 1>, <Pct 1 neighbor 2>, ... <Pct 1 neighbor n>
+. . . until all precincts are written
+
+
+
+Other notes:
+    Precinct neighbors are denoted as an index in the list.

@@ -1,15 +1,13 @@
 import geopandas as gpd
+import pandas as pd
 
 import sys
 import json
-from typing import cast
 import time 
 DATAPATH_RAW = "data/geojson/"
 DATAPATH_PROCESSED = "data/processed/"
 
-
 state = ""
-
 
 json.JSONDecoder
 
@@ -17,33 +15,58 @@ def main():
     state = sys.argv[1].upper()
     year = sys.argv[2]
 
-    precincts = []
     print(f"Processing data for state: {state}...")
     print(f"Using census data:  {year}...")
 
     dataFrame = gpd.read_file(f'{DATAPATH_RAW}{state}.geojson')
 
-    with open(f'{DATAPATH_RAW}{state}.geojson', 'r') as input:
-        data = json.load(input)
-        print("JSON Data loaded...")
-
-    for feature in data.get('features'):
-        precinct = Precinct(feature.get('properties'), feature.get('geometry'))
-        precincts.append(precinct)
     print("Features loaded... beginning neighbor analysis...")
     startTime = time.time()
-    neighborDict = findAllNeighborsGPD(precincts, dataFrame)
+    findAllNeighborsGPD(dataFrame)
     elapsed = time.time() - startTime
 
     print(f"Neighbor analysis finished in {elapsed} seconds...")
     print(f"Outputting to file...")
 
-    with open(f"{DATAPATH_PROCESSED}{state}_{year}.json", "w") as output:
-        json.dump(precincts, output, default=lambda x: x.__dict__)
+    outputFileName = f"{DATAPATH_PROCESSED}{state}_{year}.brd"
+    with open(outputFileName, "w") as output:
+        writeToBrdArch(output, dataFrame)
 
-    print(f"Processed data written to {DATAPATH_PROCESSED}{state}_{year}.json...")
+    print(f"Processed data written to {outputFileName}...")
+
+def findAllNeighborsGPD(dataFrame: gpd.GeoDataFrame):
+    neighborList = []
+    for i, feature in dataFrame.iterrows():
+        neighbors = dataFrame[dataFrame.geometry.touches(feature.geometry)].index.tolist()
+        neighborList.append(neighbors)
+    dataFrame['neighbors'] = neighborList
+    dataFrame.drop(columns=['geometry'])
 
 
+def writeToBrdArch(file, dataFrame: gpd.GeoDataFrame):
+    # write header
+    header = f"||\n"
+    file.write(header)
+    # write each precinct
+    for i, feature in dataFrame.iterrows():
+        writePctToFile(file, i, feature)
+    pass
+
+def writePctToFile(file, i: int, feature: pd.Series):
+    neighbors = ""
+    for i in range(0, len(feature.get('neighbors'))):
+        neighbor = feature.get('neighbors')[i]
+        if i == 0:
+            neighbors = neighbor
+        neighbors = f"{neighbors}, {neighbor}"
+        pass
+    file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{neighbors}\n")
+    pass
+
+# STUB FOR LATER
+class State:
+    def __init__(self, abbr, pop, year):
+        self.abbr = abbr
 
 class Precinct:
     def __init__(self, properties, geometry):
@@ -55,17 +78,6 @@ class Precinct:
 
     def setNeighbors(self, neighbors):
         self.neighbors = neighbors
-
-def findAllNeighborsGPD(precincts, dataFrame):
-    for i, feature in dataFrame.iterrows():
-        neighbors = dataFrame[dataFrame.geometry.touches(feature.geometry)].Precinct.tolist()
-        precincts[i].setNeighbors(neighbors)
-
-# STUB FOR LATER
-class State:
-    def __init__(self, abbr, pop, year):
-        self.abbr = abbr
-
 
 if __name__ == "__main__":
     main()
