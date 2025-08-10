@@ -44,8 +44,8 @@ def findAllNeighborsGPD(dataFrame: gpd.GeoDataFrame):
 
 
 def writeToBrdArch(file, dataFrame: gpd.GeoDataFrame):
-    # write header
-    header = f"||\n"
+    # TODO - write header
+    header = f"||{len(dataFrame)}\n"
     file.write(header)
     # write each precinct
     for i, feature in dataFrame.iterrows():
@@ -54,30 +54,14 @@ def writeToBrdArch(file, dataFrame: gpd.GeoDataFrame):
 
 def writePctToFile(file, i: int, feature: pd.Series):
     neighbors = ""
-    for i in range(0, len(feature.get('neighbors'))):
-        neighbor = feature.get('neighbors')[i]
-        if i == 0:
+    j = 0
+    for j in range(0, len(feature.get('neighbors'))):
+        neighbor = feature.get('neighbors')[j]
+        if j == 0:
             neighbors = neighbor
         neighbors = f"{neighbors}, {neighbor}"
         pass
-    file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{neighbors}\n")
-    pass
-
-# STUB FOR LATER
-class State:
-    def __init__(self, abbr, pop, year):
-        self.abbr = abbr
-
-class Precinct:
-    def __init__(self, properties, geometry):
-        self.name = properties.get('Precinct')
-        self.county = properties.get("COUNTY")
-        self.population = properties.get("TOTPOP")
-
-        # Add extra fields once a basic prototype exists
-
-    def setNeighbors(self, neighbors):
-        self.neighbors = neighbors
+    file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{j}|{neighbors}\n")
 
 if __name__ == "__main__":
     main()
