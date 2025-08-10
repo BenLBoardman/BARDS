@@ -10,7 +10,7 @@ bards: obj main
 main: $(OBJPATH)main.o $(OBJPATH)cmd.o
 	$(CC) $(CFLAGS) $(OBJPATH)main.o $(OBJPATH)cmd.o $(OBJPATH)io.o \
     $(OBJPATH)redistrict.o $(OBJPATH)state.o \
-	-o bards.exe
+	-o bards
 
 obj: $(SRCPATH)main.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)main.c -o $(OBJPATH)main.o
