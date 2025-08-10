@@ -1,3 +1,5 @@
+import geopandas as gpd
+
 import sys
 import json
 from typing import cast
@@ -19,6 +21,8 @@ def main():
     print(f"Processing data for state: {state}...")
     print(f"Using census data:  {year}...")
 
+    dataFrame = gpd.read_file(f'{DATAPATH_RAW}{state}.geojson')
+
     with open(f'{DATAPATH_RAW}{state}.geojson', 'r') as input:
         data = json.load(input)
         print("JSON Data loaded...")
@@ -28,7 +32,7 @@ def main():
         precincts.append(precinct)
     print("Features loaded... beginning neighbor analysis...")
     startTime = time.time()
-    getAllNeighbors(precincts)
+    neighborDict = findAllNeighborsGPD(precincts, dataFrame)
     elapsed = time.time() - startTime
 
     print(f"Neighbor analysis finished in {elapsed} seconds...")
@@ -49,42 +53,13 @@ class Precinct:
 
         # Add extra fields once a basic prototype exists
 
-        self.edges = []
-        self.makeEdges(geometry.get('coordinates')[0][0])
-        self.neighbors = []
+    def setNeighbors(self, neighbors):
+        self.neighbors = neighbors
 
-    def makeEdges(self, coordinates):
-        self.edges = []
-        i = 0
-        for i in range(0, len(coordinates) - 1):
-            self.edges.append((coordinates[i], coordinates[i+1]))
-        self.edges.append((coordinates[i], coordinates[0]))
-
-    def isNeighbor(self, other):
-        other = cast(Precinct, other)
-        for edge in self.edges:
-            for otherEdge in other.edges:
-                if (edge[0] == otherEdge[0] or edge[0] == otherEdge[1]):
-                    self.neighbors.append(other.name)
-                    other.neighbors.append(self.name)
-                    return 0
-
-    def addNeighbor(self, other):
-        self.neighbors.append(other)
-
-
-
-
-def getAllNeighbors(precincts):
-    try:
-        for i in range(0, len(precincts)):
-            print(f"Beginning neighbor analysis on precinct {i + 1} of {len(precincts)}...")
-            curr = cast(Precinct, precincts[i])
-            for j in range(i + 1, len(precincts)):
-                curr.isNeighbor(precincts[j])
-    except:
-        print(f"ERROR: Neighbor analysis failed on precinct {i + 1} of {len(precincts)} (comparing with precinct {j + 1} of {len(precincts)})")
-
+def findAllNeighborsGPD(precincts, dataFrame):
+    for i, feature in dataFrame.iterrows():
+        neighbors = dataFrame[dataFrame.geometry.touches(feature.geometry)].Precinct.tolist()
+        precincts[i].setNeighbors(neighbors)
 
 # STUB FOR LATER
 class State:

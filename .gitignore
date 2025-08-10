@@ -4,7 +4,7 @@
 # Object files
 *.o
 *.ko
-*.obj
+//*.obj
 *.elf
 
 # Linker output
@@ -53,3 +53,8 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+
+# misc other files and folders
+*.exe
+.vscode
