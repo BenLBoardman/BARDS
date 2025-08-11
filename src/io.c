@@ -17,10 +17,10 @@ char buf[BUF_SZ];
 int readState(State *state, char *stateAbbr, int year) {
     char fileName[256] = {0};
     char cwd[256] = {0};
-    char *tok;
+    char *tok, *pcts, *strtokPtr;
     FILE *fp = NULL;
-    int fileIndex;
-
+    int fileIndex, pctNum;
+    Precinct *curr;
 
     memset(buf, 0, BUF_SZ);
     getcwd(cwd, sizeof(cwd));
@@ -38,21 +38,55 @@ int readState(State *state, char *stateAbbr, int year) {
     //TODO process filled state header
     tok = strtok(buf, "|");
     tok = strtok(NULL, "|");
+    state->pop = atoi(tok);
     tok = strtok(NULL, "|");
     state->precinctCt = atoi(tok);
-    state->precincts = malloc(sizeof(Precinct) * state->precinctCt);
+    state->precincts = malloc(sizeof(Precinct*) * state->precinctCt);
 
     printf("Precinct ct: %d\n", state->precinctCt);
 
     for(int i = 0; i < state->precinctCt; i++) {
+        state->precincts[i] = malloc(sizeof(Precinct));
+        curr = state->precincts[i];
         fgets(buf, BUF_SZ, fp);
-        printf("Precinct: %s\n", buf);
 
         tok = strtok(buf, "|");
         fileIndex = atoi(tok);
         if(fileIndex != i) {
             fprintf(stderr, "File precinct no. does not match with calculated.\n");
             return -1;
+        }
+
+        tok = strtok(NULL, "|");
+        strncpy(curr->name, tok, NAME_LEN);
+
+        tok = strtok(NULL, "|");
+        strncpy(curr->county, tok, NAME_LEN);
+
+        tok = strtok(NULL, "|");
+        curr->pop = atoi(tok);
+
+        tok = strtok(NULL, "|");
+        curr->neighborCnt = atoi(tok);
+
+        curr->neighbors = malloc(sizeof(Precinct*) * curr->neighborCnt);
+        tok = strtok(NULL, "|");
+
+        strtokPtr = tok;
+        for(int j = 0; j < curr->neighborCnt; j++) {
+            pcts = strtok(strtokPtr, ", ");
+            strtokPtr = NULL;
+
+            pctNum = atoi(pcts);
+            curr->neighbors[j] = pctNum;
+        }
+    }
+
+    for(int i = 0; i < state->precinctCt; i++) {
+        curr = state->precincts[i];
+        for(int j = 0; j < curr->neighborCnt; j++) {
+            pctNum = curr->neighbors[j];
+            curr->neighbors[j] = state->precincts[pctNum];
         }
     }
 

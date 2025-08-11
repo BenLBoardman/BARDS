@@ -2,15 +2,15 @@
     #define STATE_DEF
 
     #define STATE_CNT 1
-    #define PRECINCT_NAME_SIZE 256
+    #define NAME_LEN 256
 
     typedef struct District {
 
     } District;
 
     typedef struct precinct_t {
-        char name[PRECINCT_NAME_SIZE];
-        int idLen;
+        char name[NAME_LEN];
+        char county[NAME_LEN];
         struct precinct_t **neighbors;
         int neighborCnt;
         int pop;
@@ -25,7 +25,7 @@
 
 
         int precinctCt;
-        Precinct *precincts;
+        Precinct **precincts;
 
 
         int distCt;
