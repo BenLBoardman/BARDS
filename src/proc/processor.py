@@ -39,10 +39,11 @@ def main():
 def findAllNeighborsGPD(dataFrame: gpd.GeoDataFrame):
     neighborList = []
     for i, feature in dataFrame.iterrows():
-        neighbors = dataFrame[dataFrame.geometry.touches(feature.geometry)].index.tolist()
+        neighbors = dataFrame[dataFrame.geometry.intersects(feature.geometry)].index.tolist()
+        neighbors.remove(i)
         neighborList.append(neighbors)
     dataFrame['neighbors'] = neighborList
-    dataFrame.drop(columns=['geometry'])
+    dataFrame = dataFrame.drop(columns=['geometry'])
 
 
 def writeToBrdArch(file, population, dataFrame: gpd.GeoDataFrame):
@@ -57,13 +58,14 @@ def writeToBrdArch(file, population, dataFrame: gpd.GeoDataFrame):
 def writePctToFile(file, i: int, feature: pd.Series):
     neighbors = ""
     j = 0
-    for j in range(0, len(feature.get('neighbors'))):
+    numNeighbors = len(feature.get('neighbors'))
+    for j in range(0, numNeighbors):
         neighbor = feature.get('neighbors')[j]
         if j == 0:
             neighbors = neighbor
         else:
             neighbors = f"{neighbors}, {neighbor}"
-    file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{j}|{neighbors}\n")
+    file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{numNeighbors}|{neighbors}\n")
 
 if __name__ == "__main__":
     main()
