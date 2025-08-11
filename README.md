@@ -33,7 +33,7 @@ The basic version of BARDS is not complete. Below is a list of currently-planned
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
 - processor - basic precinct data - COMPLETE
 - main app - basic runtime structure - COMPLETE
-- processor - precinct neighbor data - NEEDS FIXING (see Issue #1)
+- processor - precinct neighbor data - COMPLETE
 - redistrict - read from .brd - TESTING
 - processor - basic state-level data - IN PROGRESS
 - processor - precinct demographic data - NOT STARTED
