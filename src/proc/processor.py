@@ -45,7 +45,7 @@ def findAllNeighborsGPD(dataFrame: gpd.GeoDataFrame):
 
 def writeToBrdArch(file, dataFrame: gpd.GeoDataFrame):
     # TODO - write header
-    header = f"||{len(dataFrame)}\n"
+    header = f"ph|ph|{len(dataFrame)}\n"
     file.write(header)
     # write each precinct
     for i, feature in dataFrame.iterrows():
