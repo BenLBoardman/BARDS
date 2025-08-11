@@ -59,8 +59,8 @@ def writePctToFile(file, i: int, feature: pd.Series):
         neighbor = feature.get('neighbors')[j]
         if j == 0:
             neighbors = neighbor
-        neighbors = f"{neighbors}, {neighbor}"
-        pass
+        else:
+            neighbors = f"{neighbors}, {neighbor}"
     file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{j}|{neighbors}\n")
 
 if __name__ == "__main__":
