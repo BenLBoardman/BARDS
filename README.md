@@ -21,23 +21,23 @@ At present, there are two commands that are accepted, each with its own addition
     Process takes two additional arguments - a state name S and a year Y. It will read the GeoJSON file S_Y.geojson from the bards/data/geojson folder and output the file S_Y.brd in the bards/data/processed folder
 
 *redistrict S Y* draws districts based on a set of precincts described in a `.brd` file. It expects these files to be located in bards/data/processed and takes the following arguments.
-    S - the state to be redistricted. Required to find the `.brd` with information.
-    Y - the census/data year to use. Required to find the `.brd` with information.
-    In addition, it takes the following optional arguments:
-    *--n <number>* - The number of districts to draw. Otherwise, it will default to a value read from the `*.brd` file
-    *--o <name>* - A name to give to the output map.
+- S - the state to be redistricted. Required to find the `.brd` with information.
+- Y - the census/data year to use. Required to find the `.brd` with information.
+- In addition, it takes the following optional arguments:
+- *--n <number>* - The number of districts to draw. Otherwise, it will default to a value read from the `*.brd` file
+- *--o <name>* - A name to give to the output map.
 
 
 **CURRENT ROADMAP**
 The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
-    processor - basic precinct data - COMPLETE
-    processor - precinct neighbor data - COMPLETE
-    processor - basic state-level data - IN PROGRESS
-    processor - precinct demographic data - NOT STARTED
-    processor - precinct electoral data - NOT STARTED
-    main app - basic runtime structure - COMPLETE
-    redistrict - read from .brd - IN PROGRESS
-    redistrict - add precincts to districts - NOT STARTED
-    redistrict - ensure districts have good population - NOT STARTED
-    redistrict - output to .csv = NOT STARTED
+- processor - basic precinct data - COMPLETE
+- processor - precinct neighbor data - COMPLETE
+- processor - basic state-level data - IN PROGRESS
+- processor - precinct demographic data - NOT STARTED
+- processor - precinct electoral data - NOT STARTED
+- main app - basic runtime structure - COMPLETE
+- redistrict - read from .brd - IN PROGRESS
+- redistrict - add precincts to districts - NOT STARTED
+- redistrict - ensure districts have good population - NOT STARTED
+- redistrict - output to .csv = NOT STARTED
