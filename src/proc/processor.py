@@ -7,12 +7,13 @@ import time
 DATAPATH_RAW = "data/geojson/"
 DATAPATH_PROCESSED = "data/processed/"
 
-state = ""
+
 
 json.JSONDecoder
 
 def main():
     state = sys.argv[1].upper()
+    population = 0
     year = sys.argv[2]
 
     print(f"Processing data for state: {state}...")
@@ -22,6 +23,7 @@ def main():
 
     print("Features loaded... beginning neighbor analysis...")
     startTime = time.time()
+    population = dataFrame['TOTPOP'].sum()
     findAllNeighborsGPD(dataFrame)
     elapsed = time.time() - startTime
 
@@ -30,7 +32,7 @@ def main():
 
     outputFileName = f"{DATAPATH_PROCESSED}{state}_{year}.brd"
     with open(outputFileName, "w") as output:
-        writeToBrdArch(output, dataFrame)
+        writeToBrdArch(output, population, dataFrame)
 
     print(f"Processed data written to {outputFileName}...")
 
@@ -43,9 +45,9 @@ def findAllNeighborsGPD(dataFrame: gpd.GeoDataFrame):
     dataFrame.drop(columns=['geometry'])
 
 
-def writeToBrdArch(file, dataFrame: gpd.GeoDataFrame):
+def writeToBrdArch(file, population, dataFrame: gpd.GeoDataFrame):
     # TODO - write header
-    header = f"ph|ph|{len(dataFrame)}\n"
+    header = f"ph|{population}|{len(dataFrame)}\n"
     file.write(header)
     # write each precinct
     for i, feature in dataFrame.iterrows():
