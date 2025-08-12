@@ -1,3 +1,5 @@
+#include <sys/types.h>
+
 #ifndef STATE_DEF
     #define STATE_DEF
 
@@ -12,24 +14,23 @@
         char name[NAME_LEN];
         char county[NAME_LEN];
         struct precinct_t **neighbors;
-        int neighborCnt;
-        int pop;
+        u_int16_t neighborCnt;
+        u_int32_t pop;
+        u_int16_t dist;
     } Precinct;
 
     typedef struct state_t {
         char abbr[3];
         char *name;
-        int nameLen;
-        int pop;
-        int tgt_pop;
+        u_int32_t pop;
 
 
-        int precinctCt;
+        u_int32_t precinctCt;
         Precinct **precincts;
 
 
-        int distCt;
-        District *districts;
+        u_int16_t distCt;
+        u_int32_t *perDistPop;
     } State;
 
 #endif
