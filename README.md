@@ -34,10 +34,10 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - processor - basic precinct data - COMPLETE
 - main app - basic runtime structure - COMPLETE
 - processor - precinct neighbor data - COMPLETE
-- redistrict - read from .brd - TESTING
+- redistrict - read from .brd - COMPLETE
+- redistrict - add precincts to districts - IN PROGRESS
 - processor - basic state-level data - IN PROGRESS
 - processor - precinct demographic data - NOT STARTED
 - processor - precinct electoral data - NOT STARTED
-- redistrict - add precincts to districts - NOT STARTED
 - redistrict - ensure districts have good population - NOT STARTED
 - redistrict - output to .csv = NOT STARTED
