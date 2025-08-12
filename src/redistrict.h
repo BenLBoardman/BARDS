@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "cmd.h"
-#include "state.h"
+#include "struct/state.h"
 #include "io.h"
 
 #define MKDIST_FLAG_NUMDIST 0x01
