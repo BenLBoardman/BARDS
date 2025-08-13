@@ -35,7 +35,7 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - main app - basic runtime structure - COMPLETE
 - processor - precinct neighbor data - COMPLETE
 - redistrict - read from .brd - COMPLETE
-- redistrict - backing data structures - IN PROGRESS
+- redistrict - implement necessary data structures - TESTING
 - redistrict - add precincts to districts - IN PROGRESS
 - processor - basic state-level data - IN PROGRESS
 - processor - precinct demographic data - NOT STARTED
