@@ -36,6 +36,8 @@ int readState(State *state, char *stateAbbr, int year) {
     for(int i = 0; i < state->precinctCt; i++) {
         state->precincts[i] = malloc(sizeof(Precinct));
         curr = state->precincts[i];
+        curr->id = i;
+        
         fgets(buf, BUF_SZ, fp);
 
         tok = strtok(buf, "|");

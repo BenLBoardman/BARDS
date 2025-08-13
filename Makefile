@@ -9,7 +9,7 @@ bards: obj main
 
 main: $(OBJPATH)main.o $(OBJPATH)cmd.o
 	$(CC) $(CFLAGS) $(OBJPATH)main.o $(OBJPATH)cmd.o $(OBJPATH)io.o \
-    $(OBJPATH)redistrict.o $(OBJPATH)state.o  $(OBJPATH)stack.o \
+    $(OBJPATH)redistrict.o $(OBJPATH)state.o  $(OBJPATH)datastruct.o \
 	-o bards
 
 obj: $(SRCPATH)main.c
@@ -18,12 +18,18 @@ obj: $(SRCPATH)main.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)io.c -o $(OBJPATH)io.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)redistrict.c -o $(OBJPATH)redistrict.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)struct/state.c -o $(OBJPATH)state.o
-	$(CC) $(CFLAGS) -c $(SRCPATH)struct/stack.c -o $(OBJPATH)stack.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)struct/datastruct.c -o $(OBJPATH)datastruct.o
 
 cmd: $(SRCPATH)cmd.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)cmd.c -o $(OBJPATH)cmd.o
 
 
+test: $(SRCPATH)test.c
+	$(CC) $(CFLAGS) -c $(SRCPATH)test.c -o $(OBJPATH)test.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)struct/datastruct.c -o $(OBJPATH)datastruct.o
+	$(CC) $(CFLAGS) -c $(OBJPATH)test.o datastruct.o -o test
+
 clean:
 	rm $(OBJPATH)*
-	rm ./bards.exe
+	rm ./bards
+	rm ./test

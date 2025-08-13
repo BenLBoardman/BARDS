@@ -14,6 +14,7 @@
         char name[NAME_LEN];
         char county[NAME_LEN];
         struct precinct_t **neighbors;
+        u_int32_t id;
         u_int16_t neighborCnt;
         u_int32_t pop;
         u_int16_t dist;

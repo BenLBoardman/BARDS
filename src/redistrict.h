@@ -3,7 +3,7 @@
 
 #include "cmd.h"
 #include "struct/state.h"
-#include "struct/stack.h"
+#include "struct/datastruct.h"
 #include "io.h"
 
 #define MKDIST_FLAG_NUMDIST 0x01

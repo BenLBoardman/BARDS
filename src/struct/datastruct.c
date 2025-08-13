@@ -1,4 +1,4 @@
-#include "hashTable.h"
+#include "datastruct.h"
 
 //Add a Precinct to a linked list
 // Input: A pointer to the head of the linked list, a pointer to the precinct to add
@@ -94,7 +94,82 @@ void ll_free(LinkList* list) {
 }
 
 
+// Hash a precinct based on its id (order in the state precinct list)
+// Input: a pointer to the precinct to be hashed
+int hash(Precinct *precinct) {
+    return precinct->id % HASH_TABLE_BUCKETS; //simple hash algorithm, works since the hashing is based on an id
+}
 
-int hash(HashTable *, Precinct *);
-int exists(HashTable *, Precinct *);
-void insert(HashTable *, Precinct *);
+
+// Determine if a precinct is in the hash table already
+// Input: a pointer to a hashtable and a pointer to a precinct
+// Output: A boolean corresponding to whether the precinct was found
+int ht_find(HashTable *table, Precinct *precinct) {
+    int pHash = hash(precinct);
+
+    return ll_find(table->table[pHash], precinct) != NULL ? 1 : 0;
+}
+
+
+//Insert a precinct into a hashtable, if it isn't present already
+// Input: a pointer to a hashtable and a pointer to a precinct
+void ht_insert(HashTable *table, Precinct *precinct) {
+    int pHash;
+
+    if(ht_find(table, precinct)) {
+        return;
+    }
+
+    pHash = hash(precinct);
+    ll_add(table->table[pHash], precinct);    
+}
+
+Stack st_init(Precinct *head) {
+    Stack newStack;
+
+    newStack.head = NULL;
+    newStack.tail = NULL;
+    newStack.size = 0;
+
+    if(head != NULL)
+        st_push(&newStack, head);
+
+    return newStack;
+}
+
+void st_push(Stack *stack, Precinct *data) {
+    stack_data_t *stData = malloc(sizeof(stack_data_t));
+
+    stData->data = data;
+    stData->next = NULL;
+
+    if(stack->size == 0) {
+        stack->head = data;
+        stack->tail = data;
+    } else {
+        stack->tail->next = data;
+        stack->tail = data;
+    }
+    stack->size++;
+}
+
+void st_pop(Stack *stack) {
+    stack_data_t *stData = stack->head;
+    void *data = stData->data;
+
+    if(stack->size == 0){
+        return NULL;
+    } else if(stack->size == 1) {
+        stack->head == NULL;
+        stack->tail == NULL;
+    } else {
+        stack->head = stack->head->next;
+    }
+
+    free(stData);
+    return data;
+}
+
+int st_isEmpty(Stack *stack) {
+    return stack->size == 0;
+}

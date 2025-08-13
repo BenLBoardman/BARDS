@@ -23,21 +23,21 @@ int makeDists(redistrict_input_t input, __uint8_t flags) {
         return -1;
     }
 
-    buildDists(&target); 
+    buildDistsDFS(&target); 
     return 0;
 }
 
 
 
 /*************************************************************** 
- *  The first and simplest district-builder algorithm
+ *  The first and simplest district-builder algorithm BARDS will use.
  *  A variant of a DFS, this algorithm will start from a random precinct and assign neighboring precincts in order of discovery until all precincts are assigned 
  *  to districts. When a given district has the correct population, it will increment the currDist value and start doing the next district. This will repeat 
  *  until every precinct has been assigned to a district. This is intentionally an incredibly naive algorithm.
  *  
  */
 int buildDistsDFS(State *state) {
-    Stack dfsStack = initStack(NULL);
+    Stack dfsStack = st_init(NULL);
 
     int currDist = 1;
 }
