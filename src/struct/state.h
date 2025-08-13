@@ -31,6 +31,9 @@
 
         u_int16_t distCt;
         u_int32_t *perDistPop;
+
+        int weight; //CURRENTLY UNUSED - will eventually be used to pick precincts to put in a district together
     } State;
+
 
 #endif
