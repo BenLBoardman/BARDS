@@ -46,7 +46,6 @@ Precinct *ll_remove(LinkList *list, Precinct *target) {
     return out;
 }
 
-
 //Given a pointer to a Precinct, determine if it is present in a linked list.
 // Input: a pointer to the head of a linked list, a pointer to a Precinct to find
 // Output: a pointer to the LinkList containing the target (if found), or NULL if it is not found.
@@ -69,8 +68,7 @@ Precinct *ll_get(LinkList *list, Precinct *target) {
     return find == NULL ? NULL : find->data;
 }
 
-
-// This function gets the size of a linked list
+//This function gets the size of a linked list
 // Input: a pointer to the head of a linked list
 // Output: the number of elements in the linked list
 int ll_size(LinkList* list) {
@@ -80,8 +78,7 @@ int ll_size(LinkList* list) {
     return i;
 }
 
-
-// This function frees all elements of a linked list
+//This function frees all elements of a linked list
 // Input: a pointer to the head of a linked list
 void ll_free(LinkList* list) {
     LinkList *curr = list;
@@ -93,23 +90,49 @@ void ll_free(LinkList* list) {
     }
 }
 
+//Initiate a hash table with a specific capacity
+// Input: A capacity for the hash table.
+// Output: A pointer to the newly initiated HashTable
+HashTable *ht_init(int capacity) {
+    HashTable *table;
+    int i;
+    LinkList *curr;
+    table = malloc(sizeof(HashTable));
 
-// Hash a precinct based on its id (order in the state precinct list)
-// Input: a pointer to the precinct to be hashed
-int hash(Precinct *precinct) {
-    return precinct->id % HASH_TABLE_BUCKETS; //simple hash algorithm, works since the hashing is based on an id
+    table->capacity = capacity;
+    table ->size = 0;
+    table->table = malloc(sizeof(LinkList) * capacity);
+
+    for(int i = 0; i < capacity; i++) {
+        table->table[i] = malloc(sizeof(LinkList));
+    }
+
+    return table;
 }
 
+//Hash a precinct based on its id (order in the state precinct list)
+// Input: a pointer to the hash table and a pointer to the precinct to be hashed
+// Output: a hash value to locate the precinct in the hash table
+int hash(HashTable *table, Precinct *precinct) {
+    return precinct->id % table->capacity; //simple hash algorithm, works since the hashing is based on an id
+}
 
-// Determine if a precinct is in the hash table already
+//Determine if a precinct is in the hash table already
 // Input: a pointer to a hashtable and a pointer to a precinct
 // Output: A boolean corresponding to whether the precinct was found
 int ht_find(HashTable *table, Precinct *precinct) {
-    int pHash = hash(precinct);
+    int pHash = hash(table, precinct);
 
     return ll_find(table->table[pHash], precinct) != NULL ? 1 : 0;
 }
 
+//Get the linked list entry at a specific index.
+//May be deprecated/removed if it isn't used.
+// Input: A pointer to the hash table, and an index
+// Output: A pointer to the linked-list entry at the given index
+LinkList *ht_get(HashTable *table, int index) {
+    return table->table[index];
+}
 
 //Insert a precinct into a hashtable, if it isn't present already
 // Input: a pointer to a hashtable and a pointer to a precinct
@@ -120,8 +143,34 @@ void ht_insert(HashTable *table, Precinct *precinct) {
         return;
     }
 
-    pHash = hash(precinct);
-    ll_add(table->table[pHash], precinct);    
+    pHash = hash(table, precinct);
+    ll_add(table->table[pHash], precinct);
+    table->size++;    
+}
+
+//Remove and return a precinct from a hash table, if it exists
+// Input: a pointer to a hashtable and a pointer to a precinct to remove
+// Output: the removed precinct.
+Precinct *ht_remove(HashTable *table, Precinct *precinct) {
+    LinkList *ht_list;
+    ht_list = ht_get(table, hash(table, precinct));
+
+    if(ht_list != NULL) 
+        ll_remove(ht_list, precinct);
+
+    table->size--;
+    return precinct;
+}
+
+//Free the memory associated with a hash table
+// Input: a hash table to free
+void ht_free(HashTable *table) {
+    for(int i = 0; i < table->capacity; i++) {
+        ll_free(table->table[i]);
+    }
+
+    free(table->table);
+    free(table);
 }
 
 Stack st_init(Precinct *head) {
@@ -136,6 +185,7 @@ Stack st_init(Precinct *head) {
 
     return newStack;
 }
+
 
 void st_push(Stack *stack, Precinct *data) {
     stack_data_t *stData = malloc(sizeof(stack_data_t));
@@ -153,6 +203,7 @@ void st_push(Stack *stack, Precinct *data) {
     stack->size++;
 }
 
+
 void st_pop(Stack *stack) {
     stack_data_t *stData = stack->head;
     void *data = stData->data;
@@ -169,6 +220,7 @@ void st_pop(Stack *stack) {
     free(stData);
     return data;
 }
+
 
 int st_isEmpty(Stack *stack) {
     return stack->size == 0;

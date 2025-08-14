@@ -13,8 +13,9 @@ typedef struct link_list_t {
 } LinkList;
 
 typedef struct hash_table_t {
-    LinkList *table[HASH_TABLE_BUCKETS];
+    LinkList **table;
     u_int32_t size;
+    u_int32_t capacity;
 } HashTable;
 
 typedef struct stack_data_t {
@@ -36,9 +37,12 @@ Precinct *ll_get(LinkList*, Precinct*);
 int ll_size(LinkList*);
 void ll_free(LinkList*);
 
-int hash(Precinct *);
+HashTable *ht_init(int);
+int hash(HashTable *, Precinct *);
 int ht_find(HashTable *, Precinct *);
+LinkList *ht_get(HashTable *, int);
 void ht_insert(HashTable *, Precinct *);
+Precinct *ht_remove(HashTable *, Precinct *);
 
 int st_isEmpty(Stack*);
 Precinct *st_Pop(Stack*);
