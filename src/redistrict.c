@@ -37,7 +37,7 @@ int makeDists(redistrict_input_t input, __uint8_t flags) {
  *  
  */
 int buildDistsDFS(State *state) {
-    Stack dfsStack = st_init(NULL);
+    Stack *dfsStack = st_init(NULL);
 
     int currDist = 1;
 }

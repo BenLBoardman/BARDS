@@ -23,12 +23,12 @@ void ll_add(LinkList *list, Precinct *precinct) {
 // Input: A pointer to the head of the linked list, a pointer ot the precinct to be removed
 // Output: a pointer to the removed precinct, or NULL if it doesn't exist
 Precinct *ll_remove(LinkList *list, Precinct *target) {
-    LinkList *remove, prev, next;
+    LinkList *remove;
     Precinct *out;
 
     remove = ll_find(list, target);
     if(remove == NULL) {
-        return;
+        return NULL;
     }
 
     if(remove == list) {
@@ -95,8 +95,6 @@ void ll_free(LinkList* list) {
 // Output: A pointer to the newly initiated HashTable
 HashTable *ht_init(int capacity) {
     HashTable *table;
-    int i;
-    LinkList *curr;
     table = malloc(sizeof(HashTable));
 
     table->capacity = capacity;
@@ -173,20 +171,24 @@ void ht_free(HashTable *table) {
     free(table);
 }
 
-Stack st_init(Precinct *head) {
-    Stack newStack;
+//Initiate a new stack, with an optional head value
+// Input: A pointer to the precinct to serve as the head of the stack (OPTIONAL)
+// Output: a pointer to the newly created stack
+Stack *st_init(Precinct *head) {
+    Stack *newStack = malloc(sizeof(Stack));
 
-    newStack.head = NULL;
-    newStack.tail = NULL;
-    newStack.size = 0;
+    newStack->head = NULL;
+    newStack->tail = NULL;
+    newStack->size = 0;
 
     if(head != NULL)
-        st_push(&newStack, head);
+        st_push(newStack, head);
 
     return newStack;
 }
 
-
+//Push a precinct onto the stack
+// Input: A pointer to the stack and a pointer to the precinct to add to the stack
 void st_push(Stack *stack, Precinct *data) {
     stack_data_t *stData = malloc(sizeof(stack_data_t));
 
@@ -194,25 +196,27 @@ void st_push(Stack *stack, Precinct *data) {
     stData->next = NULL;
 
     if(stack->size == 0) {
-        stack->head = data;
-        stack->tail = data;
+        stack->head = stData;
+        stack->tail = stData;
     } else {
-        stack->tail->next = data;
-        stack->tail = data;
+        stack->tail->next = stData;
+        stack->tail = stData;
     }
     stack->size++;
 }
 
-
-void st_pop(Stack *stack) {
+//Pop a precinct from the stack
+// Input: A pointer to the stack
+// Output: A pointer to the popped precinct
+Precinct *st_pop(Stack *stack) {
     stack_data_t *stData = stack->head;
-    void *data = stData->data;
+    Precinct *data = stData->data;
 
     if(stack->size == 0){
         return NULL;
     } else if(stack->size == 1) {
-        stack->head == NULL;
-        stack->tail == NULL;
+        stack->head = NULL;
+        stack->tail = NULL;
     } else {
         stack->head = stack->head->next;
     }
@@ -221,7 +225,23 @@ void st_pop(Stack *stack) {
     return data;
 }
 
-
+//Determine if a given stack is empty
+// Input: a pointer to a stack
+// Output: 1 if the stack is empty, 0 if it isn't
 int st_isEmpty(Stack *stack) {
     return stack->size == 0;
+}
+
+//Free a stack
+// Input: a pointer to a stack
+void st_free(Stack *stack) {
+    stack_data_t *curr, *prev;
+
+    curr = stack->head;
+    while(curr != NULL) {
+        prev = curr;
+        curr = curr->next;
+        free(prev);
+    }
+    free(stack);
 }

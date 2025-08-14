@@ -20,7 +20,7 @@ typedef struct hash_table_t {
 
 typedef struct stack_data_t {
     Precinct *data;
-    Precinct *next;
+    struct stack_data_t *next;
 } stack_data_t;
 
 typedef struct stack_t {
@@ -44,7 +44,8 @@ LinkList *ht_get(HashTable *, int);
 void ht_insert(HashTable *, Precinct *);
 Precinct *ht_remove(HashTable *, Precinct *);
 
+Stack *st_init(Precinct*);
 int st_isEmpty(Stack*);
 Precinct *st_Pop(Stack*);
 void st_push(Stack*, Precinct*);
-Stack st_init(Precinct*);
+void st_free(Stack*);
