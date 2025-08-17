@@ -9,10 +9,11 @@
 
     #define NUM_CMDS 2
     #define PROC_PATH "src/proc/"
-    #define PROC_NAME "processor.py"
+    #define PROC_NAME "redistricter.py"
 
     int processGeoJSON(int, char *[]);
     int redistrict(int, char *[]);
+    int pdistrict(int, char *[]);
     char *upperCaseStr(char *);
 
     typedef struct redistrict_input_t {

@@ -13,23 +13,23 @@ main: $(OBJPATH)main.o $(OBJPATH)cmd.o
 	-o bards
 
 obj: $(SRCPATH)main.c
+	$(CC) $(CFLAGS) -c $(SRCPATH)struct/datastruct.c -o $(OBJPATH)datastruct.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)main.c -o $(OBJPATH)main.o
+	$(CC) $(CFLAGS) -c $(SRCPATH)test.c -o $(OBJPATH)test.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)cmd.c -o $(OBJPATH)cmd.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)io.c -o $(OBJPATH)io.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)redistrict.c -o $(OBJPATH)redistrict.o
 	$(CC) $(CFLAGS) -c $(SRCPATH)struct/state.c -o $(OBJPATH)state.o
-	$(CC) $(CFLAGS) -c $(SRCPATH)struct/datastruct.c -o $(OBJPATH)datastruct.o
+	
 
 cmd: $(SRCPATH)cmd.c
 	$(CC) $(CFLAGS) -c $(SRCPATH)cmd.c -o $(OBJPATH)cmd.o
 
 
-test: $(SRCPATH)test.c
-	$(CC) $(CFLAGS) -c $(SRCPATH)test.c -o $(OBJPATH)test.o
-	$(CC) $(CFLAGS) -c $(SRCPATH)struct/datastruct.c -o $(OBJPATH)datastruct.o
-	$(CC) $(CFLAGS) -c $(OBJPATH)test.o datastruct.o -o test
+test: obj $(OBJPATH)test.o
+	$(CC) $(CFLAGS) $(OBJPATH)test.o $(OBJPATH)io.o -o test
 
 clean:
-	rm $(OBJPATH)*
+	rm $(OBJPATH)*.o
 	rm ./bards
 	rm ./test

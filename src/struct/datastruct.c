@@ -174,23 +174,23 @@ void ht_free(HashTable *table) {
 //Initiate a new stack, with an optional head value
 // Input: A pointer to the precinct to serve as the head of the stack (OPTIONAL)
 // Output: a pointer to the newly created stack
-Stack *st_init(Precinct *head) {
-    Stack *newStack = malloc(sizeof(Stack));
+Queue *qu_init(Precinct *head) {
+    Queue *newStack = malloc(sizeof(Queue));
 
     newStack->head = NULL;
     newStack->tail = NULL;
     newStack->size = 0;
 
     if(head != NULL)
-        st_push(newStack, head);
+        qu_push(newStack, head);
 
     return newStack;
 }
 
 //Push a precinct onto the stack
 // Input: A pointer to the stack and a pointer to the precinct to add to the stack
-void st_push(Stack *stack, Precinct *data) {
-    stack_data_t *stData = malloc(sizeof(stack_data_t));
+void qu_push(Queue *stack, Precinct *data) {
+    queue_data_t *stData = malloc(sizeof(queue_data_t));
 
     stData->data = data;
     stData->next = NULL;
@@ -208,9 +208,9 @@ void st_push(Stack *stack, Precinct *data) {
 //Pop a precinct from the stack
 // Input: A pointer to the stack
 // Output: A pointer to the popped precinct
-Precinct *st_pop(Stack *stack) {
-    stack_data_t *stData = stack->head;
-    Precinct *data = stData->data;
+Precinct *qu_pop(Queue *stack) {
+    queue_data_t *quData = stack->head;
+    Precinct *data = quData->data;
 
     if(stack->size == 0){
         return NULL;
@@ -221,21 +221,21 @@ Precinct *st_pop(Stack *stack) {
         stack->head = stack->head->next;
     }
 
-    free(stData);
+    free(quData);
     return data;
 }
 
 //Determine if a given stack is empty
 // Input: a pointer to a stack
 // Output: 1 if the stack is empty, 0 if it isn't
-int st_isEmpty(Stack *stack) {
+int qu_isEmpty(Queue *stack) {
     return stack->size == 0;
 }
 
 //Free a stack
 // Input: a pointer to a stack
-void st_free(Stack *stack) {
-    stack_data_t *curr, *prev;
+void qu_free(Queue *stack) {
+    queue_data_t *curr, *prev;
 
     curr = stack->head;
     while(curr != NULL) {

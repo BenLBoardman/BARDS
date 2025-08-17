@@ -9,6 +9,7 @@ struct {
 }cmds[] = {
     { "process", processGeoJSON },
     { "redistrict", redistrict },
+    { "pdistrict", pdistrict },
 };
 
 

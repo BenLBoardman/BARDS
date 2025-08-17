@@ -3,6 +3,11 @@
 
 A programming package for algorithmic redistricting.
 
+Data primarily from https://redistrictingdatahub.org
+
+States supported:
+    - New Hampshire
+
 Installation:
 1. For full functionality, the following software is required:
     - A C compiler (recommendation: GCC)
@@ -36,6 +41,7 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - processor - precinct neighbor data - COMPLETE
 - redistrict - read from .brd - COMPLETE
 - redistrict - implement necessary data structures - TESTING
+- ALL - expand documentation - IN PROGRESS
 - redistrict - add precincts to districts - IN PROGRESS
 - processor - basic state-level data - IN PROGRESS
 - processor - precinct demographic data - NOT STARTED
