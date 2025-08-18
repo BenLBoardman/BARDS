@@ -4,9 +4,6 @@ import BardProcessor as proc
 import SimpleDistrictAlgorithm as simple
 
 import sys
-DATAPATH_RAW = "data/geojson/"
-DATAPATH_PROCESSED = "data/processed/"
-
 
 
 
@@ -21,17 +18,18 @@ def main():
     print(f"Processing data for state: {state}...")
     print(f"Using census data:  {year}...")
 
-    gdf = gpd.read_file(f'{DATAPATH_RAW}{state}.geojson')
+    gdf = gpd.read_file(f'{proc.DATAPATH_IN}{state}.geojson')
 
     if cmd == "process":
-        proc.process(state, year, True, gdf)
+        proc.processIn(state, year, True, gdf)
 
     if cmd == "simple":
-        procOut = proc.process(state, year, False, gdf)
+        procOut = proc.processIn(state, year, False, gdf)
         population = procOut[0]
         gdf = procOut[1]
         gdf = simple.draw(population, numDists, gdf)
         dists = simple.buildDistrictGDF(gdf, numDists)
+        proc.processOut("TEST", dists)
 
 
 

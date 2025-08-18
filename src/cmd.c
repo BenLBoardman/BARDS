@@ -80,13 +80,13 @@ int pdistrict(int argc, char *argv[]) {
 
     strcpy(&pyName[strlen(pyName)], PROC_NAME);
 
-    if(argc != 2) {
-        fprintf(stderr, "Usage: ./bards.exe process <state abbr.> <year>\n");
+    if(argc != 3) {
+        fprintf(stderr, "Usage: ./bards.exe process <state abbr.> <year> < num>\n");
         return -1;    
     }
 
 
-    if(execlp("python3", "python3", pyName, "simple", argv[0], argv[1], NULL) == -1) {
+    if(execlp("python3", "python3", pyName, "simple", argv[0], argv[1], argv[2], NULL) == -1) {
         fprintf(stderr, "Error entering python");
         return -1;
     }

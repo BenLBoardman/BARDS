@@ -7,7 +7,7 @@
 #ifndef CMD_HEADER_H
     #define CMD_HEADER_H
 
-    #define NUM_CMDS 2
+    #define NUM_CMDS 3
     #define PROC_PATH "src/proc/"
     #define PROC_NAME "redistricter.py"
 

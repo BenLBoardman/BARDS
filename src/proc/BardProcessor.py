@@ -3,11 +3,12 @@ import pandas as pd
 
 
 import time 
-DATAPATH_RAW = "data/geojson/"
+DATAPATH_IN = "data/in/"
+DATAPATH_OUT = "data/out/"
 DATAPATH_PROCESSED = "data/processed/"
 
 
-def process(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
+def processIn(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
     population = 0
 
     print("Features loaded... beginning neighbor analysis...")
@@ -60,4 +61,13 @@ def writePctToFile(file, i: int, feature: pd.Series):
         else:
             neighbors = f"{neighbors}, {neighbor}"
     file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{numNeighbors}|{neighbors}\n")
-    
+
+
+def processOut(name: str, gdf: gpd.GeoDataFrame):
+    #gdf = gdf.to_crs(epsg=4326)
+    #gdf.to_file("f{DATAPATH_OUT}{name}.GeoJSON", driver="GeoJSON")
+    #geojson_str = gdf.to_json(to_wgs84=True)
+
+# Save to a file
+    with open("output.geojson", "w") as f:
+        f.write(gdf.to_json())

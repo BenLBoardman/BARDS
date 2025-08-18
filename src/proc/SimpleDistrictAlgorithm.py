@@ -6,7 +6,7 @@ def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
     queue = deque()
     visited = set()
 
-    distList = [-1] * gdf.shape[0]
+    distList = [-1] * len(gdf)
     target = []
     pop = totPop
     distNum = 1
@@ -44,7 +44,13 @@ def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
     return gdf
 
 def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
-    districtGDF = gpd.GeoDataFrame(columns=precinctGDF.columns, geometry=[])
+    districtGDF = gpd.GeoDataFrame(columns=['id', 'NAME'], geometry=[])
+    for i in range(1, distCt + 1):
+      filteredPGDF = precinctGDF.loc[precinctGDF['barddist'] == i]
+      districtGDF.loc[len(districtGDF)] = [i, str(i), precinctGDF.union_all()]
+    return districtGDF
+      
+      
 
     
 
