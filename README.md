@@ -45,7 +45,8 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - simple algorithm - random starting precinct - COMPLETE
 - main app - improvements & parameter checking - IN PROGRESS
 - ALL - expand documentation - IN PROGRESS
-- simple algorithm - console messages - NOT STARTED
+- simple algorithm - console messages - IN PROGRESS
+- data - get other state shapefiles - IN PROGRESS
 - contiguous simple algorithm - contiguity guarantee - NOT STARTED
 - simple redistrict - better population balancing - NOT STARTED
-- data - get other state shapefiles - NOT STARTED
+

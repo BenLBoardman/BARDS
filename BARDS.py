@@ -1,19 +1,18 @@
 import geopandas as gpd
 
 import src.BardProcessor as proc
-import src.SimpleDistrictAlgorithm as simple
+import src.algo.Select as select
 
 import sys
 
-# Commented-out states do not yet have precinct data in the app
+# Commented-out states do not yet have precinct data loaded
 defaultCt = {# 'AL':  7, 'AK':  1, 'AZ':  9, 'AR':  4, 'CA': 52,
              # 'CO':  8, 'CT':  5, 'DE':  1, 'FL': 28, 'GA': 14,
              # 'HI':  2, 'ID':  2, 'IL': 17, 'IN':  9, 'IA':  4,
              # 'KS':  4, 'KY':  6, 'LA':  6, 'ME':  2, 'MD':  8,
              # 'MA':  9, 'MI': 13, 'MN':  8, 'MS':  4, 'MO':  8,
              # 'MT':  2, 'NE':  3, 
-               'NV':  4, 'NH':  2#,
-             # 'NJ': 12,
+               'NV':  4, 'NH':  2, 'NJ': 12#,
              # 'NM':  3, 'NY': 26, 'NC': 14, 'ND':  1, 'OH': 15,
              # 'OK':  5, 'OR':  6, 'PA': 17, 'RI':  2, 'SC':  7,
              # 'SD':  1, 'TN':  9, 'TX': 38, 'UT':  4, 'VT':  1,
@@ -21,6 +20,8 @@ defaultCt = {# 'AL':  7, 'AK':  1, 'AZ':  9, 'AR':  4, 'CA': 52,
              }
 
 def main():
+
+    # Process args
     if len(sys.argv) < 4:
         print("Not enough arguments. Required arguments - python3 BARDS.py <algo> <state> <year>")
         return -1
@@ -48,14 +49,13 @@ def main():
     gdf = gpd.read_file(f'{proc.DATAPATH_IN}{state}_{year}.geojson')
 
     # Process input data & get neighbors
-    population = proc.processIn(state, year, False, gdf)
+    population = proc.processIn(state, year, gdf)
 
     # Insert new algorithms into the if-else HERE.
-    if algo == "simple":
-        gdf = simple.draw(population, numDists, gdf)
-    else:
-        print(f"Algorithm {algo} not recognized, districts not drawn.")
-        return -1
+    status = select.selectAlgo(algo, population, numDists, gdf)
+    if status[0] == -1:
+        return status[0]
+    gdf = status[1]
     
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)

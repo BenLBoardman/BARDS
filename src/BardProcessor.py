@@ -8,21 +8,21 @@ DATAPATH_OUT = "data/out/"
 DATAPATH_PROCESSED = "data/processed/"
 
 
-def processIn(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
+def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
     
-    cvap = pd.DataFrame(pd.DataFrame(
+    censusData = pd.DataFrame(pd.DataFrame(
             json.loads(str) for str in gdf['datasets'].tolist()
         )['T_20_CENS'].tolist(), columns=['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic'])    
-    gdf['TOTPOP'] = cvap['Total']
+    gdf['TOTPOP'] = censusData['Total']
 
     population = gdf['TOTPOP'].sum()
     print("Precinct data loaded... beginning neighbor analysis...")
     startTime = time.time()
 
     findAllNeighborsGPD(gdf)
-    elapsed = time.time() - startTime
+    elapsed = round(time.time() - startTime, 3)
 
     print(f"Neighbor analysis finished in {elapsed} seconds...")
     
