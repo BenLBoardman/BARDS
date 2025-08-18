@@ -1,5 +1,6 @@
 import geopandas as gpd
 
+import random
 from collections import deque
 
 def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
@@ -22,7 +23,9 @@ def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
         pop -= 1
         i += 1
 
-    queue.append(gdf.loc[0])
+    startingLoc = int(random.random() * len(gdf))
+    print(f"Starting from precinct no. {startingLoc} of {len(gdf)}")
+    queue.append(gdf.loc[startingLoc])
 
     while(queue):
         curr = queue.popleft()

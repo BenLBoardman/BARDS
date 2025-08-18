@@ -43,7 +43,8 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - processor - output to geoJSON - COMPLETE
 - main app - improvements & parameter checking - IN PROGRESS
 - ALL - expand documentation - IN PROGRESS
-- simple redistrict - random starting precinct - NOT STARTED
+- simple redistrict - random starting precinct - COMPLETE
+- simple redistrict - console messages - NOT STARTED
 - simple redistrict - contiguity guarantee - NOT STARTED
 - simple redistrict - better population balancing - NOT STARTED
 - data - get other state shapefiles - NOT STARTED
