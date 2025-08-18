@@ -3,7 +3,7 @@
 
 A programming package for algorithmic redistricting.
 
-Data primarily from https://redistrictingdatahub.org
+Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 States supported:
     - New Hampshire
@@ -36,15 +36,15 @@ At present, there are two commands that are accepted, each with its own addition
 **CURRENT ROADMAP**
 The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
-- processor - basic precinct data - COMPLETE
+- processor - load data - COMPLETE
 - main app - basic runtime structure - COMPLETE
-- processor - precinct neighbor data - COMPLETE
-- redistrict - read from .brd - COMPLETE
-- redistrict - implement necessary data structures - TESTING
+- simple redistrict - add precincts to districts - COMPLETE
+- processor - precinct neighbor analysis - COMPLETE
+- main app - combine district geometries - IN PROGRESS
 - ALL - expand documentation - IN PROGRESS
-- redistrict - add precincts to districts - IN PROGRESS
-- processor - basic state-level data - IN PROGRESS
-- processor - precinct demographic data - NOT STARTED
-- processor - precinct electoral data - NOT STARTED
-- redistrict - ensure districts have good population - NOT STARTED
-- redistrict - output to .csv = NOT STARTED
+- processor - output to geoJSON - IN PROGRESS
+- simple redistrict - random starting precinct - NOT STARTED
+- simple redistrict - contiguity guarantee - NOT STARTED
+- simple redistrict - better population balancing - NOT STARTED
+- TEST ON OTHER STATES - NOT STARTED
+- Remove unnecessary C code - NOT STARTED
