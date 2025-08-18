@@ -18,7 +18,7 @@ def main():
     print(f"Processing data for state: {state}...")
     print(f"Using census data:  {year}...")
 
-    gdf = gpd.read_file(f'{proc.DATAPATH_IN}{state}.geojson')
+    gdf = gpd.read_file(f'{proc.DATAPATH_IN}{state}_{year}.geojson')
 
     if cmd == "process":
         proc.processIn(state, year, True, gdf)

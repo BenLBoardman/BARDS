@@ -1,7 +1,7 @@
 import geopandas as gpd
 import pandas as pd
 
-
+import json
 import time 
 DATAPATH_IN = "data/in/"
 DATAPATH_OUT = "data/out/"
@@ -13,6 +13,11 @@ def processIn(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
 
     print("Features loaded... beginning neighbor analysis...")
     startTime = time.time()
+    cvap = pd.DataFrame(pd.DataFrame(
+            json.loads(str) for str in gdf['datasets'].tolist()
+        )['V_20_CVAP'].tolist(), columns=['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic'])    
+    gdf['TOTPOP'] = cvap['Total']
+
     population = gdf['TOTPOP'].sum()
     findAllNeighborsGPD(gdf)
     elapsed = time.time() - startTime
