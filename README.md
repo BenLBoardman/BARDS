@@ -5,8 +5,7 @@ A programming package for algorithmic redistricting.
 
 Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
-States supported:
-    - New Hampshire
+States supported: Nevada, New Hampshire
 
 Installation:
 1. For full functionality, the following software is required:
