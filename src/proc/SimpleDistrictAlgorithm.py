@@ -42,13 +42,6 @@ def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
     
     gdf['barddist'] = distList
     return gdf
-
-def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
-    districtGDF = gpd.GeoDataFrame(columns=['id', 'NAME'], geometry=[])
-    for i in range(1, distCt + 1):
-      filteredPGDF = precinctGDF.loc[precinctGDF['barddist'] == i]
-      districtGDF.loc[len(districtGDF)] = [i, str(i), filteredPGDF.union_all()]
-    return districtGDF
       
       
 

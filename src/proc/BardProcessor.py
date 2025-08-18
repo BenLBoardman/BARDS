@@ -11,14 +11,16 @@ DATAPATH_PROCESSED = "data/processed/"
 def processIn(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
     population = 0
 
-    print("Features loaded... beginning neighbor analysis...")
-    startTime = time.time()
+    
     cvap = pd.DataFrame(pd.DataFrame(
             json.loads(str) for str in gdf['datasets'].tolist()
         )['V_20_CVAP'].tolist(), columns=['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic'])    
     gdf['TOTPOP'] = cvap['Total']
 
     population = gdf['TOTPOP'].sum()
+    print("Precinct data loaded... beginning neighbor analysis...")
+    startTime = time.time()
+
     findAllNeighborsGPD(gdf)
     elapsed = time.time() - startTime
 
@@ -33,7 +35,7 @@ def processIn(state: str, year: int, toFile: bool, gdf: gpd.GeoDataFrame):
 
         print(f"Processed data written to {outputFileName}...")
     
-    return (population, gdf)
+    return population
 
 def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):
     neighborList = []
@@ -67,12 +69,15 @@ def writePctToFile(file, i: int, feature: pd.Series):
             neighbors = f"{neighbors}, {neighbor}"
     file.write(f"{i}|{feature.get('Precinct')}|{feature.get('COUNTY')}|{feature.get('TOTPOP')}|{numNeighbors}|{neighbors}\n")
 
+def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
+    districtGDF = gpd.GeoDataFrame(columns=['id', 'NAME'], geometry=[])
+    for i in range(1, distCt + 1):
+      filteredPGDF = precinctGDF.loc[precinctGDF['barddist'] == i]
+      districtGDF.loc[len(districtGDF)] = [i, str(i), filteredPGDF.union_all()]
+    return districtGDF
 
-def processOut(name: str, gdf: gpd.GeoDataFrame):
-    #gdf = gdf.to_crs(epsg=4326)
-    #gdf.to_file("f{DATAPATH_OUT}{name}.GeoJSON", driver="GeoJSON")
-    #geojson_str = gdf.to_json(to_wgs84=True)
-
-# Save to a file
-    with open("output.geojson", "w") as f:
-        f.write(gdf.to_json())
+def processOut(fileName: str, gdf: gpd.GeoDataFrame):
+    filePath = f"{DATAPATH_OUT}{fileName}.GeoJSON"
+    print(f"Writing to {filePath}...")
+    gdf = gdf.set_crs(epsg=4326)
+    gdf.to_file(filePath, driver="GeoJSON")

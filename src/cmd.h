@@ -9,7 +9,7 @@
 
     #define NUM_CMDS 3
     #define PROC_PATH "src/proc/"
-    #define PROC_NAME "redistricter.py"
+    #define PROC_NAME "BARDS.py"
 
     int processGeoJSON(int, char *[]);
     int redistrict(int, char *[]);

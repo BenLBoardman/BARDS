@@ -40,11 +40,12 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - main app - basic runtime structure - COMPLETE
 - simple redistrict - add precincts to districts - COMPLETE
 - processor - precinct neighbor analysis - COMPLETE
-- main app - combine district geometries - IN PROGRESS
+- processor - combine district geometries - COMPLETE
+- processor - output to geoJSON - COMPLETE
+- main app - improvements & parameter checking - IN PROGRESS
 - ALL - expand documentation - IN PROGRESS
-- processor - output to geoJSON - IN PROGRESS
 - simple redistrict - random starting precinct - NOT STARTED
 - simple redistrict - contiguity guarantee - NOT STARTED
 - simple redistrict - better population balancing - NOT STARTED
-- TEST ON OTHER STATES - NOT STARTED
+- data - get other state shapefiles - NOT STARTED
 - Remove unnecessary C code - NOT STARTED
