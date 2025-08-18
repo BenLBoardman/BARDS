@@ -37,15 +37,15 @@ The basic version of BARDS is not complete. Below is a list of currently-planned
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
 - processor - load data - COMPLETE
 - main app - basic runtime structure - COMPLETE
-- simple redistrict - add precincts to districts - COMPLETE
+- simple algorithm - add precincts to districts - COMPLETE
 - processor - precinct neighbor analysis - COMPLETE
 - processor - combine district geometries - COMPLETE
 - processor - output to geoJSON - COMPLETE
+- Remove unnecessary C code - COMPLETE
+- simple algorithm - random starting precinct - COMPLETE
 - main app - improvements & parameter checking - IN PROGRESS
 - ALL - expand documentation - IN PROGRESS
-- simple redistrict - random starting precinct - COMPLETE
-- simple redistrict - console messages - NOT STARTED
-- simple redistrict - contiguity guarantee - NOT STARTED
+- simple algorithm - console messages - NOT STARTED
+- contiguous simple algorithm - contiguity guarantee - NOT STARTED
 - simple redistrict - better population balancing - NOT STARTED
 - data - get other state shapefiles - NOT STARTED
-- Remove unnecessary C code - NOT STARTED

@@ -1,7 +1,7 @@
 import geopandas as gpd
 
-import BardProcessor as proc
-import SimpleDistrictAlgorithm as simple
+import src.BardProcessor as proc
+import src.SimpleDistrictAlgorithm as simple
 
 import sys
 

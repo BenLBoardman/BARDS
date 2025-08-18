@@ -25,7 +25,7 @@ def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
 
     startingLoc = int(random.random() * len(gdf))
     print(f"Starting from precinct no. {startingLoc} of {len(gdf)}")
-    queue.append(gdf.loc[startingLoc])
+    queue.append(gdf.loc[0])
 
     while(queue):
         curr = queue.popleft()
