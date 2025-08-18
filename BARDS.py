@@ -20,26 +20,42 @@ defaultCt = {# 'AL':  7, 'AK':  1, 'AZ':  9, 'AR':  4, 'CA': 52,
              }
 
 def main():
+    args = sys.argv
 
     # Process args
-    if len(sys.argv) < 4:
+    if len(args) < 4:
         print("Not enough arguments. Required arguments - python3 BARDS.py <algo> <state> <year>")
         return -1
     
-    algo = sys.argv[1].lower()
+    algo = args[1].lower()
 
-    state = sys.argv[2].upper()
+    state = args[2].upper()
     if state not in defaultCt.keys():
         print(f"State {state} not recognized, please try again")
         return -1
     
     population = 0
-    year = sys.argv[3]
+    year = args[3]
+    name = f"{state}_{year}-{algo}"
 
-    if len(sys.argv) == 5:
-        numDists = int(sys.argv[4])
-    else: 
-        numDists = defaultCt.get(state)
+    numDists = defaultCt.get(state)
+
+    # Process Optional Args
+    for i in range(4, len(args)):
+        if args[i] == '--o':
+            if not i == len(args):
+                name = args[i+1]
+                i += 1
+            else:
+                print("Optional arg --o should be followed with a name!")
+                return -1
+        if args[i] == '--n':
+            if not i == len(args):
+                numDists = int(args[i+1])
+                i += 1
+            else:
+                print("Optional arg --n should be followed with a number of districts!")
+                return -1
 
     print(f"Drawing {numDists} districts for state: {state}...")
     print(f"Using census data:  {year}...")
@@ -61,7 +77,7 @@ def main():
     dists = proc.buildDistrictGDF(gdf, numDists)
     
     #Output to file
-    proc.processOut(f"{state}_{year}-{algo}", dists)
+    proc.processOut(name, dists)
 
 
 

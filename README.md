@@ -5,34 +5,32 @@ A programming package for algorithmic redistricting.
 
 Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
-States supported: Nevada, New Hampshire
+## States Supported
+Nevada, New Hampshire, New Jersey
 
-Installation:
-1. For full functionality, the following software is required:
-    - A C compiler (recommendation: GCC)
+## Installing and Running
+For full functionality, the following software is required:
     - Python3
     - GeoPandas 
+Cloning the repository contains all the necessary code otherwise.
 
-2. Compile the C portion of the code with the command `make bards` from the root of the project. The output will be stored in the executable file `bards`.
+To run BARDS, use the command python3 BARDS.py <algo> <state> <year> [other...]
 
+Below is a more detailed explanation of required and optional arguments
 
-**Runtime**
-To run BARDS, use the command ./bards <command> <args>
+`algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
+`state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
+`year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
-At present, there are two commands that are accepted, each with its own additional arguments.
+**Optional Arguments**
+`--o name`
+`--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
 
-*process S Y* converts a GeoJSON precinct file into a format expected by the BARDS redistrict command. It uses an external Python script.
-    Process takes two additional arguments - a state name S and a year Y. It will read the GeoJSON file S_Y.geojson from the bards/data/geojson folder and output the file S_Y.brd in the bards/data/processed folder
+## Algorithms
+Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved.
+- SimpleBFS (Author: @BenLBoardman) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
 
-*redistrict S Y* draws districts based on a set of precincts described in a `.brd` file. It expects these files to be located in bards/data/processed and takes the following arguments.
-- S - the state to be redistricted. Required to find the `.brd` with information.
-- Y - the census/data year to use. Required to find the `.brd` with information.
-- In addition, it takes the following optional arguments:
-- *--n <number>* - The number of districts to draw. Otherwise, it will default to a value read from the `*.brd` file
-- *--o <name>* - A name to give to the output map.
-
-
-**CURRENT ROADMAP**
+## Current Roadmap
 The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
 - processor - load data - COMPLETE
