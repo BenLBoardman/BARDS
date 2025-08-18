@@ -17,11 +17,10 @@ int readState(State *state, char *stateAbbr, int year) {
     fp = fopen(fileName, "r");
     if(fp == NULL) {
         fprintf(stderr, "Failed to open file %s.\n", fileName);
-        goto error;
+        return -1;
     }
 
     fgets(buf, BUF_SZ, fp);
-    printf("%s\n", buf);
 
     //TODO process filled state header
     tok = strtok(buf, "|");
@@ -30,8 +29,6 @@ int readState(State *state, char *stateAbbr, int year) {
     tok = strtok(NULL, "|");
     state->precinctCt = atoi(tok);
     state->precincts = malloc(sizeof(Precinct*) * state->precinctCt);
-
-    printf("Precinct ct: %d\n", state->precinctCt);
 
     for(int i = 0; i < state->precinctCt; i++) {
         state->precincts[i] = malloc(sizeof(Precinct));
@@ -84,13 +81,15 @@ int readState(State *state, char *stateAbbr, int year) {
     fclose(fp);
 
     tmpPop = state->pop;
+    state->perDistTgt = malloc(sizeof(u_int32_t) * state->distCt);
     state->perDistPop = malloc(sizeof(u_int32_t) * state->distCt);
+
     for(int i = 0; i < state->distCt; i++) {
-        state->perDistPop[i] = state->pop / state->distCt;
-        tmpPop -= state->perDistPop[i];
+        state->perDistTgt[i] = state->pop / state->distCt;
+        tmpPop -= state->perDistTgt[i];
     }
     for(int i = 0; tmpPop > 0; tmpPop--) {
-        state->perDistPop[i]++;
+        state->perDistTgt[i]++;
     }
 
     return 0;

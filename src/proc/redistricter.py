@@ -15,7 +15,7 @@ def main():
     state = sys.argv[2].upper()
     population = 0
     year = sys.argv[3]
-    num = int(sys.argv[4])
+    numDists = int(sys.argv[4])
     
 
     print(f"Processing data for state: {state}...")
@@ -30,7 +30,8 @@ def main():
         procOut = proc.process(state, year, False, gdf)
         population = procOut[0]
         gdf = procOut[1]
-        gdf = simple.draw(population, num, gdf)
+        gdf = simple.draw(population, numDists, gdf)
+        dists = simple.buildDistrictGDF(gdf, numDists)
 
 
 

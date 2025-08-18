@@ -23,7 +23,7 @@ int makeDists(redistrict_input_t input, __uint8_t flags) {
         return -1;
     }
 
-    buildDistsDFS(&target); 
+    buildDistsBFS(&target); 
     return 0;
 }
 
@@ -36,8 +36,34 @@ int makeDists(redistrict_input_t input, __uint8_t flags) {
  *  until every precinct has been assigned to a district. This is intentionally an incredibly naive algorithm.
  *  
  */
-int buildDistsDFS(State *state) {
-    Stack *dfsStack = st_init(NULL);
+int buildDistsBFS(State *state) {
+    Queue *dfsStack;
+    HashTable *table;
+    Precinct *currPct, *neighbor;
+    int currDist;
+    
+    table = ht_init(state->precinctCt / 5);
+    dfsStack = qu_init(state->precincts[0]);
 
-    int currDist = 1;
+    ht_insert(table, state->precincts[0]);
+    currDist = 1;
+    while(!qu_isEmpty(dfsStack)) {
+        currPct = qu_pop(dfsStack);
+
+        //discover neighbors
+        for(int i = 0; i < currPct->neighborCnt; i++) {
+            neighbor = currPct->neighbors[i];
+            if(!ht_find(table, neighbor)) {
+                ht_insert(table, neighbor);
+                qu_push(dfsStack, neighbor);
+            }
+        }
+
+        //add pct to district
+        currPct->dist = currDist;
+        if(state->perDistPop[currDist] > state->perDistTgt[currDist] - 750) {
+            currDist++;
+        }
+    }
+
 }
