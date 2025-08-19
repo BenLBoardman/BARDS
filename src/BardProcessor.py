@@ -6,7 +6,6 @@ import time
 import os
 DATAPATH_IN = "precinctShapefiles/"
 DATAPATH_OUT = "output/"
-DATAPATH_PROCESSED = "data/processed/"
 
 def fileIntake(state: str, year: int):
     filePath = f"{DATAPATH_IN}{year}/{state}.geojson"
@@ -61,6 +60,10 @@ def processOut(path: str, gdf: gpd.GeoDataFrame):
     gdf.to_file(filePath, driver="GeoJSON")
 
 def buildOutputPath(algo: str, name: str, state: str, year: int):
+    if not os.path.isdir(DATAPATH_OUT):
+        os.mkdir(DATAPATH_OUT)
+
+
     filePath = f"{DATAPATH_OUT}{algo}"
     if not os.path.isdir(filePath):
         os.mkdir(filePath)
