@@ -46,9 +46,11 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - ALL - expand documentation - COMPLETE
 - simple bfs algorithm - console messages - IN PROGRESS
 - data - get other state shapefiles - IN PROGRESS
+- refactor - reorganize data dirs - NOT STARTED
 
 
 ### Priorities after Open-Source
+- utils/processor - add an index value to maps by default
 - utils/processor - function to convert datasets from strings to nested Series
 - NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
 - NEW ALGORITHM - multiple bfs (BFS from multiple starting points
