@@ -18,11 +18,11 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
     censusData = getDataset(year, "census", state, gdf)    
-    if censusData == None:
+    if censusData[0] == -1:
         print("Census data not found!")
         return -1
     
-    gdf['TOTPOP'] = censusData['Total']
+    gdf['TOTPOP'] = censusData[1]['Total']
 
     population = gdf['TOTPOP'].sum()
     print("Precinct data loaded... beginning neighbor analysis...")
@@ -36,21 +36,21 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     return population
 
 # Get a dataset of a given year and type from the dataframe. This can be used for election data, census data, or VAP data.
-# Valid datasets are listed in the datasets dict.
+# Valid datasets are listed in the datasets dict. Returns a tuple containing (status, dataframe)
 def getDataset(year: int, type: str, state: str, gdf: gpd.GeoDataFrame):
     if type not in datasets.keys():
         print("Invalid dataset entry request.")
-        return None
+        return (-1, None)
 
     dataset = datasets.get(type)
     try:
         datasetName = f"{dataset['prefix']}_{int(year) % 2000}_{dataset['name']}"
-        return pd.DataFrame(pd.DataFrame(
+        return (0, pd.DataFrame(pd.DataFrame(
             json.loads(str) for str in gdf['datasets'].tolist()
-            )[datasetName].tolist(), columns=dataset['fields']) 
+            )[datasetName].tolist(), columns=dataset['fields'])) 
     except:
         print(f"{state} does not include {year} {type} data!")
-        return None
+        return (-1, None)
 
 # Generate neighbor lists for each precinct using GeoPandas
 def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):

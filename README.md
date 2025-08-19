@@ -6,7 +6,7 @@ A programming package for algorithmic redistricting.
 Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 ## States Supported
-BARDS currently has 2020 precinct data for Montana, Nebraska, Nevada, New Hampshire, and New Jersey. 2010 data is planned but not included. This data is stored in `precinctShapefiles/2020
+BARDS currently has 2020 precinct data for Montana, Nebraska, Nevada, New Hampshire, New Jersey, Ohio, Oklahoma, Oregon, and Pennsylvania. 2010 data is planned but not included. This data is stored in `precinctShapefiles/2020
 
 ## Output
 Completed maps are placed in `output/<algo>/<year>/<state>/`. Custom output locations are a possible future feature, but are not actively planned at present.
