@@ -36,7 +36,7 @@ def main():
     
     population = 0
     year = args[3]
-    name = f"{state}_{year}-{algo}"
+    name = ""
 
     numDists = defaultCt.get(state)
 
@@ -62,22 +62,23 @@ def main():
     print(f"Using algorithm: {algo}...")
 
     print(f"Loading precinct data...")
-    gdf = gpd.read_file(f'{proc.DATAPATH_IN}{state}_{year}.geojson')
+    gdf = proc.fileIntake(state, year)
 
     # Process input data & get neighbors
     population = proc.processIn(state, year, gdf)
 
-    # Insert new algorithms into the if-else HERE.
-    status = select.selectAlgo(algo, population, numDists, gdf)
-    if status[0] == -1:
-        return status[0]
-    gdf = status[1]
+    # Insert new algorithms into the if-else in selectAlgo.
+    alg = select.selectAlgo(algo, population, numDists, gdf)
+    if alg == None:
+        return -1
+    gdf = alg.draw(population, numDists, gdf)
     
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)
     
+    filePath = proc.buildOutputPath(algo, name, state, year)
     #Output to file
-    proc.processOut(name, dists)
+    proc.processOut(filePath, dists)
 
 
 

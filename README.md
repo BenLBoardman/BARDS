@@ -44,16 +44,16 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - simple algorithm - random starting precinct - COMPLETE
 - main app - improvements & parameter checking - COMPLETE
 - ALL - expand documentation - COMPLETE
+- refactor - reorganize & improve data dirs/IO - COMPLETE
 - simple bfs algorithm - console messages - IN PROGRESS
 - data - get other state shapefiles - IN PROGRESS
-- refactor - reorganize data dirs - NOT STARTED
 
 
 ### Priorities after Open-Source
 - utils/processor - add an index value to maps by default
 - utils/processor - function to convert datasets from strings to nested Series
 - NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
-- NEW ALGORITHM - multiple bfs (BFS from multiple starting points
+- NEW ALGORITHM - multiple bfs (BFS from multiple starting points)
 
 ## Adding an algorithm
 In order to make use of the included utility function, a new algorithm should do the following:

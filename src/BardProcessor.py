@@ -2,10 +2,15 @@ import geopandas as gpd
 import pandas as pd
 
 import json
-import time 
-DATAPATH_IN = "data/in/"
-DATAPATH_OUT = "data/out/"
+import time
+import os
+DATAPATH_IN = "precinctShapefiles/"
+DATAPATH_OUT = "output/"
 DATAPATH_PROCESSED = "data/processed/"
+
+def fileIntake(state: str, year: int):
+    filePath = f"{DATAPATH_IN}{year}/{state}.geojson"
+    return gpd.read_file(filePath)
 
 #Intake a precinct map and prepare it to draw districts
 def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
@@ -49,8 +54,29 @@ def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
     return districtGDF
 
 # Output a district dataframe to a geoJSON file
-def processOut(fileName: str, gdf: gpd.GeoDataFrame):
-    filePath = f"{DATAPATH_OUT}{fileName}.GeoJSON"
+def processOut(path: str, gdf: gpd.GeoDataFrame):
+    filePath = f"{path}.GeoJSON"
     print(f"Writing to {filePath}...")
     gdf = gdf.set_crs(epsg=4326)
     gdf.to_file(filePath, driver="GeoJSON")
+
+def buildOutputPath(algo: str, name: str, state: str, year: int):
+    filePath = f"{DATAPATH_OUT}{algo}"
+    if not os.path.isdir(filePath):
+        os.mkdir(filePath)
+
+    filePath = f"{filePath}/{year}"
+    if not os.path.isdir(filePath):
+        os.mkdir(filePath)
+
+    filePath = f"{filePath}/{state}"
+    if not os.path.isdir(filePath):
+        os.mkdir(filePath)
+
+    index = len(os.listdir(filePath))
+    if name == "":
+        filePath = f"{filePath}/{state}_{index + 1}"
+    else:
+        filePath = f"{filePath}/{name}"
+    
+    return filePath
