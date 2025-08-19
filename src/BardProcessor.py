@@ -7,7 +7,7 @@ DATAPATH_IN = "data/in/"
 DATAPATH_OUT = "data/out/"
 DATAPATH_PROCESSED = "data/processed/"
 
-
+#Intake a precinct map and prepare it to draw districts
 def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
@@ -28,6 +28,7 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     
     return population
 
+# Generate neighbor lists for each precinct using GeoPandas
 def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):
     neighborList = []
     indexList = []
@@ -39,6 +40,7 @@ def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):
     gdf['neighbors'] = neighborList
     gdf['index'] = indexList
 
+# Build a GeoDataFrame corresponding to the geometry of each district, given the DataFrame of precincts including their district 
 def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
     districtGDF = gpd.GeoDataFrame(columns=['id', 'NAME'], geometry=[])
     for i in range(1, distCt + 1):
@@ -46,6 +48,7 @@ def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):
       districtGDF.loc[len(districtGDF)] = [i, str(i), filteredPGDF.union_all()]
     return districtGDF
 
+# Output a district dataframe to a geoJSON file
 def processOut(fileName: str, gdf: gpd.GeoDataFrame):
     filePath = f"{DATAPATH_OUT}{fileName}.GeoJSON"
     print(f"Writing to {filePath}...")

@@ -2,6 +2,7 @@ import geopandas as gpd
 
 from src.algo import SimpleBFS
 
+# Select an algorithm from the list of valid algorithms
 def selectAlgo(algo: str, population: int, numDists: int, gdf: gpd.GeoDataFrame):
     # Insert new algorithms into the if-else HERE.
     if algo == "simple":

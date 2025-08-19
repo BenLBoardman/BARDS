@@ -4,6 +4,7 @@ import random
 import time
 from collections import deque
 
+# Draw a map. This function header is recommended but not required. Returning a modified dataframe is also strongly recommended.
 def draw(totPop: int, numDists: int, gdf: gpd.GeoDataFrame):
     queue = deque()
     visited = set()

@@ -28,7 +28,7 @@ Below is a more detailed explanation of required and optional arguments
 
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved.
-- SimpleBFS (Author: @BenLBoardman) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
+- SimpleBFS (Author: @BenLBoardman, Ver: 1.0, Since: 18 Aug 2025) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
 
 ## Current Roadmap
 The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
@@ -41,10 +41,16 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - processor - output to geoJSON - COMPLETE
 - Remove unnecessary C code - COMPLETE
 - simple algorithm - random starting precinct - COMPLETE
-- main app - improvements & parameter checking - IN PROGRESS
-- ALL - expand documentation - IN PROGRESS
+- main app - improvements & parameter checking - COMPLETE
+- ALL - expand documentation - COMPLETE
 - simple algorithm - console messages - IN PROGRESS
 - data - get other state shapefiles - IN PROGRESS
 - contiguous simple algorithm - contiguity guarantee - NOT STARTED
 - simple redistrict - better population balancing - NOT STARTED
 
+## Adding an algorithm
+In order to make use of the included utility function, a new algorithm should do the following:
+- Take as input a GeoDataFrame passed as input to algo.Select.selectAlgo()
+- Return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map)
+
+Algorithms should be placed in src/algo/ and be imported into src/algo/Select.py and added to the if statement in selectAlgo(). If you're making a pull request, it is recommended to add a description of the algorithm under "Algorithms"
