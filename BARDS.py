@@ -61,10 +61,9 @@ def main():
     print(f"Using algorithm: {algo}...")
 
     print(f"Loading precinct data...")
-    gdf = proc.fileIntake(state, year)
 
     # Process input data & get neighbors
-    population = proc.processIn(state, year, gdf)
+    population = proc.processIn(state, year)
 
     # Insert new algorithms into the if-else in selectAlgo.
     alg = select.selectAlgo(algo, population, numDists, gdf)

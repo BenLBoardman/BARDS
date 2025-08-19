@@ -5,17 +5,15 @@ import json
 import time
 import os
 DATAPATH_IN = "precinctShapefiles/"
-DATAPATH_OUT = "output/"
-
-def fileIntake(state: str, year: int):
-    filePath = f"{DATAPATH_IN}{year}/{state}.geojson"
-    return gpd.read_file(filePath)
+DATAPATH_OUT = "output/"    
 
 #Intake a precinct map and prepare it to draw districts
-def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
+def processIn(state: str, year: int):
     population = 0
 
-    
+    filePath = f"{DATAPATH_IN}{year}/{state}.geojson"
+    gdf = gpd.read_file(filePath)
+
     censusData = pd.DataFrame(pd.DataFrame(
             json.loads(str) for str in gdf['datasets'].tolist()
         )['T_20_CENS'].tolist(), columns=['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic'])    

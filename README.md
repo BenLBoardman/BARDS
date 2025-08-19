@@ -6,7 +6,10 @@ A programming package for algorithmic redistricting.
 Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 ## States Supported
-Nevada, New Hampshire, New Jersey
+BARDS currently has 2020 precinct data for Montana, Nebraska, Nevada, New Hampshire, and New Jersey. 2010 data is planned but not included. This data is stored in `precinctShapefiles/2020
+
+## Output
+Completed maps are placed in `output/<algo>/<year>/<state>/`. Custom output locations are a possible future feature, but are not actively planned at present.
 
 ## Installing and Running
 For full functionality, the following software is required:
@@ -23,7 +26,7 @@ Below is a more detailed explanation of required and optional arguments
 - `year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
 **Optional Arguments**
-- `--o name`
+- `--o name`: Give the output geoJSON a specific file name.
 - `--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
 
 ## Algorithms
@@ -56,8 +59,9 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - NEW ALGORITHM - multiple bfs (BFS from multiple starting points)
 
 ## Adding an algorithm
-In order to make use of the included utility function, a new algorithm should do the following:
-- Take as input a GeoDataFrame passed as input to algo.Select.selectAlgo()
-- Return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map)
+In order to make use of the included utility function, a new algorithm file should contain a class with the following properties:
+- Implement the function draw(population: int, numDists: int, gdf: gpd.GeoDataFrame) that 
+- draw() should return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map)
+
 
 Algorithms should be placed in src/algo/ and be imported into src/algo/Select.py and added to the if statement in selectAlgo(). If you're making a pull request, it is recommended to add a description of the algorithm under "Algorithms"
