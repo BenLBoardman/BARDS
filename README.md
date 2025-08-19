@@ -18,19 +18,20 @@ To run BARDS, use the command python3 BARDS.py <algo> <state> <year> [other...]
 
 Below is a more detailed explanation of required and optional arguments
 
-`algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
-`state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
-`year` is the census data year for which data should be use. At present, 2020 is the only accepted option
+- `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
+- `state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
+- `year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
 **Optional Arguments**
-`--o name`
-`--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
+- `--o name`
+- `--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
 
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved.
 - SimpleBFS (Author: @BenLBoardman, Ver: 1.0, Since: 18 Aug 2025) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
 
 ## Current Roadmap
+### Needed Before Open-Source
 The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
 NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
 - processor - load data - COMPLETE
@@ -43,10 +44,14 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - simple algorithm - random starting precinct - COMPLETE
 - main app - improvements & parameter checking - COMPLETE
 - ALL - expand documentation - COMPLETE
-- simple algorithm - console messages - IN PROGRESS
+- simple bfs algorithm - console messages - IN PROGRESS
 - data - get other state shapefiles - IN PROGRESS
-- contiguous simple algorithm - contiguity guarantee - NOT STARTED
-- simple redistrict - better population balancing - NOT STARTED
+
+
+### Priorities after Open-Source
+- utils/processor - function to convert datasets from strings to nested Series
+- NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
+- NEW ALGORITHM - multiple bfs (BFS from multiple starting points
 
 ## Adding an algorithm
 In order to make use of the included utility function, a new algorithm should do the following:
