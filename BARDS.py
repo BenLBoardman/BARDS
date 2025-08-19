@@ -63,7 +63,12 @@ def main():
     print(f"Loading precinct data...")
 
     # Process input data & get neighbors
-    population = proc.processIn(state, year)
+    filePath = f"{proc.DATAPATH_IN}{year}/{state}.geojson"
+    gdf = gpd.read_file(filePath)
+    population = proc.processIn(state, year, gdf)
+    if population < 0:
+        print("Error getting population data!")
+        return -1
 
     # Insert new algorithms into the if-else in selectAlgo.
     alg = select.selectAlgo(algo, population, numDists, gdf)

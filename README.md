@@ -48,20 +48,22 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - main app - improvements & parameter checking - COMPLETE
 - ALL - expand documentation - COMPLETE
 - refactor - reorganize & improve data dirs/IO - COMPLETE
-- simple bfs algorithm - console messages - IN PROGRESS
+- processor - dataset retrieval - COMPLETE
+- simple bfs algorithm - console messages - COMPLETE
+- processor - add an index value to maps by default - COMPLETE
 - data - get other state shapefiles - IN PROGRESS
+- processor - more dataset support - NOT STARTED
 
 
 ### Priorities after Open-Source
-- utils/processor - add an index value to maps by default
-- utils/processor - function to convert datasets from strings to nested Series
 - NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
 - NEW ALGORITHM - multiple bfs (BFS from multiple starting points)
 
 ## Adding an algorithm
 In order to make use of the included utility function, a new algorithm file should contain a class with the following properties:
 - Implement the function draw(population: int, numDists: int, gdf: gpd.GeoDataFrame) that 
-- draw() should return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map)
-
+- draw() should return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map).
 
 Algorithms should be placed in src/algo/ and be imported into src/algo/Select.py and added to the if statement in selectAlgo(). If you're making a pull request, it is recommended to add a description of the algorithm under "Algorithms"
+
+A dataset can be retrieved by calling `processor.getDataSet()`. See that function definition and the `dataset` struct for details.

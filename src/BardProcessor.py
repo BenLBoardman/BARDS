@@ -5,18 +5,23 @@ import json
 import time
 import os
 DATAPATH_IN = "precinctShapefiles/"
-DATAPATH_OUT = "output/"    
+DATAPATH_OUT = "output/"
+
+# The lists datasets that can currently be retrieved with getDataSet.
+datasets = {
+    "census": {'name': 'CENS', 'prefix': 'T', 'fields': ['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic']},
+    "president": {'name': 'PRES', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']}
+}
 
 #Intake a precinct map and prepare it to draw districts
-def processIn(state: str, year: int):
+def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
-    filePath = f"{DATAPATH_IN}{year}/{state}.geojson"
-    gdf = gpd.read_file(filePath)
-
-    censusData = pd.DataFrame(pd.DataFrame(
-            json.loads(str) for str in gdf['datasets'].tolist()
-        )['T_20_CENS'].tolist(), columns=['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic'])    
+    censusData = getDataset(year, "census", state, gdf)    
+    if censusData == None:
+        print("Census data not found!")
+        return -1
+    
     gdf['TOTPOP'] = censusData['Total']
 
     population = gdf['TOTPOP'].sum()
@@ -29,6 +34,23 @@ def processIn(state: str, year: int):
     print(f"Neighbor analysis finished in {elapsed} seconds...")
     
     return population
+
+# Get a dataset of a given year and type from the dataframe. This can be used for election data, census data, or VAP data.
+# Valid datasets are listed in the datasets dict.
+def getDataset(year: int, type: str, state: str, gdf: gpd.GeoDataFrame):
+    if type not in datasets.keys():
+        print("Invalid dataset entry request.")
+        return None
+
+    dataset = datasets.get(type)
+    try:
+        datasetName = f"{dataset['prefix']}_{int(year) % 2000}_{dataset['name']}"
+        return pd.DataFrame(pd.DataFrame(
+            json.loads(str) for str in gdf['datasets'].tolist()
+            )[datasetName].tolist(), columns=dataset['fields']) 
+    except:
+        print(f"{state} does not include {year} {type} data!")
+        return None
 
 # Generate neighbor lists for each precinct using GeoPandas
 def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):
