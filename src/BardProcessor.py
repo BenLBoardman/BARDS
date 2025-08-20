@@ -7,10 +7,12 @@ import os
 DATAPATH_IN = "precinctShapefiles/"
 DATAPATH_OUT = "output/"
 
-# The lists datasets that can currently be retrieved with getDataSet.
+# The list of datasets that can currently be retrieved with getDataSet.
 datasets = {
     "census": {'name': 'CENS', 'prefix': 'T', 'fields': ['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic']},
-    "president": {'name': 'PRES', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']}
+    "president": {'name': 'PRES', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']},
+    "senate": {'name': 'SEN', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']},
+    "governor": {'name': 'GOV', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']}
 }
 
 #Intake a precinct map and prepare it to draw districts

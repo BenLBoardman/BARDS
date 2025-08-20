@@ -58,6 +58,7 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 ### Priorities after Open-Source
 - NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
 - NEW ALGORITHM - multiple bfs (BFS from multiple starting points)
+- Command line option to request multiple state data at once
 
 ## Adding an algorithm
 In order to make use of the included utility function, a new algorithm file should contain a class with the following properties:
