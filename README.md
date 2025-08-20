@@ -33,10 +33,9 @@ Below is a more detailed explanation of required and optional arguments
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved.
 - SimpleBFS (Author: @BenLBoardman, Ver: 1.0, Since: 18 Aug 2025) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
 
-## Current Roadmap
-### Needed Before Open-Source
-The basic version of BARDS is not complete. Below is a list of currently-planned features and their implementation status.
-NOTE: This list of features only reflects the features necessary for a minimal functional program. more features will be added as these are completed.
+## Current Features
+The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
+NOTE: This list of features only reflects the features currently planned to support algorithms. more features will be added as these are completed.
 - processor - load data - COMPLETE
 - main app - basic runtime structure - COMPLETE
 - simple algorithm - add precincts to districts - COMPLETE
@@ -52,13 +51,17 @@ NOTE: This list of features only reflects the features necessary for a minimal f
 - simple bfs algorithm - console messages - COMPLETE
 - processor - add an index value to maps by default - COMPLETE
 - data - get other state shapefiles - IN PROGRESS
-- processor - more dataset support - NOT STARTED
+- processor - more dataset support - IN PROGRESS
+- Command line option to request multiple state data at once - NOT STARTED
+- data enhancements - store each district as a dataframe - NOT STARTED
+- utility algorirgms - determine if a district is contiguous - NOT STARTED
+- utility algorithms - determine if a district has "holes" - NOT STARTED
+- utility algorithms - calculate bias of a set of districts by various metrics - NOT STARTED
 
-
-### Priorities after Open-Source
-- NEW ALGORITHM - contiguous simple bfs (BFS with extra code to improve contiguity)
-- NEW ALGORITHM - multiple bfs (BFS from multiple starting points)
-- Command line option to request multiple state data at once
+## Planned Algorithms
+As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:
+- contiguous simple bfs (BFS with extra code to improve contiguity)
+- multiple bfs (BFS from multiple starting points)
 
 ## Adding an algorithm
 In order to make use of the included utility function, a new algorithm file should contain a class with the following properties:
