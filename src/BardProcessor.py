@@ -4,7 +4,7 @@ import pandas as pd
 import json
 import time
 import os
-GIT_FILE_PATH = "https://raw.githubusercontent.com/BenLBoardman/BARDS/437512606c3facd7d07a3e8f629157b1fd7e2d19"
+GIT_FILE_PATH = "https://raw.githubusercontent.com/BenLBoardman/BARDS/vtd-data"
 DATAPATH_OUT = "output/"
 
 # The list of datasets that can currently be retrieved with getDataSet.
