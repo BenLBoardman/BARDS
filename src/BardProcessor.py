@@ -4,7 +4,7 @@ import pandas as pd
 import json
 import time
 import os
-DATAPATH_IN = "precinctShapefiles/"
+GIT_FILE_PATH = "https://raw.githubusercontent.com/BenLBoardman/BARDS/437512606c3facd7d07a3e8f629157b1fd7e2d19"
 DATAPATH_OUT = "output/"
 
 # The list of datasets that can currently be retrieved with getDataSet.
@@ -14,6 +14,10 @@ datasets = {
     "senate": {'name': 'SEN', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']},
     "governor": {'name': 'GOV', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']}
 }
+
+def getInputPath(state: str, year: int):
+    path = f"{GIT_FILE_PATH}/{year}/{state}.geojson"
+    return path
 
 #Intake a precinct map and prepare it to draw districts
 def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):

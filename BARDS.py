@@ -64,8 +64,7 @@ def main():
     print(f"Loading precinct data...")
 
     # Process input data & get neighbors
-    filePath = f"{proc.DATAPATH_IN}{year}/{state}.geojson"
-    gdf = gpd.read_file(filePath)
+    gdf = gpd.read_file(proc.getInputPath(state, year))
     population = proc.processIn(state, year, gdf)
     if population < 0:
         print("Error getting population data!")
