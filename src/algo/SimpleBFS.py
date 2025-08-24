@@ -1,5 +1,7 @@
 import geopandas as gpd
 
+from src.obj.District import District
+
 import random
 import time
 from collections import deque
@@ -14,18 +16,18 @@ class SimpleBFS:
         visited = set()
 
         distList = [-1] * len(gdf)
-        target = []
+        dists = []
         pop = totPop
         distNum = 1
     
         startTime = time.time()
         for i in range(0, numDists):
-            target.append(totPop // numDists)
-            pop = pop - target[i]
+            dists.append(District(i, totPop // numDists))
+            pop = pop - dists[i].tgt
 
         i = 0
         while pop > 0:
-            target[i] += 1
+            dists[i].tgt += 1
             pop -= 1
             i += 1
 
@@ -33,6 +35,7 @@ class SimpleBFS:
         print(f"Starting from precinct {gdf.loc[startingLoc].get('name')}...")
         queue.append(gdf.loc[startingLoc])
 
+        currDist = dists[0]
         while(queue):
             curr = queue.popleft()
             if curr.get('index') not in visited:
@@ -44,12 +47,18 @@ class SimpleBFS:
                     queue.append(gdf.loc[j])
             
                 distList[curr.get('index')] = distNum
-                pop += int(curr.get("TOTPOP"))
-                if distNum < numDists and pop >= (target[distNum] - 1000):
+
+                currDist.addPrecinct(curr)
+                if distNum < numDists and currDist.isFull():
+                        currDist = dists[distNum]
                         distNum += 1
-                        pop = 0
     
         print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
+
+        for i in range(0, distNum):
+            dist = dists[i]
+            if not dist.isContiguous(gdf):
+                print(f"WARNING: District {i + 1} is not contiguous")
         gdf['barddist'] = distList
         return gdf
       

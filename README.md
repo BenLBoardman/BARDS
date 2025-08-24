@@ -53,8 +53,8 @@ NOTE: This list of features only reflects the features currently planned to supp
 - data - get other state shapefiles - IN PROGRESS
 - processor - more dataset support - IN PROGRESS
 - Command line option to request multiple state data at once - NOT STARTED
-- data enhancements - store each district as a dataframe - NOT STARTED
-    - utility algorithms - determine if a district is contiguous - NOT STARTED
+- data enhancements - store each district as an object - COMPLETE
+    - utility algorithms - determine if a district is contiguous - COMPLETE
     - utility algorithms - calculate bias of a set of districts by various metrics - NOT STARTED
 
 ## Planned Algorithms
