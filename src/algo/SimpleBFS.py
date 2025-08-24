@@ -57,7 +57,7 @@ class SimpleBFS:
 
         for i in range(0, distNum):
             dist = dists[i]
-            if not dist.isContiguous(gdf):
+            if not dist.isContiguous():
                 print(f"WARNING: District {i + 1} is not contiguous")
         gdf['barddist'] = distList
         return gdf
