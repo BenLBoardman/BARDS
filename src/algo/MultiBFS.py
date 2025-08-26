@@ -64,7 +64,7 @@ class MultiBFS:
             i = i % numDists
 
         gdf['barddist'] = pctAssns
-        return (gdf, dists)
+        return (gdf, dists, assigned)
 
 def addNeighborsToQueue(assigned: set, queue: deque, dist: District, pct: Precinct, gdf: gpd.geodataframe):
     neighbors = pct.neighbors

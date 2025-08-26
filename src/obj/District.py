@@ -87,7 +87,14 @@ class District:
         
         return dists
 
-    def doWarnings(dists: list):
+    def getUnassignedPrecincts(assigned: set, gdf: pd.DataFrame):
+        precincts = set(gdf['index'])
+        for precinct in assigned:
+            if precinct in precincts:
+                precincts.remove(precinct)
+        return precincts
+
+    def doWarnings(assigned: set, dists: list, gdf: pd.DataFrame):
         for i in range(0, len(dists)):
             dist = dists[i]
             if dist.isTooBig():
@@ -96,6 +103,9 @@ class District:
                 print(f"WARNING: District {i+1} is too small (District size {round((dist.pop * 100) / dist.tgt, 2)}% of target)")
             if not dist.isContiguous():
                 print(f"WARNING: District {i+1} is not contiguous") 
+        unassignedPrecincts = District.getUnassignedPrecincts(assigned, gdf)
+        if unassignedPrecincts:
+            print(f"WARNING: {len(unassignedPrecincts)} of {len(gdf)} precincts are not assigned to districts")
 
     def toDataFrame(self, gdf: gpd.GeoDataFrame):
         return gpd.GeoDataFrame(gdf[gdf['index'].isin(self.precincts)])

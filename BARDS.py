@@ -80,10 +80,10 @@ def main():
     dList = District.makeDistrictObjects(population, numDists)
 
     startTime = time.time()
-    (gdf, dList) = alg.draw(population, dList, numDists, gdf)
+    (gdf, dList, assigned) = alg.draw(population, dList, numDists, gdf)
     print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
     
-    District.doWarnings(dList)
+    District.doWarnings(assigned, dList, gdf)
 
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)

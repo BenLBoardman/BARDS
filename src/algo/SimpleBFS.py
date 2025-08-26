@@ -40,7 +40,7 @@ class SimpleBFS:
                         distNum += 1
 
         gdf['barddist'] = distList
-        return (gdf, dists)
+        return (gdf, dists, visited)
       
 
     
