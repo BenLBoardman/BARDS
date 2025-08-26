@@ -40,8 +40,8 @@ class District:
         queue = deque()
         visited = set()
         all = set(self.precincts)
-
-        queue.append(self.precincts[0])
+        if self.precincts:
+            queue.append(self.precincts[0])
 
         while(queue):
             curr = queue.popleft()
