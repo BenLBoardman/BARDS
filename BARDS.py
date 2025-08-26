@@ -5,6 +5,7 @@ import src.algo.Select as select
 from src.obj.District import District
 
 import sys
+import time
 
 # Commented-out states do not yet have precinct data loaded
 defaultCt = {# 'AL':  7, 'AK':  1, 'AZ':  9, 'AR':  4, 'CA': 52,
@@ -78,7 +79,9 @@ def main():
     
     dList = District.makeDistrictObjects(population, numDists)
 
+    startTime = time.time()
     (gdf, dList) = alg.draw(population, dList, numDists, gdf)
+    print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
     
     District.doWarnings(dList)
 

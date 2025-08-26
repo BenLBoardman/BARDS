@@ -3,7 +3,6 @@ import geopandas as gpd
 from src.obj.District import District
 
 import random
-import time
 from collections import deque
 class SimpleBFS:
 
@@ -18,8 +17,6 @@ class SimpleBFS:
         distList = [-1] * len(gdf)
         distNum = 1
     
-        startTime = time.time()
-
         startingLoc = int(random.random() * len(gdf))
         print(f"Starting from precinct {gdf.loc[startingLoc].get('name')}...")
         queue.append(gdf.loc[startingLoc])
@@ -41,8 +38,6 @@ class SimpleBFS:
                 if distNum < numDists and currDist.isFull():
                         currDist = dists[distNum]
                         distNum += 1
-    
-        print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
 
         gdf['barddist'] = distList
         return (gdf, dists)
