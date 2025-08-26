@@ -24,7 +24,7 @@ class District:
         return None
 
     def isFull(self):
-        return self.pop >= self.tgt
+        return self.pop >= (self.tgt * (1- self.maxdev / 5))
     
     def isTooSmall(self):
         return self.pop < self.tgt * (1- self.maxdev)
@@ -53,6 +53,30 @@ class District:
 
         return visited == all
     
+    def makeDistrictObjects(totPop: int, distCt: int):
+        dists = []
+        pop = totPop
+        for i in range(0, distCt):
+            dists.append(District(i, totPop // distCt))
+            pop = pop - dists[i].tgt
+
+        i = 0
+        while pop > 0:
+            dists[i].tgt += 1
+            pop -= 1
+            i += 1
+        
+        return dists
+
+    def doWarnings(dists: list):
+        for i in range(0, len(dists)):
+            dist = dists[i]
+            if dist.isTooBig():
+                print(f"WARNING: District {i+1} is too large (District size {round((dist.pop * 100) / dist.tgt, 2)}% of target)")
+            if dist.isTooSmall():
+                print(f"WARNING: District {i+1} is too small (District size {round((dist.pop * 100) / dist.tgt, 2)}% of target)")
+            if not dist.isContiguous():
+                print(f"WARNING: District {i+1} is not contiguous") 
 
     def toDataFrame(self, gdf: gpd.GeoDataFrame):
         return gpd.GeoDataFrame(gdf[gdf['index'].isin(self.precincts)])

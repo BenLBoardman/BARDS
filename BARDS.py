@@ -2,6 +2,7 @@ import geopandas as gpd
 
 import src.BardProcessor as proc
 import src.algo.Select as select
+from src.obj.District import District
 
 import sys
 
@@ -74,8 +75,13 @@ def main():
     alg = select.selectAlgo(algo, population, numDists, gdf)
     if alg == None:
         return -1
-    gdf = alg.draw(population, numDists, gdf)
     
+    dList = District.makeDistrictObjects(population, numDists)
+
+    (gdf, dList) = alg.draw(population, dList, numDists, gdf)
+    
+    District.doWarnings(dList)
+
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)
     
