@@ -34,7 +34,7 @@ class SimpleBFS:
             
                 distList[curr.get('index')] = distNum
 
-                currDist.addPrecinct(curr)
+                currDist.addPrecinctPD(curr)
                 if distNum < numDists and currDist.isFull():
                         currDist = dists[distNum]
                         distNum += 1

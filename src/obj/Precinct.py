@@ -5,3 +5,4 @@ class Precinct:
         self.pop = precinct['TOTPOP']
         self.neighbors = precinct['neighbors']
         self.index = precinct['index']
+        self.name = precinct['name']
