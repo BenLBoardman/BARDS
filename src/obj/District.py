@@ -57,7 +57,7 @@ class District:
         dists = []
         pop = totPop
         for i in range(0, distCt):
-            dists.append(District(i, totPop // distCt))
+            dists.append(District(i+1, totPop // distCt))
             pop = pop - dists[i].tgt
 
         i = 0

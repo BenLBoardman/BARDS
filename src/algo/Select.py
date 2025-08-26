@@ -10,7 +10,7 @@ def selectAlgo(algo: str, population: int, numDists: int, gdf: gpd.GeoDataFrame)
     if algo == "simple":
         drawer =  sbfs.SimpleBFS()
     if algo == "multi":
-        drawer =  sbfs.MultiBFS()
+        drawer =  mbfs.MultiBFS()
     else:
         print(f"Algorithm {algo} not recognized, districts not drawn.")
         
