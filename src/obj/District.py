@@ -19,6 +19,7 @@ class District:
         
     def addPrecinct(self, precinct: Precinct):
         self.precincts.append(precinct)
+        precinct.addToDistrict(self)
         self.pop += precinct.pop
 
     def getPrecinctFromIndex(self, index: int):
@@ -87,6 +88,7 @@ class District:
         
         return dists
 
+    # REMOVE once state object fully implemented
     def getUnassignedPrecincts(assigned: set, gdf: pd.DataFrame):
         precincts = set(gdf['index'])
         for precinct in assigned:
@@ -94,6 +96,7 @@ class District:
                 precincts.remove(precinct)
         return precincts
 
+    # REMOVE once state object fully implemented
     def doWarnings(assigned: set, dists: list, gdf: pd.DataFrame):
         for i in range(0, len(dists)):
             dist = dists[i]
