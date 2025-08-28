@@ -6,6 +6,7 @@ class Precinct:
         self.neighbors = precinct['neighbors']
         self.index = precinct['index']
         self.name = precinct['name']
+        self.district = None
 
     def addToDistrict(self, district):
         self.district = district

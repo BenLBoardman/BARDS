@@ -1,6 +1,7 @@
 import geopandas as gpd
 import pandas as pd
 
+from src.obj.State import State
 from src.obj.District import District
 from src.obj.Precinct import Precinct
 
@@ -12,10 +13,10 @@ class MultiBFS:
     def __init__(self):
         pass
 
-    def draw(self, totPop: int, dists: list[District], numDists: int, gdf: gpd.GeoDataFrame):
-        assigned = set()
+    def draw(self, state: State, gdf: gpd.GeoDataFrame):
         pctLoc = -1
-
+        dists = state.dists
+        assigned = state.assigned
 
         pctAssns = [-1] * len(gdf)
         queues = []
@@ -27,48 +28,50 @@ class MultiBFS:
         for tuple in qdTuple:
             queue, dist = tuple
             while True:
-                pctLoc = int(random.random() * len(gdf))
+                pctLoc = int(random.random() * state.numPrecincts)
                 if pctAssns[pctLoc] == -1:
                     break
-            pct = gdf.loc[pctLoc]
-            print(f"\t{pct.get('name')}")
-            queue.append(pctLoc)
-            pctAssns[pctLoc] = dist.id
+            pct = state.getPrecinct(pctLoc)
+            print(f"\t{pct.name}")
+            queue.append(pct)
 
         i = 0
         while True:
             if (not any(queues)) or all(dist.isFull() for dist in dists): 
                 # All districts are done adding precincts
                 break 
-            if (not queues[i]) or dists[i].isFull(): 
+
+            dist = state.dists[i]
+            if (not queues[i]) or dist.isFull(): 
                 # This district is done adding precincts
                 queues[i].clear()
                 i += 1
-                i = i % numDists
+                i = i % state.numDists
                 continue
             
-            index = queues[i].popleft()
-            while index in assigned and queues[i]:
-                index = queues[i].popleft()
-            curr = gdf.loc[index]
-            pct = Precinct(curr)
-            if index not in assigned and (dists[i].borders(pct) or not dists[i].precincts):
-                assigned.add(index)
-                dists[i].addPrecinct(pct)
-                pctAssns[index] = i + 1
+            curr = queues[i].popleft()
+            while curr in assigned and queues[i]:
+                curr = queues[i].popleft()
+            if curr not in assigned and (dist.borders(curr) or not dist.precincts):
+                state.assign(curr, i)
+                pctAssns[curr.index] = i + 1
 
-            addNeighborsToQueue(assigned, queues[i], dists[i], pct, gdf)
+            addNeighborsToQueue(assigned, queues[i], dist, curr)
 
             # Cycle through districts
             i += 1
-            i = i % numDists
+            i = i % state.numDists
+
+        # Assign Unassigned Precincts
+        unassigned = state.unassigned
+    #    for index in unassignedPrecincts:
+    #        precinct = Precinct(gdf.loc(index))
 
         gdf['barddist'] = pctAssns
-        return (gdf, dists, assigned)
+        return gdf
 
-def addNeighborsToQueue(assigned: set, queue: deque, dist: District, pct: Precinct, gdf: gpd.geodataframe):
+def addNeighborsToQueue(assigned: set, queue: deque, dist: District, pct: Precinct):
     neighbors = pct.neighbors
-    for j in neighbors:
-        neighbor = gdf.loc[j]
-        if j not in assigned and dist.bordersPD(neighbor) and j not in queue:
-            queue.append(j)
+    for neighbor in neighbors:
+        if neighbor not in assigned and dist.borders(neighbor) and neighbor not in queue:
+            queue.append(neighbor)

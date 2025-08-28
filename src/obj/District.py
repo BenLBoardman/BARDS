@@ -51,18 +51,16 @@ class District:
 
                 neighbors = curr.neighbors
 
-                for j in neighbors:
-                    potential = self.getPrecinctFromIndex(j)
-                    if potential != None:
-                        queue.append(potential)
+                for neighbor in neighbors:
+                    if neighbor in self.precincts:
+                        queue.append(neighbor)
 
         return visited == all
     
 
     def borders(self, precinct: Precinct):
-        indices = [pct.index for pct in self.precincts]
         for neighbor in precinct.neighbors:
-            if neighbor in indices:
+            if neighbor in self.precincts:
                 return True
         return False
     
@@ -87,28 +85,6 @@ class District:
             i += 1
         
         return dists
-
-    # REMOVE once state object fully implemented
-    def getUnassignedPrecincts(assigned: set, gdf: pd.DataFrame):
-        precincts = set(gdf['index'])
-        for precinct in assigned:
-            if precinct in precincts:
-                precincts.remove(precinct)
-        return precincts
-
-    # REMOVE once state object fully implemented
-    def doWarnings(assigned: set, dists: list, gdf: pd.DataFrame):
-        for i in range(0, len(dists)):
-            dist = dists[i]
-            if dist.isTooBig():
-                print(f"WARNING: District {i+1} is too large (District size {round((dist.pop * 100) / dist.tgt, 2)}% of target)")
-            if dist.isTooSmall():
-                print(f"WARNING: District {i+1} is too small (District size {round((dist.pop * 100) / dist.tgt, 2)}% of target)")
-            if not dist.isContiguous():
-                print(f"WARNING: District {i+1} is not contiguous") 
-        unassignedPrecincts = District.getUnassignedPrecincts(assigned, gdf)
-        if unassignedPrecincts:
-            print(f"WARNING: {len(unassignedPrecincts)} of {len(gdf)} precincts are not assigned to districts")
 
     def toDataFrame(self, gdf: gpd.GeoDataFrame):
         return gpd.GeoDataFrame(gdf[gdf['index'].isin(self.precincts)])

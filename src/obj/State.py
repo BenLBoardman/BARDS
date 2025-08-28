@@ -5,19 +5,21 @@ import pandas as pd
 
 # STATE OBJECT CURRENTLY UNUSED
 class State:
-    def __init__(self, pop: int, distCt: int, df: pd.DataFrame):
+    def __init__(self, id: str, pop: int, distCt: int, df: pd.DataFrame):
+        self.id = id
         self.pop = pop
         self.mkDistObjs(distCt)
+        self.numDists = distCt
         self.mkPrecincts(df)
+        self.numPrecincts = len(self.precincts)
         self.unassigned = self.precincts.copy()
         self.assigned = set()
-
         self.neighborIndexToPrecinct()
     
-    def assign(self, precinct: Precinct, district: District):
+    def assign(self, precinct: Precinct, i: int):
         self.assigned.add(precinct)
         self.unassigned.remove(precinct)
-        district.addPrecinct(precinct)
+        self.dists[i].addPrecinct(precinct)
 
     def mkDistObjs(self, distCt: int):
         self.dists = []
@@ -47,7 +49,8 @@ class State:
                 neighbors.append(obj)
             precinct.neighbors = neighbors
 
-
+    def getPrecinct(self, index: int):
+        return next((obj for obj in self.precincts if obj.index == index), None)
 
     def doWarnings(self):
         for i in range(0, len(self.dists)):

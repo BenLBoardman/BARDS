@@ -2,6 +2,7 @@ import geopandas as gpd
 
 import src.BardProcessor as proc
 import src.algo.Select as select
+from src.obj.State import State
 from src.obj.District import District
 
 import sys
@@ -31,8 +32,8 @@ def main():
     
     algo = args[1].lower()
 
-    state = args[2].upper()
-    if state not in defaultCt.keys():
+    stateID = args[2].upper()
+    if stateID not in defaultCt.keys():
         print(f"State {state} not recognized, please try again")
         return -1
     
@@ -40,7 +41,7 @@ def main():
     year = args[3]
     name = ""
 
-    numDists = defaultCt.get(state)
+    numDists = defaultCt.get(stateID)
 
     # Process Optional Args
     for i in range(4, len(args)):
@@ -59,15 +60,15 @@ def main():
                 print("Optional arg --n should be followed with a number of districts!")
                 return -1
 
-    print(f"Drawing {numDists} districts for state: {state}...")
+    print(f"Drawing {numDists} districts for state: {stateID}...")
     print(f"Using census data:  {year}...")
     print(f"Using algorithm: {algo}...")
 
     print(f"Loading precinct data...")
 
     # Process input data & get neighbors
-    gdf = gpd.read_file(proc.getInputPath(state, year))
-    population = proc.processIn(state, year, gdf)
+    gdf = gpd.read_file(proc.getInputPath(stateID, year))
+    population = proc.processIn(stateID, year, gdf)
     if population < 0:
         print("Error getting population data!")
         return -1
@@ -77,18 +78,19 @@ def main():
     if alg == None:
         return -1
     
-    dList = District.makeDistrictObjects(population, numDists)
+
+    state = State(stateID, population, numDists, gdf)
 
     startTime = time.time()
-    (gdf, dList, assigned) = alg.draw(population, dList, numDists, gdf)
+    gdf = alg.draw(state, gdf)
     print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
     
-    District.doWarnings(assigned, dList, gdf)
+    state.doWarnings()
 
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)
     
-    filePath = proc.buildOutputPath(algo, name, state, year)
+    filePath = proc.buildOutputPath(algo, name, stateID, year)
     #Output to file
     proc.processOut(filePath, dists)
 
