@@ -62,10 +62,21 @@ class MultiBFS:
             i += 1
             i = i % state.numDists
 
-        # Assign Unassigned Precincts
+        # Add leftover unassigned precincts to districts
         unassigned = state.unassigned
-    #    for index in unassignedPrecincts:
-    #        precinct = Precinct(gdf.loc(index))
+        print(f"Initial assignment completed. Adding {len(unassigned)} remaining precincts to districts...")
+        unassignedL = list(unassigned)
+        i = 0
+        while unassignedL:
+            curr = unassignedL[i]
+            for dist in state.dists:
+                if dist.borders(curr):
+                    state.assign(curr, dist.id-1)
+                    unassignedL.remove(curr)
+                    break
+            i += 1
+            if i >= len(unassignedL):
+                i = 0
 
         gdf['barddist'] = pctAssns
         return gdf
