@@ -15,11 +15,27 @@ class State:
         self.unassigned = self.precincts.copy()
         self.assigned = set()
         self.neighborIndexToPrecinct()
+        self.deviation = 0
+        self.smallestDist = None
+        self.largestDist = None
     
     def assign(self, precinct: Precinct, i: int):
         self.assigned.add(precinct)
         self.unassigned.remove(precinct)
-        self.dists[i].addPrecinct(precinct)
+        self.dists[i].addPrecinct(precinct, self.dists)
+
+    def unassign(self, precinct: Precinct, i: int):
+        self.assigned.remove(precinct)
+        self.unassigned.add(precinct)
+        self.dists[i].removePrecinct(precinct, self.dists)
+
+    def swap(self, prec1: Precinct, prec2: Precinct):
+        dist1 = prec1.district.id
+        dist2 = prec2.district.id
+        self.unassign(prec1, dist1)
+        self.unassign(prec2, dist2)
+        self.assign(prec2, dist1)
+        self.assign(prec1, dist2)
 
     def mkDistObjs(self, distCt: int):
         self.dists = []
@@ -64,3 +80,8 @@ class State:
         if self.unassigned:
             print(f"WARNING: {len(self.unassigned)} of {len(self.precincts)} precincts are not assigned to districts")
             
+    def updateSmallestDistrict(self):
+        pass
+
+    def updateLargestDistrict(self):
+        pass

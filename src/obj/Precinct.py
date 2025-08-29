@@ -10,3 +10,6 @@ class Precinct:
 
     def addToDistrict(self, district):
         self.district = district
+
+    def removeFromDistrict(self):
+        self.district = None

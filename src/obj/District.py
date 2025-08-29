@@ -12,15 +12,33 @@ class District:
         self.pop = 0
         self.precincts = []
         self.maxdev = 0.0075 # maximum per-district population deviation that will be achieved before precincts will stop being added - set to 0.75% by default
+        self.neighbors = set()
 
     def addPrecinctPD(self, precinct: pd.Series):
         self.precincts.append(Precinct(precinct))
         self.pop += precinct['TOTPOP']
         
-    def addPrecinct(self, precinct: Precinct):
+    def addPrecinct(self, precinct: Precinct, dists):
         self.precincts.append(precinct)
         precinct.addToDistrict(self)
         self.pop += precinct.pop
+        self.updateNeighbors(precinct, dists)
+
+    def removePrecinct(self, precinct: Precinct, dists):
+        self.precincts.remove(precinct)
+        precinct.removeFromDistrict()
+        self.pop -= precinct.pop
+        self.updateNeighbors(precinct, dists)
+
+    def updateNeighbors(self, precinct: Precinct, dists):
+        for pNeighbor in precinct.neighbors:
+            for dist in dists:
+                if (not dist == self) and dist.borders(precinct):
+                    dist.addNeighbor(self)
+                    self.addNeighbor(dist)
+
+    def addNeighbor(self, other):
+        self.neighbors.add(other)
 
     def getPrecinctFromIndex(self, index: int):
         for precinct in self.precincts:
