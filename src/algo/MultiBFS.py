@@ -72,11 +72,13 @@ class MultiBFS:
             for dist in state.dists:
                 if dist.borders(curr):
                     state.assign(curr, dist.id-1)
+                    pctAssns[curr.index] = dist.id
                     unassignedL.remove(curr)
                     break
             i += 1
             if i >= len(unassignedL):
                 i = 0
+
 
         gdf['barddist'] = pctAssns
         return gdf
