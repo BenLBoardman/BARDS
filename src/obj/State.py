@@ -16,6 +16,7 @@ class State:
         self.assigned = set()
         self.neighborIndexToPrecinct()
         self.deviation = 0
+        self.avgTgt = int(pop / distCt)
         self.smallestDist = None
         self.largestDist = None
     
@@ -23,11 +24,13 @@ class State:
         self.assigned.add(precinct)
         self.unassigned.remove(precinct)
         self.dists[i].addPrecinct(precinct, self.dists)
+        self.updateDeviation(self.dists[i])
 
     def unassign(self, precinct: Precinct, i: int):
         self.assigned.remove(precinct)
         self.unassigned.add(precinct)
         self.dists[i].removePrecinct(precinct, self.dists)
+        self.updateDeviation(self.dists[i])
 
     def swap(self, prec1: Precinct, prec2: Precinct):
         dist1 = prec1.district.id
@@ -36,6 +39,17 @@ class State:
         self.unassign(prec2, dist2)
         self.assign(prec2, dist1)
         self.assign(prec1, dist2)
+        self.updateDeviation(dist1)
+        self.updateDeviation(dist2)
+
+    def updateDeviation(self, dist: District):
+        if self.smallestDist == None or dist.pop < self.smallestDist.pop:
+            self.smallestDist = dist
+        
+        if self.largestDist == None or dist.pop > self.largestDist.pop:
+            self.largestDist = dist
+        
+        self.deviation = round((self.largestDist.pop - self.smallestDist.pop)/self.avgTgt, 4)
 
     def mkDistObjs(self, distCt: int):
         self.dists = []
@@ -79,7 +93,9 @@ class State:
                 print(f"WARNING: District {i+1} is not contiguous") 
         if self.unassigned:
             print(f"WARNING: {len(self.unassigned)} of {len(self.precincts)} precincts are not assigned to districts")
-            
+        if self.deviation > .0075:
+            print(f"WARNING: Statewide population deviation is {round(self.deviation*100, 2)}%, it should be less than 0.75%.")
+    
     def updateSmallestDistrict(self):
         pass
 
