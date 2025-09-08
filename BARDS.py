@@ -34,7 +34,7 @@ def main():
 
     stateID = args[2].upper()
     if stateID not in defaultCt.keys():
-        print(f"State {state} not recognized, please try again")
+        print(f"State {stateID} not recognized, please try again")
         return -1
     
     population = 0
@@ -84,12 +84,12 @@ def main():
     startTime = time.time()
     gdf = alg.draw(state, gdf)
     print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
-    
+    state.updateDeviation()
     state.doWarnings()
 
     # Build district geometries
     dists = proc.buildDistrictGDF(gdf, numDists)
-    
+
     filePath = proc.buildOutputPath(algo, name, stateID, year)
     #Output to file
     proc.processOut(filePath, dists)

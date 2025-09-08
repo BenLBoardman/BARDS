@@ -11,29 +11,59 @@ from collections import deque
 class MultiBFS:
 
     def __init__(self):
-        pass
+        self.retries = 0
 
     def draw(self, state: State, gdf: gpd.GeoDataFrame):
-        pctLoc = -1
-        dists = state.dists
-        assigned = state.assigned
 
         pctAssns = [-1] * len(gdf)
+
+        self.makeNuclei(state, pctAssns)
+        self.buildMap(state, pctAssns)
+        while state.deviation > 0.03 * state.numDists: # note - this method works well for all states tested so far (NH, NV, TN, NJ) except Oregon
+            print(f"State deviation is {round(state.deviation * 100, 2)}%, regenerating map.")
+            self.retries += 1
+            pctAssns = [-1] * len(state.precincts)
+            self.makeNucleus(state.smallestDist, state.largestDist.precincts, pctAssns)
+            self.makeNucleus(state.largestDist, state.largestDist.precincts, pctAssns)
+
+            for dist in state.dists:
+                pct = dist.nucleus
+                pctAssns[pct.index] = dist.id+1
+            state.clear()
+            self.buildMap(state, pctAssns)
+
+        print(f"Generated base map with {self.retries} retries...")
+        if state.deviation >= state.maxDev:
+            print(f"Beginning successive-swap rebalancing...")
+            state.ssRebalance()
+
+        gdf['barddist'] = [precinct.district.id for precinct in state.precincts]
+        return gdf
+
+    def makeNuclei(self, state: State, pctAssns: list):
+        if self.retries == 0:
+            print("Using District Nuclei:")
+        for dist in state.dists:
+            self.makeNucleus(dist, state.precincts, pctAssns)
+
+    def makeNucleus(self, dist: District, pcts: set, pctAssns: list):
+        while True:
+            pct = random.sample(pcts, 1)[0]
+            if pctAssns[pct.index] == -1:
+                break
+        dist.nucleus = pct
+        if self.retries == 0:
+            print(f"\t{pct.name}")
+
+    def buildMap(self, state: State, pctAssns: list):
+        dists = state.dists
+        assigned = state.assigned
         queues = []
         for dist in dists:
-            queues.append(deque())
-        qdTuple = list(zip(queues, dists))
+            queue = deque()
+            queue.append(dist.nucleus)
+            queues.append(queue)
 
-        print("Using District Nuclei:")
-        for tuple in qdTuple:
-            queue, dist = tuple
-            while True:
-                pctLoc = int(random.random() * state.numPrecincts)
-                if pctAssns[pctLoc] == -1:
-                    break
-            pct = state.getPrecinct(pctLoc)
-            print(f"\t{pct.name}")
-            queue.append(pct)
 
         i = 0
         while True:
@@ -64,7 +94,8 @@ class MultiBFS:
 
         # Add leftover unassigned precincts to districts
         unassigned = state.unassigned
-        print(f"Initial assignment completed. Adding {len(unassigned)} remaining precincts to districts...")
+        if self.retries == 0:
+            print(f"Initial assignment completed. Adding {len(unassigned)} remaining precincts to districts...")
         unassignedL = list(unassigned)
         i = 0
         while unassignedL:
@@ -80,8 +111,7 @@ class MultiBFS:
                 i = 0
 
 
-        gdf['barddist'] = pctAssns
-        return gdf
+        state.updateDeviation()
 
 def addNeighborsToQueue(assigned: set, queue: deque, dist: District, pct: Precinct):
     neighbors = pct.neighbors

@@ -10,6 +10,7 @@ DATAPATH_OUT = "output/"
 # The list of datasets that can currently be retrieved with getDataSet.
 datasets = {
     "census": {'name': 'CENS', 'prefix': 'T', 'fields': ['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic']},
+    "census_adj": {'name': 'CENS_ADJ', 'prefix': 'T', 'fields': ['Total', 'Native', 'Asian', 'Black', 'Pacific', 'White', 'Hispanic']},
     "president": {'name': 'PRES', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']},
     "senate": {'name': 'SEN', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']},
     "governor": {'name': 'GOV', 'prefix': 'E', 'fields': ['Total', 'Dem', 'Rep']}
@@ -23,7 +24,10 @@ def getInputPath(state: str, year: int):
 def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
-    censusData = getDataset(year, "census", state, gdf)    
+    if hasDataset(year, "CENSUS_ADJ", state, gdf):
+        censusData = getDataset(year, "census_adj", state, gdf)
+    else:
+        censusData = getDataset(year, "census", state, gdf)    
     if censusData[0] == -1:
         print("Census data not found!")
         return -1
@@ -41,6 +45,14 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     
     return population
 
+
+def hasDataset(year: int, type: str, state: str, gdf: gpd.geodataframe):
+    if type not in datasets.keys():
+        return False
+    dataset = datasets.get(type)
+    datasetName = f"{dataset['prefix']}_{int(year) % 2000}_{dataset['name']}"
+    return any(gdf['datasets'].str.contains(datasetName))
+    
 # Get a dataset of a given year and type from the dataframe. This can be used for election data, census data, or VAP data.
 # Valid datasets are listed in the datasets dict. Returns a tuple containing (status, dataframe)
 def getDataset(year: int, type: str, state: str, gdf: gpd.GeoDataFrame):
@@ -49,14 +61,13 @@ def getDataset(year: int, type: str, state: str, gdf: gpd.GeoDataFrame):
         return (-1, None)
 
     dataset = datasets.get(type)
-    try:
+    if hasDataset(year, type, state, gdf):
         datasetName = f"{dataset['prefix']}_{int(year) % 2000}_{dataset['name']}"
         return (0, pd.DataFrame(pd.DataFrame(
             json.loads(str) for str in gdf['datasets'].tolist()
             )[datasetName].tolist(), columns=dataset['fields'])) 
-    except:
-        print(f"{state} does not include {year} {type} data!")
-        return (-1, None)
+    print(f"{state} does not include {year} {type} data!")
+    return (-1, None)
 
 # Generate neighbor lists for each precinct using GeoPandas
 def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):

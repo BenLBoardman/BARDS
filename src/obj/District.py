@@ -13,6 +13,7 @@ class District:
         self.precincts = []
         self.maxdev = 0.0075 # maximum per-district population deviation that will be achieved before precincts will stop being added - set to 0.75% by default
         self.neighbors = set()
+        self.nucleus = None
 
     def addPrecinctPD(self, precinct: pd.Series):
         self.precincts.append(Precinct(precinct))
@@ -103,6 +104,13 @@ class District:
             i += 1
         
         return dists
+    
+    def clear(self):
+        self.pop = 0
+        for precinct in self.precincts:
+            precinct.district = None
+        self.precincts = []
+        self.neighbors.clear()
 
     def toDataFrame(self, gdf: gpd.GeoDataFrame):
         return gpd.GeoDataFrame(gdf[gdf['index'].isin(self.precincts)])
