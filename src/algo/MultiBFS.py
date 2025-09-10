@@ -19,7 +19,7 @@ class MultiBFS:
 
         self.makeNuclei(state, pctAssns)
         self.buildMap(state, pctAssns)
-        while state.deviation > 0.03 * state.numDists: # note - this method works well for all states tested so far (NH, NV, TN, NJ) except Oregon
+        while state.deviation > 0.04 * state.numDists: # note - this method works well for all states tested so far (NH, NV, TN, NJ) except Oregon
             print(f"State deviation is {round(state.deviation * 100, 2)}%, regenerating map.")
             self.retries += 1
             pctAssns = [-1] * len(state.precincts)
@@ -34,7 +34,7 @@ class MultiBFS:
 
         print(f"Generated base map with {self.retries} retries...")
         if state.deviation >= state.maxDev:
-            print(f"Beginning successive-swap rebalancing...")
+            print(f"Beginning successive-swap rebalancing with {round(state.deviation*100,2)}% deviation...")
             state.ssRebalance()
 
         gdf['barddist'] = [precinct.district.id for precinct in state.precincts]
@@ -83,7 +83,7 @@ class MultiBFS:
             while curr in assigned and queues[i]:
                 curr = queues[i].popleft()
             if curr not in assigned and (dist.borders(curr) or not dist.precincts):
-                state.assign(curr, i)
+                state.assign(curr, dist)
                 pctAssns[curr.index] = i + 1
 
             addNeighborsToQueue(assigned, queues[i], dist, curr)
@@ -102,7 +102,7 @@ class MultiBFS:
             curr = unassignedL[i]
             for dist in state.dists:
                 if dist.borders(curr):
-                    state.assign(curr, dist.id-1)
+                    state.assign(curr, dist)
                     pctAssns[curr.index] = dist.id
                     unassignedL.remove(curr)
                     break

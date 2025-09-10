@@ -12,7 +12,7 @@ class State:
         self.numDists = distCt
         self.mkPrecincts(df)
         self.numPrecincts = len(self.precincts)
-        self.unassigned = self.precincts.copy()
+        self.unassigned = set(self.precincts.copy())
         self.assigned = set()
         self.neighborIndexToPrecinct()
         self.deviation = 0
@@ -21,23 +21,31 @@ class State:
         self.largestDist = None
         self.maxDev = 0.0075 # Max acceptable deviation
     
-    def assign(self, precinct: Precinct, i: int, updateDev: bool=False):
+    def assign(self, precinct: Precinct, district: District, updateDev: bool=False):
         self.assigned.add(precinct)
         self.unassigned.remove(precinct)
-        self.dists[i].addPrecinct(precinct, self.dists)
+        if district not in self.dists:
+            print(f"District {district.id} is not in the State!")
+            return False
+        district.addPrecinct(precinct, self.dists)
         if updateDev:
             self.updateDeviation()
+        return True
 
-    def unassign(self, precinct: Precinct, i: int, updateDev: bool=False):
+    def unassign(self, precinct: Precinct, district: District, updateDev: bool=False):
         self.assigned.remove(precinct)
         self.unassigned.add(precinct)
-        self.dists[i].removePrecinct(precinct, self.dists)
+        if district not in self.dists:
+            print(f"District {district.id} is not in the State!")
+            return False
+        district.removePrecinct(precinct, self.dists)
         if updateDev:
             self.updateDeviation()
+        return True
 
     def swap(self, prec1: Precinct, prec2: Precinct, updateDev: bool=False):
-        dist1 = prec1.district.id-1
-        dist2 = prec2.district.id-1
+        dist1 = prec1.district
+        dist2 = prec2.district
         self.unassign(prec1, dist1)
         self.unassign(prec2, dist2)
         self.assign(prec2, dist1)
@@ -69,10 +77,10 @@ class State:
             i += 1
     
     def mkPrecincts(self, df: pd.DataFrame):
-        self.precincts = set()
+        self.precincts = []
         for (i, row) in df.iterrows():
             precinct = Precinct(row.copy(True))
-            self.precincts.add(precinct)
+            self.precincts.append(precinct)
         return self.precincts
     
     def neighborIndexToPrecinct(self):
@@ -84,11 +92,27 @@ class State:
             precinct.neighbors = neighbors
 
     # Successive Swap Rebalance - rebalance district pops by successively swapping neighbor precincts between districts
+    # SS rebalance is not enough - districts under a certain size need to also just take precincts from their most populous neighbor
     def ssRebalance(self):
         swaps = 0
         currDev = 0
-        while(self.deviation > self.maxDev):
+        lastSwap = None
+        done = False
+        while self.deviation > self.maxDev / 2:
+            if swaps % 2 == 0: #alternate between the smallest district taking a precinct from its largest neighbor
+                self.smallestDist.takePrecinctFrom(self.smallestDist.getLargestNeighbor(), self.dists)
+            else: # and the largest district giving a precinct to its smallest neighbor 
+                self.largestDist.givePrecinctTo(self.largestDist.getSmallestNeighbor(), self.dists)
+            swaps += 1
+            self.updateDeviation()
+            if swaps % 100 == 0:
+                print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
+        while False and self.deviation > self.maxDev and not done:
             for precinct in self.precincts:
+                if lastSwap == precinct:
+                    print("No more immediately useful swaps can be made, exiting.")
+                    done = True
+                    break
                 for neighbor in precinct.neighbors:
                     currDev = self.deviation
                     if not precinct.district == neighbor.district:
@@ -97,10 +121,11 @@ class State:
                             self.swap(precinct, neighbor, True)
                         else:
                             swaps += 1
+                            lastSwap = precinct
                             if swaps % 10 == 0:
-                                print(f"Deviation after {swaps} swaps: {self.deviation}")
+                                print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
                             break
-        print(f"Successive-swap rebalancing complete in {swaps} swaps. Final deviation is {round(currDev*100, 2)}%...")
+        print(f"Successive-swap rebalancing complete in {swaps} swaps. Final deviation is {round(self.deviation*100, 2)}%...")
 
 
     def getPrecinct(self, index: int):
@@ -122,6 +147,6 @@ class State:
     
     def clear(self):
         self.assigned = set()
-        self.unassigned = self.precincts.copy()
+        self.unassigned = set(self.precincts.copy())
         for dist in self.dists:
             dist.clear()

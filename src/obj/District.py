@@ -11,6 +11,7 @@ class District:
         self.tgt = tgtPop
         self.pop = 0
         self.precincts = []
+        self.deviation = 0
         self.maxdev = 0.0075 # maximum per-district population deviation that will be achieved before precincts will stop being added - set to 0.75% by default
         self.neighbors = set()
         self.nucleus = None
@@ -18,19 +19,62 @@ class District:
     def addPrecinctPD(self, precinct: pd.Series):
         self.precincts.append(Precinct(precinct))
         self.pop += precinct['TOTPOP']
+        self.deviation = abs(1 - round(self.pop / self.tgt, 4))
         
     def addPrecinct(self, precinct: Precinct, dists):
         self.precincts.append(precinct)
         precinct.addToDistrict(self)
         self.pop += precinct.pop
+        self.deviation = abs(1 - round(self.pop / self.tgt, 4))
         self.updateNeighbors(precinct, dists)
 
     def removePrecinct(self, precinct: Precinct, dists):
         self.precincts.remove(precinct)
         precinct.removeFromDistrict()
         self.pop -= precinct.pop
+        self.deviation = abs(1 - round(self.pop / self.tgt, 4))
         self.updateNeighbors(precinct, dists)
 
+    def takePrecinctFrom(self, other, dists):
+        if other not in self.neighbors:
+            return False
+        for precinct in other.precincts:
+            other.removePrecinct(precinct, dists)
+            if self.borders(precinct) and other.isContiguous():
+                self.addPrecinct(precinct, dists)
+                return True
+            else:
+                other.addPrecinct(precinct, dists)
+        
+    def givePrecinctTo(self, other, dists):
+        if other not in self.neighbors:
+            return False
+        for precinct in self.precincts:
+            self.removePrecinct(precinct, dists)
+            if other.borders(precinct) and self.isContiguous():
+                other.addPrecinct(precinct, dists)
+                return True
+            else:
+                self.addPrecinct(precinct, dists)
+
+    def getLargestNeighbor(self):
+        largestNeighbor = None
+        largestNeighborPop = -1
+        for neighbor in self.neighbors:
+            if neighbor.pop > largestNeighborPop:
+                largestNeighbor = neighbor
+                largestNeighborPop = neighbor.pop
+        return largestNeighbor
+        
+    def getSmallestNeighbor(self):
+        smallestNeighbor = None
+        smallestNeighborPop = 2000000000
+        for neighbor in self.neighbors:
+            if neighbor.pop < smallestNeighborPop:
+                smallestNeighbor = neighbor
+                smallestNeighborPop = neighbor.pop
+        return smallestNeighbor
+    
     def updateNeighbors(self, precinct: Precinct, dists):
         for pNeighbor in precinct.neighbors:
             for dist in dists:
@@ -51,10 +95,10 @@ class District:
         return self.pop >= (self.tgt * (1- self.maxdev / 5))
     
     def isTooSmall(self):
-        return self.pop < self.tgt * (1- self.maxdev)
+        return self.pop < self.tgt and self.deviation > self.maxdev
     
     def isTooBig(self):
-        return self.pop > self.tgt * (1 + self.maxdev)
+        return self.pop > self.tgt and self.deviation > self.maxdev
     
     def isContiguous(self):
         queue = deque()
