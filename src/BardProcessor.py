@@ -25,8 +25,10 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
     population = 0
 
     if hasDataset(year, "CENSUS_ADJ", state, gdf):
+        print("Using adjusted census data...")
         censusData = getDataset(year, "census_adj", state, gdf)
     else:
+        print("Using census data...")
         censusData = getDataset(year, "census", state, gdf)    
     if censusData[0] == -1:
         print("Census data not found!")
@@ -47,6 +49,7 @@ def processIn(state: str, year: int, gdf: gpd.GeoDataFrame):
 
 
 def hasDataset(year: int, type: str, state: str, gdf: gpd.geodataframe):
+    type = type.lower()
     if type not in datasets.keys():
         return False
     dataset = datasets.get(type)
@@ -56,6 +59,7 @@ def hasDataset(year: int, type: str, state: str, gdf: gpd.geodataframe):
 # Get a dataset of a given year and type from the dataframe. This can be used for election data, census data, or VAP data.
 # Valid datasets are listed in the datasets dict. Returns a tuple containing (status, dataframe)
 def getDataset(year: int, type: str, state: str, gdf: gpd.GeoDataFrame):
+    type = type.lower()
     if type not in datasets.keys():
         print("Invalid dataset entry request.")
         return (-1, None)
