@@ -78,12 +78,16 @@ def findAllNeighborsGPD(gdf: gpd.GeoDataFrame):
     neighborList = []
     indexList = []
     for i, feature in gdf.iterrows():
-        neighbors = gdf[gdf.geometry.intersects(feature.geometry)].index.tolist()
-        neighbors.remove(i)
+        touchNeighbors = gdf[gdf.geometry.touches(feature.geometry)].index.tolist()
+        neighbors = [n for n in touchNeighbors if properNeighbors(feature, gdf.loc[n])]
         neighborList.append(neighbors)
         indexList.append(i)
     gdf['neighbors'] = neighborList
     gdf['index'] = indexList
+
+def properNeighbors(feature: gpd.GeoSeries, neighbor: gpd.GeoSeries):
+    return (feature.geometry.intersection(neighbor.geometry).geom_type 
+        in ['LineString', 'MultiLineString'])
 
 # Build a GeoDataFrame corresponding to the geometry of each district, given the DataFrame of precincts including their district 
 def buildDistrictGDF(precinctGDF: gpd.GeoDataFrame, distCt: int):

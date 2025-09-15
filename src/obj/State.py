@@ -2,6 +2,7 @@ from src.obj.District import District
 from src.obj.Precinct import Precinct
 
 import pandas as pd
+import time as time
 
 # STATE OBJECT CURRENTLY UNUSED
 class State:
@@ -38,7 +39,7 @@ class State:
         if district not in self.dists:
             print(f"District {district.id} is not in the State!")
             return False
-        district.removePrecinct(precinct, self.dists)
+        district.removePrecinct(precinct, self.dists, True)
         if updateDev:
             self.updateDeviation()
         return True
@@ -62,6 +63,7 @@ class State:
                 self.largestDist = dist
         
         self.deviation = round((self.largestDist.pop - self.smallestDist.pop)/self.avgTgt, 4)
+        return self.deviation
 
     def mkDistObjs(self, distCt: int):
         self.dists = []
@@ -98,14 +100,26 @@ class State:
         currDev = 0
         lastSwap = None
         done = False
-        while self.deviation > self.maxDev / 2:
+        act = True
+        start = time.time()
+        while self.deviation > self.maxDev / 2 and act:
+            self.dists.sort(key=(lambda dist: dist.pop))
             if swaps % 2 == 0: #alternate between the smallest district taking a precinct from its largest neighbor
-                self.smallestDist.takePrecinctFrom(self.smallestDist.getLargestNeighbor(), self.dists)
-            else: # and the largest district giving a precinct to its smallest neighbor 
-                self.largestDist.givePrecinctTo(self.largestDist.getSmallestNeighbor(), self.dists)
+                i = 0
+                smd = False
+                while not smd and i < round(self.numDists / 2 - 1): 
+                    smd = self.dists[i].getLargestNeighbor().givePrecinctTo(self.dists[i], self.dists)
+                    i += 1
+            else: # and the largest precinct giving a precinct to its smallest neighbor
+                lgd = False
+                i = self.numDists - 1
+                while not lgd and i > round(self.numDists / 2 - 1):
+                    lgd = self.dists[i].givePrecinctTo(self.dists[i].getSmallestNeighbor(), self.dists)
+                    i -= 1
+            act = smd or lgd
             swaps += 1
             self.updateDeviation()
-            if swaps % 100 == 0:
+            if swaps % 100 == 0 or (swaps > 1000 and swaps % 10 == 0):
                 print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
         while False and self.deviation > self.maxDev and not done:
             for precinct in self.precincts:
@@ -126,7 +140,7 @@ class State:
                                 print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
                             break
         print(f"Successive-swap rebalancing complete in {swaps} swaps. Final deviation is {round(self.deviation*100, 2)}%...")
-
+        print(f"Rebalancing averaged {round((time.time() - start)/swaps,4)} seconds per swap.")
 
     def getPrecinct(self, index: int):
         return next((obj for obj in self.precincts if obj.index == index), None)

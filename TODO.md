@@ -1,8 +1,8 @@
 ## TODO
 
 ### Bugfixes (this branch)
-- Remove touch-point contiguity
-- Fix failure to use census adjusted data
+~~- Remove touch-point contiguity~~
+~~- Fix failure to use census adjusted data~~
 
 ### Documentation Pass (this branch)
 - Remove unused code

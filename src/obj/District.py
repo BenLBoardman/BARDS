@@ -33,29 +33,27 @@ class District:
         precinct.removeFromDistrict()
         self.pop -= precinct.pop
         self.deviation = abs(1 - round(self.pop / self.tgt, 4))
-        self.updateNeighbors(precinct, dists)
+        self.updateNeighbors(precinct, dists, True)
 
-    def takePrecinctFrom(self, other, dists):
-        if other not in self.neighbors:
-            return False
-        for precinct in other.precincts:
-            other.removePrecinct(precinct, dists)
-            if self.borders(precinct) and other.isContiguous():
-                self.addPrecinct(precinct, dists)
-                return True
-            else:
-                other.addPrecinct(precinct, dists)
-        
     def givePrecinctTo(self, other, dists):
         if other not in self.neighbors:
+            print(f"Attempted to transfer precinct from district {self.id} to non-neighbor {other.id}")
             return False
-        for precinct in self.precincts:
+        for precinct in set([p for p in self.precincts if any([n for n in p.neighbors if n.district == other])]):
             self.removePrecinct(precinct, dists)
-            if other.borders(precinct) and self.isContiguous():
-                other.addPrecinct(precinct, dists)
+            precincts = [precinct]
+            for neighbor in precinct.neighbors:
+                # if any neighbors of the chosen precinct only border the chosen precinct, remove them too
+                if len(neighbor.neighbors) == 1 and neighbor.district == self:
+                    self.removePrecinct(neighbor, dists)
+                    precincts.append(neighbor)
+            if self.isContiguous():
+                [other.addPrecinct(p, dists) for p in precincts]
                 return True
             else:
-                self.addPrecinct(precinct, dists)
+                [self.addPrecinct(p, dists) for p in precincts]
+        print(f"No contiguous transfers can be made from district {self.id} to district {other.id}")
+        return False
 
     def getLargestNeighbor(self):
         largestNeighbor = None
@@ -75,12 +73,18 @@ class District:
                 smallestNeighborPop = neighbor.pop
         return smallestNeighbor
     
-    def updateNeighbors(self, precinct: Precinct, dists):
-        for pNeighbor in precinct.neighbors:
-            for dist in dists:
-                if (not dist == self) and dist.borders(precinct):
-                    dist.addNeighbor(self)
-                    self.addNeighbor(dist)
+    def updateNeighbors(self, precinct: Precinct, dists, remove=False):
+        if remove:
+            for dist in list(self.neighbors):
+                if not any(dist.borders(precinct) for precinct in self.precincts):
+                    self.neighbors.remove(dist)
+                    dist.neighbors.remove(self)
+            return True
+        for dist in dists:
+            if (not dist == self) and dist.borders(precinct):
+                dist.addNeighbor(self)
+                self.addNeighbor(dist)
+                    
 
     def addNeighbor(self, other):
         self.neighbors.add(other)
@@ -127,6 +131,7 @@ class District:
                 return True
         return False
     
+
     def bordersPD(self, pct: pd.Series):
         indices = [pct.index for pct in self.precincts]
         for neighbor in pct.get('neighbors'):
