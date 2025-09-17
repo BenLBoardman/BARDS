@@ -3,7 +3,6 @@ import geopandas as gpd
 import src.BardProcessor as proc
 import src.algo.Select as select
 from src.obj.State import State
-from src.obj.District import District
 
 import sys
 import time

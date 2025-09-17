@@ -102,6 +102,8 @@ class State:
         done = False
         act = True
         start = time.time()
+        smd = True
+        lgd = True
         while self.deviation > self.maxDev / 2 and act:
             self.dists.sort(key=(lambda dist: dist.pop))
             if swaps % 2 == 0: #alternate between the smallest district taking a precinct from its largest neighbor
@@ -110,6 +112,7 @@ class State:
                 while not smd and i < round(self.numDists / 2 - 1): 
                     smd = self.dists[i].getLargestNeighbor().givePrecinctTo(self.dists[i], self.dists)
                     i += 1
+                    
             else: # and the largest precinct giving a precinct to its smallest neighbor
                 lgd = False
                 i = self.numDists - 1

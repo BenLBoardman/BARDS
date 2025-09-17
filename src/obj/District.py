@@ -4,6 +4,7 @@ import pandas as pd
 from src.obj.Precinct import Precinct
 
 from collections import deque
+import random
 
 class District:
     def __init__(self, id: int, tgtPop: int):
@@ -39,10 +40,11 @@ class District:
         if other not in self.neighbors:
             print(f"Attempted to transfer precinct from district {self.id} to non-neighbor {other.id}")
             return False
-        for precinct in set([p for p in self.precincts if any([n for n in p.neighbors if n.district == other])]):
+        valid = [p for p in self.precincts if any([n for n in p.neighbors if n.district == other])]
+        for precinct in random.sample(valid, len(valid)): # random sort prevents a loop of the same set of transfers
             self.removePrecinct(precinct, dists)
             precincts = [precinct]
-            for neighbor in precinct.neighbors:
+            for neighbor in random.sample(precinct.neighbors, len(precinct.neighbors)):
                 # if any neighbors of the chosen precinct only border the chosen precinct, remove them too
                 if len(neighbor.neighbors) == 1 and neighbor.district == self:
                     self.removePrecinct(neighbor, dists)
@@ -52,7 +54,7 @@ class District:
                 return True
             else:
                 [self.addPrecinct(p, dists) for p in precincts]
-        print(f"No contiguous transfers can be made from district {self.id} to district {other.id}")
+        # print(f"No contiguous transfers can be made from district {self.id} to district {other.id}")
         return False
 
     def getLargestNeighbor(self):

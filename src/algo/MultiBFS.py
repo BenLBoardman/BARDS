@@ -19,7 +19,7 @@ class MultiBFS:
 
         self.makeNuclei(state, pctAssns)
         self.buildMap(state, pctAssns)
-        while state.deviation > 0.04 * state.numDists: # note - this method works well for all states tested so far (NH, NV, TN, NJ) except Oregon
+        while state.deviation > 0.033 * state.numDists: # note - this method works well for all states tested so far (NH, NV, TN, NJ) except Oregon
             print(f"State deviation is {round(state.deviation * 100, 2)}%, regenerating map.")
             self.retries += 1
             pctAssns = [-1] * len(state.precincts)
