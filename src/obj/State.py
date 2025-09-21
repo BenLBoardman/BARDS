@@ -3,6 +3,7 @@ from src.obj.Precinct import Precinct
 
 import pandas as pd
 import time as time
+import random
 
 # STATE OBJECT CURRENTLY UNUSED
 class State:
@@ -39,7 +40,7 @@ class State:
         if district not in self.dists:
             print(f"District {district.id} is not in the State!")
             return False
-        district.removePrecinct(precinct, self.dists, True)
+        district.removePrecinct(precinct, self.dists)
         if updateDev:
             self.updateDeviation()
         return True
@@ -104,7 +105,24 @@ class State:
         start = time.time()
         smd = True
         lgd = True
-        while self.deviation > self.maxDev / 2 and act:
+        i = 0
+        xferHist = dict()
+        while self.deviation > self.maxDev / 2:
+            self.dists.sort(key=lambda dist:dist.pop)
+
+            curr = self.dists[i]
+            next = curr.getLargestNeighbor()
+            prev = curr
+            i = (i + 1) % self.numDists
+            while next.pop >= curr.pop:
+                if self.transferPrecinct(next, curr, xferHist):
+                    swaps += 1
+                prev = curr
+                curr = next
+                next = curr.getLargestNeighbor()
+                if swaps % 10 == 0:
+                    print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
+        while False and self.deviation > self.maxDev / 2 and act:
             self.dists.sort(key=(lambda dist: dist.pop))
             if swaps % 2 == 0: #alternate between the smallest district taking a precinct from its largest neighbor
                 i = 0
@@ -144,6 +162,37 @@ class State:
                             break
         print(f"Successive-swap rebalancing complete in {swaps} swaps. Final deviation is {round(self.deviation*100, 2)}%...")
         print(f"Rebalancing averaged {round((time.time() - start)/swaps,4)} seconds per swap.")
+
+    def transferPrecinct(self, source: District, dest: District, hist: dict):
+        hash = (lambda d1, d2, p: (source.id, dest.id, precinct.index))
+        startingDev = self.deviation
+        otp = False
+        if dest not in source.neighbors:
+            print(f"Attempted to transfer precinct from district {source.id} to non-neighbor {dest.id}")
+            return False
+        valid = [p for p in source.precincts if any([n for n in p.neighbors if n.district == dest])]
+        random.shuffle(valid)
+        for precinct in valid: # random sort prevents a loop of the same set of transfers
+            self.unassign(precinct, source)
+            precincts = [precinct]
+            random.shuffle(precinct.neighbors)
+            for neighbor in precinct.neighbors:
+                # if any neighbors of the chosen precinct only border the chosen precinct, remove them too
+                if len(neighbor.neighbors) == 1 and neighbor.district == source:
+                    self.unassign(neighbor, source)
+                    precincts.append(neighbor)
+            histEntry = (source,  dest, tuple(precincts))
+            
+            if source.isContiguous() and not hist.get(hash(source, dest, precinct)) == histEntry:
+                [self.assign(p, dest) for p in precincts]
+                hist[hash(source, dest, precinct)] = histEntry
+                otp = True
+                break
+            else:
+                [self.assign(p, source) for p in precincts]
+        self.updateDeviation()
+        # print(f"No contiguous transfers can be made from district {self.id} to district {other.id}")
+        return otp
 
     def getPrecinct(self, index: int):
         return next((obj for obj in self.precincts if obj.index == index), None)

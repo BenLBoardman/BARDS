@@ -41,10 +41,12 @@ class District:
             print(f"Attempted to transfer precinct from district {self.id} to non-neighbor {other.id}")
             return False
         valid = [p for p in self.precincts if any([n for n in p.neighbors if n.district == other])]
-        for precinct in random.sample(valid, len(valid)): # random sort prevents a loop of the same set of transfers
+        random.shuffle(valid)
+        for precinct in valid: # random sort prevents a loop of the same set of transfers
             self.removePrecinct(precinct, dists)
             precincts = [precinct]
-            for neighbor in random.sample(precinct.neighbors, len(precinct.neighbors)):
+            random.shuffle(precinct.neighbors)
+            for neighbor in precinct.neighbors:
                 # if any neighbors of the chosen precinct only border the chosen precinct, remove them too
                 if len(neighbor.neighbors) == 1 and neighbor.district == self:
                     self.removePrecinct(neighbor, dists)
