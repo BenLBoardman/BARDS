@@ -107,7 +107,7 @@ class State:
         lgd = True
         i = 0
         xferHist = dict()
-        while self.deviation > self.maxDev / 2:
+        while False and self.deviation > self.maxDev / 2:
             self.dists.sort(key=lambda dist:dist.pop)
 
             curr = self.dists[i]
@@ -122,20 +122,20 @@ class State:
                 next = curr.getLargestNeighbor()
                 if swaps % 10 == 0:
                     print(f"Deviation after {swaps} swaps: {round(self.deviation*100,2)}%")
-        while False and self.deviation > self.maxDev / 2 and act:
+        while self.deviation > self.maxDev / 2 and act:
             self.dists.sort(key=(lambda dist: dist.pop))
             if swaps % 2 == 0: #alternate between the smallest district taking a precinct from its largest neighbor
                 i = 0
                 smd = False
                 while not smd and i < round(self.numDists / 2 - 1): 
-                    smd = self.dists[i].getLargestNeighbor().givePrecinctTo(self.dists[i], self.dists)
+                    smd = self.transferPrecinct(self.dists[i].getLargestNeighbor(), self.dists[i], xferHist)
                     i += 1
                     
             else: # and the largest precinct giving a precinct to its smallest neighbor
                 lgd = False
                 i = self.numDists - 1
                 while not lgd and i > round(self.numDists / 2 - 1):
-                    lgd = self.dists[i].givePrecinctTo(self.dists[i].getSmallestNeighbor(), self.dists)
+                    lgd = self.transferPrecinct(self.dists[i], self.dists[i].getSmallestNeighbor(), xferHist)
                     i -= 1
             act = smd or lgd
             swaps += 1
