@@ -1,6 +1,10 @@
 import pandas as pd
 
+from ctypes import *
+
+
 class Precinct:
+
     def __init__(self, precinct: pd.Series):
         self.pop = precinct['TOTPOP']
         self.neighbors = precinct['neighbors']

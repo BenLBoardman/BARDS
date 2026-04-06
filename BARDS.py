@@ -1,8 +1,8 @@
 import geopandas as gpd
-
 import src.BardProcessor as proc
 import src.algo.Select as select
 from src.obj.State import State
+import src.obj.Structs as structs
 
 import sys
 import time
@@ -80,6 +80,7 @@ def main():
 
     state = State(stateID, population, numDists, gdf)
 
+    structs.c_precinct_t.makeCStructs(state)
     startTime = time.time()
     gdf = alg.draw(state, gdf)
     print(f"Districts computed in {round(time.time() - startTime, 3)} seconds...")
