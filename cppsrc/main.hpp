@@ -10,3 +10,4 @@ std::string datapath(STATE_DATA_PATH);
 
 int main(int argc, char *argv[]);
 std::string getStatePath(std::string state, std::string year);
+State processGeoJson(std::string stateName, std::string filename, int districtCount);

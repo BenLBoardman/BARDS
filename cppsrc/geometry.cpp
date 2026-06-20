@@ -56,12 +56,18 @@ class Geometry : public UntypedGeometry {
     
     public:
         Geometry(){} //empty constructor
-        Geometry(T& owner) : owner(owner) {cached = false; }
+        Geometry(T& owner, std::string json);
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
         GeoPoint& getCentroid();
         
 };
+
+template <typename T>
+Geometry<T>::Geometry(T& owner, std::string json) : owner(owner) {
+    cached = false; 
+    //TODO - parse json string into a full Geometry object
+}
 
 template <typename T>
 GeoLine& Geometry<T>::addLine(double x1, double x2, double y1, double y2) {
