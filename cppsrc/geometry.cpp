@@ -27,7 +27,7 @@ class GeoLine {
     public:
         GeoLine(){}
         GeoLine(double x1, double x2, double y1, double y2);
-        GeoPoint& getMidpoint();
+        const GeoPoint& getMidpoint() const;
         double getLength();
         void addOwner(UntypedGeometry* ug);
         const std::set<UntypedGeometry*>& getOwners() const;
@@ -48,13 +48,14 @@ std::unordered_map<GeoPoint, GeoLine> lineRegister;
 template <typename T>
 class Geometry : public UntypedGeometry {
     private:
-        T owner;           
+        T& owner;           
         std::set<GeoLine*> lines;
         bool cached; //has this Geometry been changed since the last time the centroid or perimeter has been calculated
         double perimeter;
         GeoPoint centroid;
     
     public:
+        Geometry(){} //empty constructor
         Geometry(T& owner) : owner(owner) {cached = false; }
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
@@ -108,7 +109,7 @@ GeoLine::GeoLine(double x1, double x2, double y1, double y2) {
     length = std::sqrt(pow((x2-x1),2)+pow((y2-y1),2));
 }
 
-GeoPoint& GeoLine::getMidpoint() {
+const GeoPoint& GeoLine::getMidpoint() const {
     return midpoint;
 }
 
