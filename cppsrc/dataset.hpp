@@ -15,8 +15,10 @@ enum DataType {
     SEN, //senate
     LT_GOV, //lt. gov
     AG, //atty gen
-    CONG //house composite
+    CONG, //house composite
     //others as needed
+
+    ERR //generic error type
 };
 
 class DataSet {
@@ -25,13 +27,17 @@ class DataSet {
         const DataType type;
     
     public:
+        DataSet(unsigned year, DataType type) : year(year), type(type) {}
         const unsigned int getYr();
         const DataType getType();
+
+        bool operator<(const DataSet& other) const {
+            if(type != other.type) return type < other.type;
+            return year < other.year;
+        }
 };
 
-DataSet processSet(std::string json) {
-    //TODO - parse enough JSON to figure out if we are dealing with demographic or election data and call/return the appropriate constructor
-}
+DataSet processSet(std::string json);
 
 template <typename T>
 class DemographicData : public DataSet {
@@ -41,9 +47,7 @@ class DemographicData : public DataSet {
 
     public:
         DemographicData(std::string json);
-        DemographicData(unsigned int year, bool votingAge, DataType type) : votingAge(votingAge) {
-            this->year = year;
-            this->type = type;
+        DemographicData(unsigned int year, bool votingAge, DataType type) : DataSet(year, type), votingAge(votingAge) {
             total = 0; white = 0; hispanic = 0; black = 0; asian = 0; pacific = 0; native = 0; other = 0; mixed = 0;
         };
         void mergeData(DemographicData target);
@@ -56,9 +60,7 @@ class ElectionData : public DataSet {
         unsigned int dem, rep, total;
     public:
         ElectionData(std::string json);
-        ElectionData(unsigned int year, bool composite, DataType type) : composite(composite) {
-            this->year = year;
-            this->type = type;
+        ElectionData(unsigned int year, bool composite, DataType type) : DataSet(year, type), composite(composite) {
             dem = 0; rep = 0; total = 0;
         };
         void mergeData(ElectionData target);

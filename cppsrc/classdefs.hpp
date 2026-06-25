@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 
-#include "geometry.cpp"
+#include "geometry.hpp"
 #include "dataset.hpp"
 
 
@@ -16,16 +16,16 @@ class Precinct {
       int index;
       std::string id;
       std::string name;
-      State state;
-      District district;
+      State& state;
+      District* district;
       Geometry<Precinct> geo;
       std::set<DemographicData<Precinct>> demo;
       std::set<ElectionData<Precinct>> elex;
       
     public:
-      Precinct();
       Precinct(State& state, std::string json);
       int getPopulation();
+      void computeNeighbors();
       std::set<DemographicData<Precinct>> getDemo();
       std::set<ElectionData<Precinct>> getElex();
 };
@@ -36,20 +36,20 @@ class District {
     int population;
     int target;
     int id;
-    State state;
+    State& state;
     std::vector<Precinct*> precints;
-    Geometry<District> geo();  
+    Geometry<District> geo;  
     std::set<DemographicData<District>> demo;
     std::set<ElectionData<District>> elex;
 
   public:
-    District();
     District(State& state, int target);
 };
 
 class State {
   private:
     int population;
+    int districtCount;
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
     std::string name;
@@ -57,7 +57,6 @@ class State {
     std::set<ElectionData<State>> elex;
   
   public:
-    State();
     State(std::string name, int districtCount);
     void addPrecinct(Precinct& p);
     void finishProcessing();
