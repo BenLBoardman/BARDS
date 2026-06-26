@@ -1,9 +1,21 @@
 #include "classdefs.hpp"
 
 
-Precinct::Precinct(State& state, std::string json) : state(state), geo(*this) {
+Precinct::Precinct(State& state, const JsonValue& json) : state(state), geo(*this) {
     district = nullptr;
-    //todo - process JSON into a precinct data - includes calling geometry constructor and loading demographics/election data sets
+
+    //TODO - load metadata (id, name, etc)
+
+    //demographic data
+    std::set<std::string> datasets = state.getDatasetNames();
+    for(std::string dataName : datasets) {
+        if(state.getDataSet(dataName).isDemographic()) {
+            demo.emplace(static_cast<const DemographicData&>(state.getDataSet(dataName)), json["datasets"][dataName].asObject());
+        }
+        elex.emplace(static_cast<const ElectionData&>(state.getDataSet(dataName)), json["datasets"][dataName].asObject());
+    }
+
+    //Todo- load geometry
 }
 
 void Precinct::computeNeighbors() {
@@ -14,11 +26,11 @@ int Precinct::getPopulation() {
     return population;
 }
 
-std::set<DemographicData<Precinct>> Precinct::getDemo() {
+std::set<DemographicData> Precinct::getDemo() {
     return demo;
 }
 
-std::set<ElectionData<Precinct>> Precinct::getElex() {
+std::set<ElectionData> Precinct::getElex() {
     return elex;
 }
 
@@ -29,7 +41,6 @@ District::District(State& state, int target) : state(state), target(target), geo
 State::State(std::string name, int districtCount) : name(name), districtCount(districtCount) {
     districts = std::vector<District*>();
     population = 0;
-    //todo - initialize demographics & election data
 }
 
 void State::addPrecinct(Precinct& p) {
@@ -47,4 +58,27 @@ void State::finishProcessing() {
         districts.push_back(new District(*this, target + (rem != 0)));
         rem -= (rem != 0);
     }
+}
+
+void State::loadDatasets(const JsonValue& json) {
+    for(const auto& [key, set] : json.asObject()) {
+        datasetNames.insert(key);
+        if (isDemographic(set)) {
+            demo.emplace(key, DemographicData(key, set));
+        } else {
+            elex.emplace(key, ElectionData(key, set));
+        }
+    }
+}
+
+const DataSet& State::getDataSet(const std::string& name) const {
+    auto dSet = demo.find(name);
+    if(dSet != demo.end()) {
+        return dSet->second;
+    }
+    auto eSet = elex.find(name);
+    if(eSet != elex.end()) {
+        return eSet->second;
+    }
+    throw std::runtime_error("Selected data set "+name+" does not exist!");
 }

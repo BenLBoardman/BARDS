@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "json.hpp"
+
 class UntypedGeometry {
     public:
         virtual ~UntypedGeometry() = default;
@@ -58,7 +60,7 @@ class Geometry : public UntypedGeometry {
     
     public:
         Geometry(T& owner);
-        void loadGeometry(std::string json);
+        void loadGeometry(const JsonValue& json);
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
         GeoPoint& getCentroid();
@@ -71,7 +73,7 @@ Geometry<T>::Geometry(T& owner) : owner(owner) {
 }
 
 template <typename T>
-void Geometry<T>::loadGeometry(std::string json) {
+void Geometry<T>::loadGeometry(const JsonValue& json) {
     //TODO - parse json string into a full Geometry object
 }
 

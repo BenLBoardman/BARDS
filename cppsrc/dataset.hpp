@@ -1,5 +1,6 @@
 #include <string>
 
+#include "json.hpp"
 
 enum DataType {
     //demographic data types
@@ -10,6 +11,7 @@ enum DataType {
     CENS, //census population
 
     //election data types
+    COMP, //multi-election composite containing any number of elections
     PRES, //president
     GOV, //governor
     SEN, //senate
@@ -27,81 +29,47 @@ class DataSet {
         const DataType type;
     
     public:
+        DataSet() : year(0), type(ERR) {}
         DataSet(unsigned year, DataType type) : year(year), type(type) {}
         const unsigned int getYr();
         const DataType getType();
-
+        virtual bool isDemographic() const = 0;
         bool operator<(const DataSet& other) const {
             if(type != other.type) return type < other.type;
             return year < other.year;
         }
 };
 
-DataSet processSet(std::string json);
+bool isDemographic(const JsonValue& json);
 
-template <typename T>
 class DemographicData : public DataSet {
     private:
         bool votingAge;
         int total, white, hispanic, black, asian, pacific, native, other, mixed;
 
     public:
-        DemographicData(std::string json);
+        DemographicData(const DemographicData& schema, const JsonValue& json);
+        DemographicData(const std::string& name, const JsonValue& json);
         DemographicData(unsigned int year, bool votingAge, DataType type) : DataSet(year, type), votingAge(votingAge) {
             total = 0; white = 0; hispanic = 0; black = 0; asian = 0; pacific = 0; native = 0; other = 0; mixed = 0;
         };
         void mergeData(DemographicData target);
+        bool isDemographic() const override { return true; };
 };
 
-template <typename T>
 class ElectionData : public DataSet {
     private:
         bool composite; //if true, then yr is the start year and officeID is the end year.
         unsigned int dem, rep, total;
     public:
-        ElectionData(std::string json);
+        ElectionData(const ElectionData& schema, const JsonValue& json);
+        ElectionData(const std::string& name, const JsonValue& json);
         ElectionData(unsigned int year, bool composite, DataType type) : DataSet(year, type), composite(composite) {
             dem = 0; rep = 0; total = 0;
         };
         void mergeData(ElectionData target);
+        bool isDemographic() const override { return false; };
 
 };
 
-template <typename T>
-DemographicData<T>::DemographicData(std::string json) {
-    //TODO - process a JSON block into demographicData
-}
-
-template <typename T>
-ElectionData<T>::ElectionData(std::string json) {
-    //TODO - process a JSON block into ElectionData
-}
-
-//Merge a DemographicData's numbers into this one
-template <typename T>
-void DemographicData<T>::mergeData(DemographicData target) {
-    if(type != target.type || year != target.year) {
-        //can only merge data of the same type & year
-        return;
-    }
-    total += target.total;
-    white += target.white;
-    hispanic += target.hispanic;
-    black += target.black;
-    asian += target.asian;
-    pacific += target.pacific;
-    native += target.native;
-    other += target.other;
-    mixed += target.mixed;
-}
-
-template <typename T>
-void ElectionData<T>::mergeData(ElectionData target) {
-    if(type != target.type || year != target.year) {
-        //can only merge data of the same type & year
-        return;
-    }
-    total += target.total;
-    dem += target.dem;
-    rep += target.rep;
-}
+DataType parseDataType(const std::string& name, const JsonValue& json);

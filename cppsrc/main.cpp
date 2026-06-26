@@ -25,34 +25,14 @@ State processGeoJson(std::string stateName, std::string filename, int districtCo
         throw std::runtime_error("Error: Could not open file. Check to ensure that the state abbreviation and year are correct.");
     }
     
+    std::string fileContents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    JsonValue json = parseJson(fileContents);
 
-    // skip to the features array
-    std::string token;
-    while(file && token != "\"features\":") {
-        file >> token;
-    }
-    // skip the [
-    file >> token; // "["
+    state.loadDatasets(json["datasets"]);
 
-    // read one feature object at a time by tracking brace depth
-    std::string featureJson;
-    char c;
-    while(file.get(c)) {
-        if(c == '{') {
-            int depth = 1;
-            featureJson = "{";
-            while(file.get(c) && depth > 0) {
-                featureJson += c;
-                if(c == '{') depth++;
-                else if(c == '}') depth--;
-            }
-            if(depth == 0) {
-                Precinct* p = new Precinct(state, featureJson);
-                state.addPrecinct(*p);
-            }
-        } else if(c == ']') {
-            break; // end of features array
-        }
+    for(const JsonValue& feature : json["features"].asArray()) {
+        Precinct *p = new Precinct(state, feature);
+        state.addPrecinct(*p);
     }
     
     state.finishProcessing();

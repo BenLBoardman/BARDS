@@ -3,7 +3,7 @@
 
 #include "geometry.hpp"
 #include "dataset.hpp"
-
+#include "json.hpp"
 
 class Precinct;
 class District;
@@ -19,15 +19,15 @@ class Precinct {
       State& state;
       District* district;
       Geometry<Precinct> geo;
-      std::set<DemographicData<Precinct>> demo;
-      std::set<ElectionData<Precinct>> elex;
+      std::set<DemographicData> demo;
+      std::set<ElectionData> elex;
       
     public:
-      Precinct(State& state, std::string json);
+      Precinct(State& state, const JsonValue& json);
       int getPopulation();
       void computeNeighbors();
-      std::set<DemographicData<Precinct>> getDemo();
-      std::set<ElectionData<Precinct>> getElex();
+      std::set<DemographicData> getDemo();
+      std::set<ElectionData> getElex();
 };
 
 
@@ -39,8 +39,8 @@ class District {
     State& state;
     std::vector<Precinct*> precints;
     Geometry<District> geo;  
-    std::set<DemographicData<District>> demo;
-    std::set<ElectionData<District>> elex;
+    std::set<DemographicData> demo;
+    std::set<ElectionData> elex;
 
   public:
     District(State& state, int target);
@@ -53,11 +53,15 @@ class State {
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
     std::string name;
-    std::set<DemographicData<State>> demo;
-    std::set<ElectionData<State>> elex;
+    std::unordered_map<std::string, DemographicData> demo;
+    std::unordered_map<std::string, ElectionData> elex;
+    std::set<std::string> datasetNames;
   
   public:
     State(std::string name, int districtCount);
     void addPrecinct(Precinct& p);
     void finishProcessing();
+    void loadDatasets(const JsonValue& json);
+    const std::set<std::string>& getDatasetNames() const { return datasetNames; }
+    const DataSet& getDataSet(const std::string& name) const;
 };

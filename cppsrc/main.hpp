@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "classdefs.hpp"
+#include "json.hpp"
 
 #define DATAPATH_OUT "output/"
 
