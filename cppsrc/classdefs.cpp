@@ -39,6 +39,7 @@ void State::addPrecinct(Precinct& p) {
     //TODO - merge precinct demographics & election data into state
 }
 
+
 void State::finishProcessing() {
     int target = population / districtCount;
     int rem = population % districtCount;
