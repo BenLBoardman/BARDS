@@ -1,5 +1,11 @@
 build:
-	g++ cppsrc/*.cpp -o BARDS.exe
+	g++ cppsrc/*.cpp -o bin/BARDS.exe
 
 debug:
-	g++ *.cpp -g -o BARDS.exe
+	g++ *.cpp -g -o bin/BARDS.exe
+
+clean:
+	rm -r bin/*
+
+run:
+	./bin/BARDS.exe
