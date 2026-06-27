@@ -19,6 +19,8 @@ class Precinct {
       State& state;
       District* district;
       Geometry<Precinct> geo;
+      const DemographicData* canonicalDemo;
+      const ElectionData* canonicalElex;
       std::set<DemographicData> demo;
       std::set<ElectionData> elex;
       
@@ -38,7 +40,8 @@ class District {
     int id;
     State& state;
     std::vector<Precinct*> precints;
-    Geometry<District> geo;  
+    Geometry<District> geo;
+    std::string canonicalDemo;
     std::set<DemographicData> demo;
     std::set<ElectionData> elex;
 
@@ -53,6 +56,8 @@ class State {
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
     std::string name;
+    DemographicData* canonicalDemo;
+    ElectionData* canonicalElex;
     std::unordered_map<std::string, DemographicData> demo;
     std::unordered_map<std::string, ElectionData> elex;
     std::set<std::string> datasetNames;
@@ -64,4 +69,6 @@ class State {
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }
     const DataSet& getDataSet(const std::string& name) const;
+    const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
+    const ElectionData* getCanonicalElex() const { return canonicalElex; }
 };

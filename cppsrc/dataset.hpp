@@ -27,12 +27,14 @@ class DataSet {
     protected:
         const unsigned int year;
         const DataType type;
+        const std::string title;
     
     public:
         DataSet() : year(0), type(ERR) {}
-        DataSet(unsigned year, DataType type) : year(year), type(type) {}
-        const unsigned int getYr();
-        const DataType getType();
+        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type), title(title) {}
+        const unsigned int getYr() const { return year; }
+        const DataType getType() const { return type; }
+        const std::string getTitle() const { return title; }
         virtual bool isDemographic() const = 0;
         bool operator<(const DataSet& other) const {
             if(type != other.type) return type < other.type;
@@ -50,11 +52,9 @@ class DemographicData : public DataSet {
     public:
         DemographicData(const DemographicData& schema, const JsonValue& json);
         DemographicData(const std::string& name, const JsonValue& json);
-        DemographicData(unsigned int year, bool votingAge, DataType type) : DataSet(year, type), votingAge(votingAge) {
-            total = 0; white = 0; hispanic = 0; black = 0; asian = 0; pacific = 0; native = 0; other = 0; mixed = 0;
-        };
         void mergeData(DemographicData target);
         bool isDemographic() const override { return true; };
+        const int getTotal() const { return total; }
 };
 
 class ElectionData : public DataSet {
@@ -64,9 +64,6 @@ class ElectionData : public DataSet {
     public:
         ElectionData(const ElectionData& schema, const JsonValue& json);
         ElectionData(const std::string& name, const JsonValue& json);
-        ElectionData(unsigned int year, bool composite, DataType type) : DataSet(year, type), composite(composite) {
-            dem = 0; rep = 0; total = 0;
-        };
         void mergeData(ElectionData target);
         bool isDemographic() const override { return false; };
 
