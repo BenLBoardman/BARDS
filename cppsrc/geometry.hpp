@@ -1,4 +1,5 @@
 #include <set>
+#include <stack>
 #include <cmath>
 #include <unordered_map>
 #include <string>
@@ -19,12 +20,14 @@ class GeoPoint {
         double getX() const;
         double getY() const;
         bool operator==(const GeoPoint& other) const;
+        bool operator<(const GeoPoint& other) const;
 };
 
 
 class GeoLine {
     private:
-        GeoPoint p1, p2, midpoint;
+        const GeoPoint *p1, *p2;
+        GeoPoint midpoint;
         double length;
         std::set<UntypedGeometry*> owners;
     public:
@@ -34,6 +37,8 @@ class GeoLine {
         double getLength();
         void addOwner(UntypedGeometry* ug);
         const std::set<UntypedGeometry*>& getOwners() const;
+        const GeoPoint* getP1() const { return p1; }
+        const GeoPoint* getP2() const { return p2; }
 };
 
 template <>
@@ -48,6 +53,8 @@ struct std::hash<GeoPoint> {
 
 //should be private to geometry code
 extern std::unordered_map<GeoPoint, GeoLine> lineRegister;
+extern std::unordered_map<GeoPoint, std::set<GeoLine*>> endpointMap;
+extern std::set<GeoPoint> pointRegister;
 
 template <typename T>
 class Geometry : public UntypedGeometry {
@@ -55,8 +62,10 @@ class Geometry : public UntypedGeometry {
         T& owner;           
         std::set<GeoLine*> lines;
         bool cached; //has this Geometry been changed since the last time the centroid or perimeter has been calculated
+        bool contiguous;
         double perimeter;
         GeoPoint centroid;
+        void updateCached();
     
     public:
         Geometry(T& owner);
@@ -74,7 +83,24 @@ Geometry<T>::Geometry(T& owner) : owner(owner) {
 
 template <typename T>
 void Geometry<T>::loadGeometry(const JsonValue& json) {
-    //TODO - parse json string into a full Geometry object
+    if(json["type"].asString() == "Polygon") {
+        const JsonArray coordArray = json["coordinates"][0].asArray();
+        for(int i = 0; i < coordArray.size() - 1; i++) {
+            addLine(coordArray[i][0].asNumber(), coordArray[i+1][0].asNumber(), coordArray[i][1].asNumber(), coordArray[i+1][1].asNumber());
+        }
+        addLine(coordArray[coordArray.size() - 1][0].asNumber(), coordArray[0][0].asNumber(), coordArray[coordArray.size() - 1][1].asNumber(), coordArray[0][1].asNumber());
+    }
+    else if(json["type"].asString() == "MultiPolygon") {
+        const JsonArray polyArray = json["coordinates"][0].asArray();
+        for(int i = 0; i < polyArray.size(); i++) {
+            const JsonArray coordArray = polyArray[i].asArray();
+            for(int j = 0; j < coordArray.size()-1; j++) {
+                addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
+            }
+            addLine(coordArray[coordArray.size() - 1][0].asNumber(), coordArray[0][0].asNumber(), coordArray[coordArray.size() - 1][1].asNumber(), coordArray[0][1].asNumber());
+        }
+    }
+    updateCached();
 }
 
 template <typename T>
@@ -82,6 +108,8 @@ GeoLine& Geometry<T>::addLine(double x1, double x2, double y1, double y2) {
     GeoLine candidate(x1, x2, y1, y2);
     auto [it, inserted] = lineRegister.emplace(candidate.getMidpoint(), candidate);
     GeoLine& line = it->second;
+    endpointMap[*line.getP1()].insert(&line);
+    endpointMap[*line.getP2()].insert(&line);
     line.addOwner(this);
     lines.insert(&line);
     cached = false;
@@ -90,11 +118,33 @@ GeoLine& Geometry<T>::addLine(double x1, double x2, double y1, double y2) {
 
 template <typename T>
 GeoPoint& Geometry<T>::getCentroid() {
+    updateCached();
+    return centroid;
+}
+
+template <typename T>
+double Geometry<T>::getPerimeter() {
+    updateCached();
+    return perimeter;
+}
+
+/**
+ * Update Geometry perimeter length, centroid, and contiguity information
+ */
+template <typename T>
+void Geometry<T>::updateCached() {
     if(cached) {
-        return centroid;
+        return;
     }
     double x=0, y=0;
     perimeter = 0;
+    contiguous = false;
+
+    if(lines.empty()) {
+        cached = true;
+        return;
+    }
+
     for(GeoLine *l : lines) {
         x += (l->getMidpoint().getX()*l->getLength());
         y += (l->getMidpoint().getY()*l->getLength());
@@ -105,13 +155,26 @@ GeoPoint& Geometry<T>::getCentroid() {
         y /= perimeter;
     }
 
+    //TODO - contiguity algo
+    std::set<GeoLine*> discovered;
+    std::stack<GeoLine*> visitQueue;
+    visitQueue.push(*lines.begin());
+    while(!visitQueue.empty()) {
+        GeoLine* curr = visitQueue.top();
+        visitQueue.pop();
+        if (discovered.count(curr)) continue;
+        discovered.insert(curr);
+        // check both endpoints
+        for (const GeoPoint* endpt : {curr->getP1(), curr->getP2()}) {
+            for (GeoLine* ln : endpointMap[*endpt]) {
+                if (!discovered.count(ln)) {
+                    visitQueue.push(ln);
+                }
+            }
+        }
+    }
+    contiguous = discovered.size() == lines.size();
+
     cached = true;
     centroid = GeoPoint(x,y);
-    return centroid;
-}
-
-template <typename T>
-double Geometry<T>::getPerimeter() {
-    getCentroid(); //update perimeter and centroid if necessary
-    return perimeter;
 }
