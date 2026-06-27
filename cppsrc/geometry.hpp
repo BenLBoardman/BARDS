@@ -88,7 +88,6 @@ void Geometry<T>::loadGeometry(const JsonValue& json) {
         for(int i = 0; i < coordArray.size() - 1; i++) {
             addLine(coordArray[i][0].asNumber(), coordArray[i+1][0].asNumber(), coordArray[i][1].asNumber(), coordArray[i+1][1].asNumber());
         }
-        addLine(coordArray[coordArray.size() - 1][0].asNumber(), coordArray[0][0].asNumber(), coordArray[coordArray.size() - 1][1].asNumber(), coordArray[0][1].asNumber());
     }
     else if(json["type"].asString() == "MultiPolygon") {
         const JsonArray polyArray = json["coordinates"][0].asArray();
@@ -97,7 +96,6 @@ void Geometry<T>::loadGeometry(const JsonValue& json) {
             for(int j = 0; j < coordArray.size()-1; j++) {
                 addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
             }
-            addLine(coordArray[coordArray.size() - 1][0].asNumber(), coordArray[0][0].asNumber(), coordArray[coordArray.size() - 1][1].asNumber(), coordArray[0][1].asNumber());
         }
     }
     updateCached();

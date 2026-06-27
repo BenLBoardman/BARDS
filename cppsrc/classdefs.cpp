@@ -1,21 +1,26 @@
 #include "classdefs.hpp"
 
-
+#include <iostream>
 Precinct::Precinct(State& state, const JsonValue& json) : state(state), geo(*this) {
     district = nullptr;
+    const JsonValue& properties = json["properties"];
 
-    //TODO - load metadata (id, name, etc)
+    id = properties["id"].asString();
+    name = properties["name"].asString();
 
     //demographic data
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            demo.emplace(static_cast<const DemographicData&>(state.getDataSet(dataName)), json["datasets"][dataName].asObject());
+            demo.emplace(static_cast<const DemographicData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
         }
-        elex.emplace(static_cast<const ElectionData&>(state.getDataSet(dataName)), json["datasets"][dataName].asObject());
+        else {
+            elex.emplace(static_cast<const ElectionData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
+        }
     }
 
-    //Todo- load geometry
+    //geometry
+    geo.loadGeometry(json["geometry"]);
 }
 
 void Precinct::computeNeighbors() {
@@ -68,6 +73,7 @@ void State::loadDatasets(const JsonValue& json) {
         } else {
             elex.emplace(key, ElectionData(key, set));
         }
+        std::cout << "Found data set " << key << std::endl;
     }
 }
 

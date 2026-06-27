@@ -82,7 +82,7 @@ DataType parseDataType(const std::string& name, const JsonValue& json) {
         if (office == "comp")   return COMP;
         if (office == "lt_gov") return LT_GOV;
         if (office == "ag")     return AG;
-        if (office == "cong")   return CONG;
+        if (office == "con")   return CONG;
         throw std::runtime_error("Unknown election office: " + office);
     }
     // check VAP_NH before generic suffix parsing since it has two underscored parts
