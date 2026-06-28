@@ -36,6 +36,7 @@ class GeoLine {
         const GeoPoint& getMidpoint() const;
         double getLength();
         void addOwner(UntypedGeometry* ug);
+        void removeOwner(UntypedGeometry* ug);
         const std::set<UntypedGeometry*>& getOwners() const;
         const GeoPoint* getP1() const { return p1; }
         const GeoPoint* getP2() const { return p2; }
@@ -75,6 +76,8 @@ class Geometry : public UntypedGeometry {
         GeoPoint& getCentroid();
         const std::set<GeoLine*> getLines() const { return lines; }
         T& getOwner() { return owner; }
+        template <typename K>
+        void mergeGeometry(Geometry<K> other);
 };
 
 template <typename T>
@@ -177,4 +180,20 @@ void Geometry<T>::updateCached() {
 
     cached = true;
     centroid = GeoPoint(x,y);
+}
+
+template <typename T>
+template <typename K>
+void Geometry<T>::mergeGeometry(Geometry<K> other) {
+    for(GeoLine *l : other.getLines()) {
+        if(lines.find(l) != lines.end()) {
+            lines.erase(l);
+            l->removeOwner(this);
+        }
+        else {
+            lines.insert(l);
+            l->addOwner(this);
+        }
+    }
+    cached = false;
 }

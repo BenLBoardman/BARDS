@@ -25,6 +25,10 @@ void GeoLine::addOwner(UntypedGeometry *ug) {
     owners.emplace(ug);
 }
 
+void GeoLine::removeOwner(UntypedGeometry* ug) {
+    owners.erase(ug);
+}
+
 const std::set<UntypedGeometry*>& GeoLine::getOwners() const {
     return owners;
 }

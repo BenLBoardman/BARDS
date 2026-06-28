@@ -59,7 +59,11 @@ std::set<ElectionData> Precinct::getElex() {
 
 District::District(State& state, int target) : state(state), target(target), geo(*this) { population = 0; }
 
-
+void District::addPrecinct(Precinct* p) {
+    precints.push_back(p);
+    population += p->getPopulation();
+    geo.mergeGeometry(p->getGeo());
+}
 
 State::State(std::string abbr, std::string name, int districtCount) : abbr(abbr), name(name), districtCount(districtCount) {
     districts = std::vector<District*>();

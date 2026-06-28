@@ -28,6 +28,7 @@ class Precinct {
       Precinct(State& state, const JsonValue& json);
       int getPopulation();
       void computeNeighbors();
+      Geometry<Precinct> getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
       std::set<DemographicData> getDemo();
       std::set<ElectionData> getElex();
 };
@@ -47,6 +48,7 @@ class District {
 
   public:
     District(State& state, int target);
+    void addPrecinct(Precinct* p);
 };
 
 class State {
@@ -72,4 +74,5 @@ class State {
     DataSet& getDataSet(const std::string& name);
     const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }
+    District* getDistrict(int i) { return districts[i-1]; }
 };
