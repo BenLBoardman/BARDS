@@ -60,6 +60,11 @@ std::set<ElectionData> Precinct::getElex() {
 District::District(State& state, int target) : state(state), target(target), geo(*this) { population = 0; }
 
 void District::addPrecinct(Precinct* p) {
+    if(p->isAssigned()) {
+        std::cout << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
+        return;
+    }
+    p->setDistrict(this);
     precints.push_back(p);
     population += p->getPopulation();
     geo.mergeGeometry(p->getGeo());
