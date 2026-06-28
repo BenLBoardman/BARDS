@@ -1,3 +1,7 @@
+#ifndef PREC_DIST_STATE
+
+#define PREC_DIST_STATE
+
 #include <vector>
 #include <string>
 
@@ -14,8 +18,6 @@ class Precinct {
       int population;
       std::set<Precinct*> neighbors;
       int index;
-      std::string id;
-      std::string name;
       State& state;
       District* district;
       Geometry<Precinct> geo;
@@ -25,12 +27,16 @@ class Precinct {
       std::set<ElectionData> elex;
       
     public:
+      const std::string id;
+      const std::string name;
+
       Precinct(State& state, const JsonValue& json);
       int getPopulation();
       void computeNeighbors();
       void setDistrict(District *d) { district = d; }
       bool isAssigned() { return district != nullptr; }
       Geometry<Precinct> getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
+      std::set<Precinct*> getNeighbors() { return neighbors; }
       std::set<DemographicData> getDemo();
       std::set<ElectionData> getElex();
 };
@@ -40,17 +46,18 @@ class District {
   private:
     int population;
     int target;
-    int id;
     State& state;
-    std::vector<Precinct*> precints;
+    std::vector<Precinct*> precincts;
     Geometry<District> geo;
     std::string canonicalDemo;
     std::set<DemographicData> demo;
     std::set<ElectionData> elex;
 
   public:
-    District(State& state, int target);
+    const int id;
+    District(State& state, int id, int target);
     void addPrecinct(Precinct* p);
+    std::vector<Precinct*> getPrecincts(){ return precincts; }
 };
 
 class State {
@@ -59,8 +66,6 @@ class State {
     int districtCount;
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
-    std::string abbr;
-    std::string name;
     DemographicData* canonicalDemo;
     ElectionData* canonicalElex;
     std::unordered_map<std::string, DemographicData> demo;
@@ -68,6 +73,9 @@ class State {
     std::set<std::string> datasetNames;
   
   public:
+    const std::string abbr;
+    const std::string name;
+
     State(std::string abbr, std::string name, int districtCount);
     void addPrecinct(Precinct& p);
     void finishProcessing();
@@ -77,5 +85,9 @@ class State {
     const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }
     std::vector<Precinct*> getPrecincts() { return precincts; }
+    std::vector<District*> getDistricts() { return districts; }
     District* getDistrict(int i) { return districts[i-1]; }
 };
+
+
+#endif

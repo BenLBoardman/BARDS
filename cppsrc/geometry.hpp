@@ -1,3 +1,6 @@
+#ifndef GEOMETRY
+#define GEOMETRY
+
 #include <set>
 #include <stack>
 #include <cmath>
@@ -197,3 +200,6 @@ void Geometry<T>::mergeGeometry(Geometry<K> other) {
     }
     cached = false;
 }
+
+
+#endif
