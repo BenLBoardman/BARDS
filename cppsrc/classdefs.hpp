@@ -12,7 +12,7 @@ class State;
 class Precinct {
     private:
       int population;
-      std::vector<Precinct*> neighbors;
+      std::set<Precinct*> neighbors;
       int index;
       std::string id;
       std::string name;
@@ -68,7 +68,7 @@ class State {
     void finishProcessing();
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }
-    const DataSet& getDataSet(const std::string& name) const;
+    DataSet& getDataSet(const std::string& name);
     const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }
 };

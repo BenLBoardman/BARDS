@@ -12,10 +12,10 @@ Precinct::Precinct(State& state, const JsonValue& json) : state(state), geo(*thi
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            demo.emplace(static_cast<const DemographicData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
+            demo.emplace(static_cast<DemographicData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
         }
         else {
-            elex.emplace(static_cast<const ElectionData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
+            elex.emplace(static_cast<ElectionData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
         }
     }
 
@@ -34,7 +34,14 @@ Precinct::Precinct(State& state, const JsonValue& json) : state(state), geo(*thi
 }
 
 void Precinct::computeNeighbors() {
-    //TODO - use Geometry object & GeoLine to find neighbors of a precinct. Will likely involve functions to find neighbors for a Geometry.
+    const std::set<GeoLine*> boundaries = geo.getLines();
+    for(auto segment : boundaries) {
+        for(auto owner : segment->getOwners()) {
+            Geometry<Precinct>* neighbor = dynamic_cast<Geometry<Precinct>*>(owner);
+            if(owner == &geo || neighbor == nullptr) continue;
+            neighbors.insert(&neighbor->getOwner());
+        }
+    }
 }
 
 int Precinct::getPopulation() {
@@ -72,6 +79,11 @@ void State::finishProcessing() {
     for(int i = 0; i < districtCount; i++) {
         districts.push_back(new District(*this, target + (rem != 0)));
         rem -= (rem != 0);
+    }
+
+    std::cout << "Precincts loaded, begining neighbor computations..." << std::endl;
+    for(auto p : precincts) {
+        p->computeNeighbors();
     }
     std::cout << "Data loading complete. Calculated state population is " << population << "..." << std::endl;
 }
@@ -122,7 +134,7 @@ void State::loadDatasets(const JsonValue& json) {
     canonicalElex = &elex.at(elexKeys[choice - 1]);
 }
 
-const DataSet& State::getDataSet(const std::string& name) const {
+DataSet& State::getDataSet(const std::string& name) {
     auto dSet = demo.find(name);
     if(dSet != demo.end()) {
         return dSet->second;

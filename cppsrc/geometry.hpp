@@ -73,6 +73,8 @@ class Geometry : public UntypedGeometry {
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
         GeoPoint& getCentroid();
+        const std::set<GeoLine*> getLines() const { return lines; }
+        T& getOwner() { return owner; }
 };
 
 template <typename T>
@@ -153,7 +155,7 @@ void Geometry<T>::updateCached() {
         y /= perimeter;
     }
 
-    //TODO - contiguity algo
+    //continuity calcs
     std::set<GeoLine*> discovered;
     std::stack<GeoLine*> visitQueue;
     visitQueue.push(*lines.begin());

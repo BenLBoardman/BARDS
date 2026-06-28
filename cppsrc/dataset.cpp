@@ -4,7 +4,7 @@ bool isDemographic(const JsonValue& json) {
     return json["type"].asString() == "demographic";
 }
 
-DemographicData::DemographicData(const DemographicData& schema, const JsonValue& json) : DataSet(schema.year, schema.type, schema.title) {
+DemographicData::DemographicData(DemographicData& schema, const JsonValue& json) : DataSet(schema.year, schema.type, schema.title) {
     votingAge = schema.votingAge;
     total    = json["Total"].isNull()    ? 0 : json["Total"].asInt();
     white    = json["White"].isNull()    ? 0 : json["White"].asInt();
@@ -25,14 +25,18 @@ DemographicData::DemographicData(const DemographicData& schema, const JsonValue&
         other   = json["Other"].isNull()   ? 0 : json["Other"].asInt();
         mixed   = json["RemTwoOrMore"].isNull() ? 0 : json["RemTwoOrMore"].asInt();
     }
+
+    schema.mergeData(*this);
 }
 
 
-ElectionData::ElectionData(const ElectionData& schema, const JsonValue& json) : DataSet(schema.year, schema.type, schema.title) {
+ElectionData::ElectionData(ElectionData& schema, const JsonValue& json) : DataSet(schema.year, schema.type, schema.title) {
     composite = schema.composite;
     total = json["Total"].isNull() ? 0 : json["Total"].asInt();
     dem   = json["Dem"].isNull()   ? 0 : json["Dem"].asInt();
     rep   = json["Rep"].isNull()   ? 0 : json["Rep"].asInt();
+
+    schema.mergeData(*this);
 }
 
 DemographicData::DemographicData(const std::string& name, const JsonValue& json) : DataSet(json["year"].asInt(), parseDataType(name, json), json["title"].asString()) {

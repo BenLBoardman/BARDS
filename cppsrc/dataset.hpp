@@ -50,7 +50,7 @@ class DemographicData : public DataSet {
         int total, white, hispanic, black, asian, pacific, native, other, mixed;
 
     public:
-        DemographicData(const DemographicData& schema, const JsonValue& json);
+        DemographicData(DemographicData& schema, const JsonValue& json);
         DemographicData(const std::string& name, const JsonValue& json);
         void mergeData(DemographicData target);
         bool isDemographic() const override { return true; };
@@ -62,7 +62,7 @@ class ElectionData : public DataSet {
         bool composite; //if true, then yr is the start year and officeID is the end year.
         unsigned int dem, rep, total;
     public:
-        ElectionData(const ElectionData& schema, const JsonValue& json);
+        ElectionData(ElectionData& schema, const JsonValue& json);
         ElectionData(const std::string& name, const JsonValue& json);
         void mergeData(ElectionData target);
         bool isDemographic() const override { return false; };
