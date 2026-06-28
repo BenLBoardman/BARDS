@@ -7,7 +7,14 @@ std::string state = "NH";
 int main(int argc, char *argv[]) {
     std::string fpath = getStatePath(state);
     std::cout << "Retrieving data at " << fpath << "..." << std::endl;
-    processGeoJson(state, fpath);
+    State s = processGeoJson(state, fpath);
+
+    std::cout << "Drawing districts..." << std::endl;
+    NeighborDistrictTest m;
+    m.drawMap(s);
+
+    std::cout << "District drawing complete..." << std::endl;
+    outputDistricts(s);
 }
 
 std::string getStatePath(std::string state) {
@@ -16,9 +23,6 @@ std::string getStatePath(std::string state) {
 
 
 State processGeoJson(std::string stateAbbr, std::string filename) {
-    
-    
-
     std::ifstream file(filename);
     if(!file.is_open()) {
         throw std::runtime_error("Error: Could not open file. Check to ensure that the state abbreviation is correct.");
@@ -44,6 +48,7 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
 
     state.loadDatasets(json["datasets"]);
 
+    std::cout << "Loading precinct data..." << std::endl;
     for(const JsonValue& feature : json["features"].asArray()) {
         Precinct *p = new Precinct(state, feature);
         state.addPrecinct(*p);
@@ -51,4 +56,14 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
     
     state.finishProcessing();
     return state;
+}
+
+void outputDistricts(State s) {
+    std::ofstream out(DATAPATH_OUT+s.abbr + ".csv");
+    out << "GEOID20,District" << std::endl;
+    for(auto d : s.getDistricts()) {
+        for(auto p : d->getPrecincts()) {
+            out << p->id << "," << d->id << std::endl;
+        }
+    }
 }
