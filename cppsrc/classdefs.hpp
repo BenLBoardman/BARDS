@@ -55,6 +55,7 @@ class State {
     int districtCount;
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
+    std::string abbr;
     std::string name;
     DemographicData* canonicalDemo;
     ElectionData* canonicalElex;
@@ -63,7 +64,7 @@ class State {
     std::set<std::string> datasetNames;
   
   public:
-    State(std::string name, int districtCount);
+    State(std::string abbr, std::string name, int districtCount);
     void addPrecinct(Precinct& p);
     void finishProcessing();
     void loadDatasets(const JsonValue& json);

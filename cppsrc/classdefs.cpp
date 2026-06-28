@@ -60,7 +60,8 @@ std::set<ElectionData> Precinct::getElex() {
 District::District(State& state, int target) : state(state), target(target), geo(*this) { population = 0; }
 
 
-State::State(std::string name, int districtCount) : name(name), districtCount(districtCount) {
+
+State::State(std::string abbr, std::string name, int districtCount) : abbr(abbr), name(name), districtCount(districtCount) {
     districts = std::vector<District*>();
     population = 0;
 }
@@ -68,8 +69,6 @@ State::State(std::string name, int districtCount) : name(name), districtCount(di
 void State::addPrecinct(Precinct& p) {
     precincts.emplace_back(&p);
     population += p.getPopulation();
-    
-    //TODO - merge precinct demographics & election data into state
 }
 
 
