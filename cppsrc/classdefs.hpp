@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "geometry.hpp"
 #include "dataset.hpp"
@@ -45,7 +46,7 @@ class Precinct {
 class District {
   private:
     int population;
-    int target;
+    
     State& state;
     std::vector<Precinct*> precincts;
     Geometry<District> geo;
@@ -55,8 +56,11 @@ class District {
 
   public:
     const int id;
+    const int target;
     District(State& state, int id, int target);
-    void addPrecinct(Precinct* p);
+    bool addPrecinct(Precinct* p);
+    bool removePrecinct(Precinct* p);
+    int getPopulation(){ return population; }
     std::vector<Precinct*> getPrecincts(){ return precincts; }
 };
 

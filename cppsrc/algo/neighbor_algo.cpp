@@ -9,16 +9,17 @@ void NeighborDistrictTest::drawMap(State& s) {
     int count = 25;
     std::queue<Precinct*> queue;
     queue.push(origin);
-    while(!queue.empty() && count > 0) {
+    while(!queue.empty() && d->getPopulation() < d->target) {
         auto curr = queue.front();
         std::cout << "Processing precinct " << curr->name << "..." << std::endl;
         queue.pop();
-        count--;
-        d->addPrecinct(curr);
-        for(auto n : curr->getNeighbors()) {
-            std::cout << "\tFound neighbor " << n->name << "..." << std::endl;
-            if(!n->isAssigned())
-                queue.push(n);
+        if(d->addPrecinct(curr)) {
+            count--;
+            for(auto n : curr->getNeighbors()) {
+                std::cout << "\tFound neighbor " << n->name << "..." << std::endl;
+                if(!n->isAssigned())
+                    queue.push(n);
+            }
         }
     } 
 }

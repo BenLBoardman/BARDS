@@ -57,15 +57,29 @@ std::set<ElectionData> Precinct::getElex() {
 
 District::District(State& state, int id, int target) : state(state), id(id), target(target), geo(*this) { population = 0; }
 
-void District::addPrecinct(Precinct* p) {
+bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
         std::cout << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
-        return;
+        return false;
     }
     p->setDistrict(this);
     precincts.push_back(p);
     population += p->getPopulation();
     geo.mergeGeometry(p->getGeo());
+    return true;
+}
+
+bool District::removePrecinct(Precinct* p) {
+    auto it = std::find(precincts.begin(), precincts.end(), p);
+    if(it == precincts.end()) {
+        std::cout << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
+        return false;
+    }
+    precincts.erase(it);
+    p->setDistrict(nullptr);
+    population -= p->getPopulation();
+    geo.mergeGeometry(p->getGeo());
+    return true;
 }
 
 State::State(std::string abbr, std::string name, int districtCount) : abbr(abbr), name(name), districtCount(districtCount) {
