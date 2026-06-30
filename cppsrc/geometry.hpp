@@ -71,7 +71,7 @@ class Geometry : public UntypedGeometry {
         double area;
         GeoPoint centroid;
         void updateCached();
-        const std::vector<const GeoPoint*> getOrderedVertices();
+        std::vector<const GeoPoint*> getOrderedVertices();
     
     public:
         Geometry(T& owner);
@@ -197,9 +197,9 @@ void Geometry<T>::updateCached() {
         int n = ordered.size();
         for (int i = 0; i < n; i++) {
             const GeoPoint* curr = ordered[i];
-        const GeoPoint* next = ordered[(i + 1) % n];
+            const GeoPoint* next = ordered[(i + 1) % n];
             area += curr->getX() * next->getY() - next->getX() * curr->getY();
-    }
+        }
     area = std::abs(area) / 2.0;
     }
 
@@ -209,19 +209,29 @@ void Geometry<T>::updateCached() {
 
 
 template <typename T>
-const std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
+std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
     std::vector<const GeoPoint*> vertices;
     GeoLine* start = *(lines.begin());
     GeoLine* curr = start;
-    do {
-        vertices.push_back(curr->getP1());
-        const GeoPoint* nextPt = curr->getP2();
-        for(GeoLine* ln : endpointMap[*nextPt]) {
-            if(ln != curr)
-                curr = ln;
-        }
-    } while (curr != start);
+    const GeoPoint* arrivedAt = curr->getP1(); // arbitrary starting vertex
+    std::set<GeoLine*> visited;
 
+    do {
+        vertices.push_back(arrivedAt);
+        visited.insert(curr);
+        const GeoPoint* otherEnd = (curr->getP1() == arrivedAt) ? curr->getP2() : curr->getP1();
+
+        GeoLine* next = nullptr;
+        for (GeoLine* ln : endpointMap[*otherEnd]) {
+            if (ln != curr && !visited.count(ln)) {
+                next = ln;
+                break;
+            }
+        }
+        if (next == nullptr) break; // dead end - malformed boundary
+        curr = next;
+        arrivedAt = otherEnd;
+    } while (curr != start);
 
     return vertices;
 }
