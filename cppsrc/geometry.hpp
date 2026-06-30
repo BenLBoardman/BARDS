@@ -68,8 +68,10 @@ class Geometry : public UntypedGeometry {
         bool cached; //has this Geometry been changed since the last time the centroid or perimeter has been calculated
         bool contiguous;
         double perimeter;
+        double area;
         GeoPoint centroid;
         void updateCached();
+        const std::vector<const GeoPoint*> getOrderedVertices();
     
     public:
         Geometry(T& owner);
@@ -77,6 +79,7 @@ class Geometry : public UntypedGeometry {
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
         GeoPoint& getCentroid();
+        double getArea();
         const std::set<GeoLine*> getLines() const { return lines; }
         T& getOwner() { return owner; }
         template <typename K>
@@ -134,6 +137,12 @@ double Geometry<T>::getPerimeter() {
     return perimeter;
 }
 
+template <typename T>
+double Geometry<T>::getArea() {
+    updateCached();
+    return area;
+}
+
 /**
  * Update Geometry perimeter length, centroid, and contiguity information
  */
@@ -181,8 +190,40 @@ void Geometry<T>::updateCached() {
     }
     contiguous = discovered.size() == lines.size();
 
+    area = -1;
+    if(contiguous) { // area calcs
+        std::vector<const GeoPoint*> ordered = getOrderedVertices();
+        area = 0.0;
+        int n = ordered.size();
+        for (int i = 0; i < n; i++) {
+            const GeoPoint* curr = ordered[i];
+        const GeoPoint* next = ordered[(i + 1) % n];
+            area += curr->getX() * next->getY() - next->getX() * curr->getY();
+    }
+    area = std::abs(area) / 2.0;
+    }
+
     cached = true;
     centroid = GeoPoint(x,y);
+}
+
+
+template <typename T>
+const std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
+    std::vector<const GeoPoint*> vertices;
+    GeoLine* start = *(lines.begin());
+    GeoLine* curr = start;
+    do {
+        vertices.push_back(curr->getP1());
+        const GeoPoint* nextPt = curr->getP2();
+        for(GeoLine* ln : endpointMap[*nextPt]) {
+            if(ln != curr)
+                curr = ln;
+        }
+    } while (curr != start);
+
+
+    return vertices;
 }
 
 template <typename T>
