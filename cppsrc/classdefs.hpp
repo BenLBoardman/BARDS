@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <random>
 
 #include "geometry.hpp"
 #include "dataset.hpp"
@@ -82,6 +83,7 @@ class State {
 
     State(std::string abbr, std::string name, int districtCount);
     void addPrecinct(Precinct& p);
+    Precinct* getRandomPrecinct();
     void finishProcessing();
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }

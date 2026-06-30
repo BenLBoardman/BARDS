@@ -92,6 +92,11 @@ void State::addPrecinct(Precinct& p) {
     population += p.getPopulation();
 }
 
+Precinct* State::getRandomPrecinct() {
+    std::random_device rd;
+    std::uniform_int_distribution<int> rand(0, precincts.size());
+    return precincts[rand(rd)];
+}
 
 void State::finishProcessing() {
     int target = population / districtCount;
