@@ -37,7 +37,7 @@ void Precinct::computeNeighbors() {
         for(auto owner : segment->getOwners()) {
             Geometry<Precinct>* neighbor = dynamic_cast<Geometry<Precinct>*>(owner);
             if(owner == &geo || neighbor == nullptr) continue;
-            neighbors.insert(&neighbor->getOwner());
+            neighbors.push_back(&neighbor->getOwner());
         }
     }
 }
@@ -54,6 +54,14 @@ std::set<ElectionData> Precinct::getElex() {
     return elex;
 }
 
+Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
+    std::uniform_int_distribution<int> rand(0, neighbors.size());
+    Precinct *p;
+    do {
+        p = neighbors[rand(rd)];
+    } while(!requireUnassigned || !p->isAssigned());
+    return p;
+}
 
 District::District(State& state, int id, int target) : state(state), id(id), target(target), geo(*this) { population = 0; }
 
@@ -92,10 +100,13 @@ void State::addPrecinct(Precinct& p) {
     population += p.getPopulation();
 }
 
-Precinct* State::getRandomPrecinct() {
-    std::random_device rd;
+Precinct* State::getRandPrecinct(bool requireUnassigned) {
     std::uniform_int_distribution<int> rand(0, precincts.size());
-    return precincts[rand(rd)];
+    Precinct *p;
+    do {
+        p = precincts[rand(rd)];
+    } while(!requireUnassigned || !p->isAssigned());
+    return p;
 }
 
 void State::finishProcessing() {

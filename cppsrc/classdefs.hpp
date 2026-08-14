@@ -15,10 +15,13 @@ class Precinct;
 class District;
 class State;
 
+
+std::random_device rd;
+
 class Precinct {
     private:
       int population;
-      std::set<Precinct*> neighbors;
+      std::vector<Precinct*> neighbors;
       int index;
       State& state;
       District* district;
@@ -38,9 +41,10 @@ class Precinct {
       void setDistrict(District *d) { district = d; }
       bool isAssigned() { return district != nullptr; }
       Geometry<Precinct> getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
-      std::set<Precinct*> getNeighbors() { return neighbors; }
+      std::vector<Precinct*> getNeighbors() { return neighbors; }
       std::set<DemographicData> getDemo();
       std::set<ElectionData> getElex();
+      Precinct *getRandNeighbor(bool requireUnassigned);
 };
 
 
@@ -83,7 +87,7 @@ class State {
 
     State(std::string abbr, std::string name, int districtCount);
     void addPrecinct(Precinct& p);
-    Precinct* getRandomPrecinct();
+    Precinct* getRandPrecinct(bool requireUnassigned);
     void finishProcessing();
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }

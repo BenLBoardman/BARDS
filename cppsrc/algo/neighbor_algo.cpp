@@ -5,7 +5,7 @@
 
 void NeighborDistrictTest::drawMap(State& s) {
     District* d = s.getDistrict(1);
-    auto origin = s.getPrecincts()[0];
+    auto origin = s.getRandPrecinct(true);
     int count = 25;
     std::queue<Precinct*> queue;
     queue.push(origin);
