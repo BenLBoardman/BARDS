@@ -1,25 +1,27 @@
 # BARDS
+### Now in C++!
 **B**en's **A**lgorithmic **R**e**D**istrict **S**oftware
 
-A programming package for algorithmic redistricting.
 
-Data primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
+
+This is a programming package/library to support and use as a baseline for algorithmic redistricting.
+
+Data comes primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 ## States Supported
-BARDS currently has 2020 precinct data for Montana, Nebraska, Nevada, New Hampshire, New Jersey, Ohio, Oklahoma, Oregon, and Pennsylvania. 2010 data is planned but not included. This data is stored in `precinctShapefiles/2020
+BARDS currently has 2020 precinct data for New Hampshire. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
 
 ## Output
-Completed maps are placed in `output/<algo>/<year>/<state>/`. Custom output locations are a possible future feature, but are not actively planned at present.
+Completed maps are placed in `output/stateAbbr.csv`. Better output systems are planned for the future. custom output locations are a possible future feature, but are not actively planned at present.
 
 ## Installing and Running
-For full functionality, the following software is required:
-    - Python3
-    - GeoPandas 
-Cloning the repository contains all the necessary code otherwise.
+For full functionality, all that is needed is a C++ compiler and Make. Release builds may be available on github at a later time.
 
-To run BARDS, use the command python3 BARDS.py <algo> <state> <year> [other...]
+To compile, run `make` to build with the default parameters, or `make debug` to compile a version with extra functionality to use with a debugger. 
 
-Below is a more detailed explanation of required and optional arguments
+To run BARDS, use the command `make run`. Command line arguments are planned as a future feature.
+
+Below is a more detailed explanation of planned required and optional arguments:
 
 - `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
 - `state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
@@ -30,43 +32,25 @@ Below is a more detailed explanation of required and optional arguments
 - `--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
 
 ## Algorithms
-Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved.
-- SimpleBFS (Author: @BenLBoardman, Ver: 1.0, Since: 18 Aug 2025) - A simple BFS-based algorithm that creates concentric ring districts originating from a specific precinct. This algorithm is partisanship-blind and does not consider contiguity. It is intended to show how the BARDS infrastructure can be used to build an algorithm.
+Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved. As they are, they will be described here.
 
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
-NOTE: This list of features only reflects the features currently planned to support algorithms. more features will be added as these are completed.
-- processor - load data - COMPLETE
-- main app - basic runtime structure - COMPLETE
-- simple algorithm - add precincts to districts - COMPLETE
-- processor - precinct neighbor analysis - COMPLETE
-- processor - combine district geometries - COMPLETE
-- processor - output to geoJSON - COMPLETE
-- Remove unnecessary C code - COMPLETE
-- simple algorithm - random starting precinct - COMPLETE
-- main app - improvements & parameter checking - COMPLETE
-- ALL - expand documentation - COMPLETE
-- refactor - reorganize & improve data dirs/IO - COMPLETE
-- processor - dataset retrieval - COMPLETE
-- simple bfs algorithm - console messages - COMPLETE
-- processor - add an index value to maps by default - COMPLETE
-- data - get other state shapefiles - IN PROGRESS
-- processor - more dataset support - IN PROGRESS
-- Command line option to request multiple state data at once - NOT STARTED
-- data enhancements - store each district as an object - COMPLETE
-    - utility algorithms - determine if a district is contiguous - COMPLETE
-    - utility algorithms - calculate bias of a set of districts by various metrics - NOT STARTED
+<RELEASE 1 - INITIAL OPEN SOURCE>
+- All state data - not started
+- Compactness calculation - in progress
+- Command-line arguments - not started
+- Fully realized BFS-based algorithm - not started
+- Better error messages - not started
+- Well established documentation - not started
+- Population deviation calculation - not started
+<RELEASE 2 - CONVENIENCE FEATURES>
+- Partisan fairness calculation - not started
+- Report generation (file containing population balance, partisan fairness, compactness info) - not started
+
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:
-- contiguous simple bfs (BFS with extra code to improve contiguity)
-- multiple bfs (BFS from multiple starting points)
 
 ## Adding an algorithm
-In order to make use of the included utility function, a new algorithm file should contain a class with the following properties:
-- Implement the function draw(population: int, numDists: int, gdf: gpd.GeoDataFrame) that 
-- draw() should return the same GeoDataFrame, with a column "barddist" added (corresponding to the district assignment of precincts in the new map).
-
-Algorithms should be placed in src/algo/ and be imported into src/algo/Select.py and added to the if statement in selectAlgo(). If you're making a pull request, it is recommended to add a description of the algorithm under "Algorithms"
-
-A dataset can be retrieved by calling `processor.getDataSet()`. See that function definition and the `dataset` struct for details.
+To add an algorithm, follow the instructions in `algo/example_algorithm.info`.

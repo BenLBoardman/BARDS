@@ -2,10 +2,11 @@
 
 
 std::string state = "NH";
+std::string year = "2020";
 
 
 int main(int argc, char *argv[]) {
-    std::string fpath = getStatePath(state);
+    std::string fpath = getStatePath(state, year);
     std::cout << "Retrieving data at " << fpath << "..." << std::endl;
     State s = processGeoJson(state, fpath);
 
@@ -17,15 +18,15 @@ int main(int argc, char *argv[]) {
     outputDistricts(s);
 }
 
-std::string getStatePath(std::string state) {
-    return "data/"+state+".geojson";
+std::string getStatePath(std::string state, std::string year) {
+    return "data/"+year+"/"+state+".geojson";
 }
 
 
 State processGeoJson(std::string stateAbbr, std::string filename) {
     std::ifstream file(filename);
     if(!file.is_open()) {
-        throw std::runtime_error("Error: Could not open file. Check to ensure that the state abbreviation is correct.");
+        throw std::runtime_error("Error: Could not open file. Check to ensure that the state abbreviation and year are valid.");
     }
 
     std::string line, stateName, temp;
