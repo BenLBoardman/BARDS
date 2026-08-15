@@ -1,5 +1,7 @@
 #include "classdefs.hpp"
 
+std::random_device rd;
+
 #include <iostream>
 Precinct::Precinct(State& state, const JsonValue& json) : state(state), id(json["properties"]["id"].asString()), name(json["properties"]["name"].asString()), geo(*this) {
     district = nullptr;

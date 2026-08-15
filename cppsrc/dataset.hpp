@@ -1,5 +1,4 @@
-#ifndef DATASET
-#define DATASET
+#pragma once
 
 #include <string>
 
@@ -73,5 +72,3 @@ class ElectionData : public DataSet {
 };
 
 DataType parseDataType(const std::string& name, const JsonValue& json);
-
-#endif

@@ -13,6 +13,6 @@
 #define DEFAULT_CSV_PATH "data/default_dist_counts.csv"
 
 int main(int argc, char *argv[]);
-std::string getStatePath(std::string state);
+std::string getStatePath(std::string state, std::string year);
 State processGeoJson(std::string stateName, std::string filename);
 void outputDistricts(State s);

@@ -1,8 +1,11 @@
+CPP_DIRS := cppsrc/geoUtil/*.cpp cppsrc/*.cpp cppsrc/algo/*.cpp -I cppsrc -I cppsrc/geoUtil
+
+
 build:
-	g++ cppsrc/*.cpp cppsrc/algo/*.cpp -std=c++23 -o bin/BARDS.exe
+	g++ $(CPP_DIRS) -std=c++23 -o bin/BARDS.exe
 
 debug:
-	g++ cppsrc/*.cpp cppsrc/algo/*.cpp -g -std=c++23 -o bin/BARDS.exe
+	g++ $(CPP_DIRS) -g -std=c++23 -o bin/BARDS.exe
 	gdb ./bin/BARDS.exe
 
 clean:

@@ -1,6 +1,5 @@
-#ifndef PREC_DIST_STATE
+#pragma once
 
-#define PREC_DIST_STATE
 
 #include <vector>
 #include <string>
@@ -16,7 +15,7 @@ class District;
 class State;
 
 
-std::random_device rd;
+extern std::random_device rd;
 
 class Precinct {
     private:
@@ -98,6 +97,3 @@ class State {
     std::vector<District*> getDistricts() { return districts; }
     District* getDistrict(int i) { return districts[i-1]; }
 };
-
-
-#endif
