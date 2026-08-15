@@ -1,0 +1,26 @@
+/*
+TO IMPLEMENT YOUR OWN ALGORITHM USING THIS AS A TEMPLATE, FOLLOW THE FOLLOWING STEPS:
+
+
+
+1. Paste the code below (between the asterisks) into algorithm_definition.hpp. Rename ExampleAlgorithm to <YourAlgorithm>.
+******************************************************
+class ExampleAlgorithm : public DistrictAlgorithm {
+    public:
+        void drawMap(State& s);
+};
+******************************************************
+
+2. Paste the code below into a new file in the algo directory. The file should be called "your_algo.cpp". Again, rename ExampleAlgorithm to <YourAlgorithm>.
+#######################################################
+#include "algorithm_definition.hpp"
+
+
+void ExampleAlgorithm::drawMap(State& s) {
+    //IMPLEMENT PRIMARY ALGORITHM CODE HERE
+    //ADD AS MANY HELPERS AS NECESSARY IN THIS FILE
+    //TO COMPLY WITH C++ COMPILERS, THEY MUST BE DEFINED ABOVE THE START OF THIS FUNCTION
+}
+########################################################
+
+*/
