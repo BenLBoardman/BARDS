@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     State s = processGeoJson(state, fpath);
 
     std::cout << "Drawing districts..." << std::endl;
-    NeighborDistrictTest m;
+    MonoDistrictTest m;
     m.drawMap(s);
 
     std::cout << "District drawing complete..." << std::endl;

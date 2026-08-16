@@ -66,6 +66,9 @@ class District {
     bool removePrecinct(Precinct* p);
     int getPopulation(){ return population; }
     std::vector<Precinct*> getPrecincts(){ return precincts; }
+    bool isContiguous() {return geo.isContiguous(); }
+    double compactnessPolsbyPopper(){ return geo.getPolsbyPopper(); }
+    double compactnessReock(){ return geo.getReock(); }
 };
 
 class State {
@@ -96,4 +99,6 @@ class State {
     std::vector<Precinct*> getPrecincts() { return precincts; }
     std::vector<District*> getDistricts() { return districts; }
     District* getDistrict(int i) { return districts[i-1]; }
+    double compactnessPolsbyPopper();
+    double compactnessReock();
 };

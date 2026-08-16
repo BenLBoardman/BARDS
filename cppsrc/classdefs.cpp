@@ -107,7 +107,7 @@ Precinct* State::getRandPrecinct(bool requireUnassigned) {
     Precinct *p;
     do {
         p = precincts[rand(rd)];
-    } while(!requireUnassigned || !p->isAssigned());
+    } while(requireUnassigned && p->isAssigned());
     return p;
 }
 
@@ -183,3 +183,18 @@ DataSet& State::getDataSet(const std::string& name) {
     }
     throw std::runtime_error("Selected data set "+name+" does not exist!");
 }
+
+double State::compactnessPolsbyPopper() {
+    double tot = 0;
+    for(auto d : districts) {
+        tot += d->compactnessPolsbyPopper();
+    }
+    return tot / districtCount;
+}
+double State::compactnessReock() {
+    double tot = 0;
+    for(auto d : districts) {
+        tot += d->compactnessReock();
+    }
+    return tot / districtCount;
+    }

@@ -1,13 +1,15 @@
-#ifndef GEOMETRY
-#define GEOMETRY
+#pragma once
 
 #include <set>
 #include <stack>
 #include <cmath>
+#include <numbers>
 #include <unordered_map>
 #include <string>
+#include <iostream>
 
 #include "json.hpp"
+#include "circle.hpp"
 
 class UntypedGeometry {
     public:
@@ -69,8 +71,13 @@ class Geometry : public UntypedGeometry {
         bool contiguous;
         double perimeter;
         double area;
+        double polsbyPopper;
+        double reock;
         GeoPoint centroid;
         void updateCached();
+        Circle minimumBoundingCircle;
+        std::vector<const GeoPoint*> vertices;
+        Circle getMinimumBoundingCircle();
         std::vector<const GeoPoint*> getOrderedVertices();
     
     public:
@@ -80,10 +87,13 @@ class Geometry : public UntypedGeometry {
         double getPerimeter();
         GeoPoint& getCentroid();
         double getArea();
+        bool isContiguous();
         const std::set<GeoLine*> getLines() const { return lines; }
         T& getOwner() { return owner; }
         template <typename K>
         void mergeGeometry(Geometry<K> other);
+        double getPolsbyPopper();
+        double getReock();
 };
 
 template <typename T>
@@ -101,11 +111,14 @@ void Geometry<T>::loadGeometry(const JsonValue& json) {
         }
     }
     else if(json["type"].asString() == "MultiPolygon") {
-        const JsonArray polyArray = json["coordinates"][0].asArray();
-        for(int i = 0; i < polyArray.size(); i++) {
-            const JsonArray coordArray = polyArray[i].asArray();
-            for(int j = 0; j < coordArray.size()-1; j++) {
-                addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
+        const JsonArray multiArray = json["coordinates"].asArray();
+        for(int k = 0; k < multiArray.size(); k++) {
+            const JsonArray polyArray = multiArray[k].asArray();
+            for(int i = 0; i < polyArray.size(); i++) {
+                const JsonArray coordArray = polyArray[i].asArray();
+                for(int j = 0; j < coordArray.size()-1; j++) {
+                    addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
+                }
             }
         }
     }
@@ -143,6 +156,19 @@ double Geometry<T>::getArea() {
     return area;
 }
 
+template <typename T>
+bool Geometry<T>::isContiguous() {
+    updateCached();
+    return contiguous;
+}
+
+
+template <typename T>
+Circle Geometry<T>::getMinimumBoundingCircle() {
+    updateCached();
+    return minimumBoundingCircle;
+}
+
 /**
  * Update Geometry perimeter length, centroid, and contiguity information
  */
@@ -151,67 +177,25 @@ void Geometry<T>::updateCached() {
     if(cached) {
         return;
     }
+
+    //reset cached data
     double x=0, y=0;
     perimeter = 0;
     contiguous = false;
+    vertices.clear();
+    minimumBoundingCircle = Circle();
+    area = -1;
+    centroid = GeoPoint();
 
     if(lines.empty()) {
+        contiguous = true;
+        area = 0;
         cached = true;
         return;
     }
+ 
 
-    for(GeoLine *l : lines) {
-        x += (l->getMidpoint().getX()*l->getLength());
-        y += (l->getMidpoint().getY()*l->getLength());
-        perimeter += l->getLength();
-    }
-    if(perimeter > 0) {
-        x /= perimeter;
-        y /= perimeter;
-    }
-
-    //continuity calcs
-    std::set<GeoLine*> discovered;
-    std::stack<GeoLine*> visitQueue;
-    visitQueue.push(*lines.begin());
-    while(!visitQueue.empty()) {
-        GeoLine* curr = visitQueue.top();
-        visitQueue.pop();
-        if (discovered.count(curr)) continue;
-        discovered.insert(curr);
-        // check both endpoints
-        for (const GeoPoint* endpt : {curr->getP1(), curr->getP2()}) {
-            for (GeoLine* ln : endpointMap[*endpt]) {
-                if (!discovered.count(ln)) {
-                    visitQueue.push(ln);
-                }
-            }
-        }
-    }
-    contiguous = discovered.size() == lines.size();
-
-    area = -1;
-    if(contiguous) { // area calcs
-        std::vector<const GeoPoint*> ordered = getOrderedVertices();
-        area = 0.0;
-        int n = ordered.size();
-        for (int i = 0; i < n; i++) {
-            const GeoPoint* curr = ordered[i];
-            const GeoPoint* next = ordered[(i + 1) % n];
-            area += curr->getX() * next->getY() - next->getX() * curr->getY();
-        }
-    area = std::abs(area) / 2.0;
-    }
-
-    cached = true;
-    centroid = GeoPoint(x,y);
-}
-
-
-template <typename T>
-std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
-    std::vector<const GeoPoint*> vertices;
-    GeoLine* start = *(lines.begin());
+    GeoLine *start = *(lines.begin());
     GeoLine* curr = start;
     const GeoPoint* arrivedAt = curr->getP1(); // arbitrary starting vertex
     std::set<GeoLine*> visited;
@@ -221,18 +205,73 @@ std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
         visited.insert(curr);
         const GeoPoint* otherEnd = (curr->getP1() == arrivedAt) ? curr->getP2() : curr->getP1();
 
-        GeoLine* next = nullptr;
+        GeoLine* next = nullptr, *startNeighbor = nullptr;
         for (GeoLine* ln : endpointMap[*otherEnd]) {
-            if (ln != curr && !visited.count(ln)) {
+            if (ln == curr) continue;
+            if (ln == start) startNeighbor = ln; // remember but don't pick yet
+            else if (!visited.count(ln) && lines.count(ln)) {
                 next = ln;
                 break;
             }
+
         }
-        if (next == nullptr) break; // dead end - malformed boundary
+        if (next == nullptr) next = startNeighbor;
+        if (next == nullptr) break;// dead end - malformed boundary
         curr = next;
         arrivedAt = otherEnd;
     } while (curr != start);
 
+    for(GeoLine* l : lines) {
+//    if(!visited.count(l)) {
+//        std::cout << "Unreached line: (" 
+//            << l->getP1()->getX() << "," << l->getP1()->getY() << ") -> ("
+//            << l->getP2()->getX() << "," << l->getP2()->getY() << ")" << std::endl;
+//    }
+}
+    //contiguity calcs
+    contiguous = (vertices.size() == lines.size());
+
+    if(!contiguous) {
+        cached = true;
+        //TODO emit error/warning
+        return;
+    }
+
+    //perimeter & centroid calcs
+    for(GeoLine *l : lines) {
+        x += (l->getMidpoint().getX()*l->getLength());
+        y += (l->getMidpoint().getY()*l->getLength());
+        perimeter += l->getLength();
+    }
+    if(perimeter > 0) {
+        x /= perimeter;
+        y /= perimeter;
+    }
+    centroid = GeoPoint(x,y);
+
+    // area calcs
+        area = 0.0;
+        int n = vertices.size();
+        for (int i = 0; i < n; i++) {
+            const GeoPoint* currPt = vertices[i];
+            const GeoPoint* nextPt = vertices[(i + 1) % n];
+            area += currPt->getX() * nextPt->getY() - nextPt->getX() * currPt->getY();
+        }
+        area = std::abs(area) / 2.0;
+
+    minimumBoundingCircle = calcMinimumBoundingCircle(vertices);
+    
+
+    //compactness calcs
+    polsbyPopper = (4*std::numbers::pi*area) / std::pow(perimeter, 2);
+    reock = area/minimumBoundingCircle.getArea();
+    cached = true;
+}
+
+
+template <typename T>
+std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
+    updateCached();
     return vertices;
 }
 
@@ -240,7 +279,8 @@ template <typename T>
 template <typename K>
 void Geometry<T>::mergeGeometry(Geometry<K> other) {
     for(GeoLine *l : other.getLines()) {
-        if(lines.find(l) != lines.end()) {
+        auto it = lines.find(l);
+        if(it != lines.end()) {
             lines.erase(l);
             l->removeOwner(this);
         }
@@ -252,5 +292,14 @@ void Geometry<T>::mergeGeometry(Geometry<K> other) {
     cached = false;
 }
 
+template <typename T>
+double Geometry<T>::getPolsbyPopper() {
+    updateCached();
+    return polsbyPopper;
+}
 
-#endif
+template <typename T>
+double Geometry<T>::getReock() {
+    updateCached();
+    return reock;
+}

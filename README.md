@@ -38,7 +38,7 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
 <RELEASE 1 - INITIAL OPEN SOURCE>
 - All state data - not started
-- Compactness calculation - in progress
+- Compactness calculation - completed
 - Command-line arguments - not started
 - Fully realized BFS-based algorithm - not started
 - Better error messages - not started
@@ -46,7 +46,8 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Population deviation calculation - not started
 <RELEASE 2 - CONVENIENCE FEATURES>
 - Partisan fairness calculation - not started
-- Report generation (file containing population balance, partisan fairness, compactness info) - not started
+- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
+- Toggleable debug logging - not started
 
 
 ## Planned Algorithms
