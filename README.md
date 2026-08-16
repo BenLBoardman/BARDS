@@ -19,17 +19,19 @@ For full functionality, all that is needed is a C++ compiler and Make. Release b
 
 To compile, run `make` to build with the default parameters, or `make debug` to compile a version with extra functionality to use with a debugger. 
 
-To run BARDS, use the command `make run`. Command line arguments are planned as a future feature.
+To run BARDS, use the command `make run <state> <year> {optional args}`. Command line arguments are planned as a future feature.
 
 Below is a more detailed explanation of planned required and optional arguments:
 
-- `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
+-  NOT YET IMPLEMENTED `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
 - `state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
 - `year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
 **Optional Arguments**
-- `--o name`: Give the output geoJSON a specific file name.
-- `--d numDists`: Make the map with a specified number of districts instead of the default number for the state.
+- NOT YET IMPLEMENTED `name=<name>`: Give the output geoJSON a specific file name.
+- `districts=<numDists>`: Make the map with a specified number of districts instead of the default number for the state.
+- NOT YET IMPLEMENTED `debug=<file>`: Output all debug logging to a file with a given name and the `.log` extension. If this is instead `debug=true`, it will be outputted to `debug.log`.
+- NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
 
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved. As they are, they will be described here.
@@ -39,7 +41,8 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 <RELEASE 1 - INITIAL OPEN SOURCE>
 - All state data - not started
 - Compactness calculation - completed
-- Command-line arguments - not started
+- Command-line argument processor - completed
+- Algorithm selection system - not started
 - Fully realized BFS-based algorithm - not started
 - Better error messages - not started
 - Well established documentation - not started
