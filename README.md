@@ -47,11 +47,10 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Better error messages - not started
 - Well established documentation - not started
 - Population deviation calculation - not started
-<RELEASE 2 - CONVENIENCE FEATURES>
 - Partisan fairness calculation - not started
 - Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - Toggleable debug logging - not started
-
+<RELEASE 2 - Multithreaded Support>
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:

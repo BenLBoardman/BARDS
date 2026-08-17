@@ -20,6 +20,9 @@ enum DataType {
     LT_GOV, //lt. gov
     AG, //atty gen
     CONG, //house composite
+    TRE, //treasurer
+    SOS, //sec of state
+    AUD, //auditor
     //others as needed
 
     ERR //generic error type
@@ -29,11 +32,16 @@ class DataSet {
     protected:
         const unsigned int year;
         const DataType type;
-        const std::string title;
+        std::string title;
     
     public:
         DataSet() : year(0), type(ERR) {}
-        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type), title(title) {}
+        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type) {
+            if(type == CENS)
+                this->title = title + " (Census)";
+            else
+                this->title = title;
+        }
         const unsigned int getYr() const { return year; }
         const DataType getType() const { return type; }
         const std::string getTitle() const { return title; }

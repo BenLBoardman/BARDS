@@ -84,9 +84,12 @@ DataType parseDataType(const std::string& name, const JsonValue& json) {
         if (office == "gov")    return GOV;
         if (office == "sen")    return SEN;
         if (office == "comp")   return COMP;
-        if (office == "lt_gov") return LT_GOV;
+        if (office == "ltgov") return LT_GOV;
         if (office == "ag")     return AG;
-        if (office == "con")   return CONG;
+        if (office == "con")    return CONG;
+        if (office == "tre")    return TRE;
+        if (office == "sos")    return SOS;
+        if (office == "aud")    return AUD;
         throw std::runtime_error("Unknown election office: " + office);
     }
     // check VAP_NH before generic suffix parsing since it has two underscored parts
@@ -96,6 +99,6 @@ DataType parseDataType(const std::string& name, const JsonValue& json) {
     if (suffix == "CVAP") return CVAP;
     if (suffix == "VAP")  return VAP;
     if (suffix == "ACS")  return ACS;
-    if (suffix == "CENS") return CENS;
+    if (suffix == "CENS" || suffix == "ADJ") return CENS;
     throw std::runtime_error("Unknown dataset type: " + name);
 }
