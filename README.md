@@ -33,6 +33,9 @@ Below is a more detailed explanation of planned required and optional arguments:
 - NOT YET IMPLEMENTED `debug=<file>`: Output all debug logging to a file with a given name and the `.log` extension. If this is instead `debug=true`, it will be outputted to `debug.log`.
 - NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
 
+## Known Issues
+- There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
+
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved. As they are, they will be described here.
 

@@ -8,6 +8,7 @@ int dists = -1;
 
 int main(int argc, char *argv[]) {
 
+
     if(!handleArgs(argc, argv) || !validateArgs()) {
         return 1;
     }
@@ -79,7 +80,7 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
     std::ifstream defaultCount(DEFAULT_CSV_PATH);
     do {
         std::getline(defaultCount, line);
-    }while(line.find(stateAbbr) != 0 || defaultCount.eof());
+    }while(line.find(stateAbbr) != 0 || !defaultCount.eof());
     std::stringstream linestream(line);
     std::getline(linestream, temp, ',');
     std::getline(linestream, stateName, ',');
@@ -97,11 +98,14 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
     state.loadDatasets(json["datasets"]);
 
     std::cout << "Loading precinct data..." << std::endl;
+    int i = 0;
     for(const JsonValue& feature : json["features"].asArray()) {
         Precinct *p = new Precinct(state, feature);
         state.addPrecinct(*p);
+        i++;
     }
     
+    std::cout << "Data for " << i << " precincts loaded." << std::endl;
     state.finishProcessing();
     return state;
 }
