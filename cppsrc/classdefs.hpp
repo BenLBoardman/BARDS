@@ -39,7 +39,7 @@ class Precinct {
       void computeNeighbors();
       void setDistrict(District *d) { district = d; }
       bool isAssigned() { return district != nullptr; }
-      Geometry<Precinct> getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
+      Geometry<Precinct>& getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
       std::vector<Precinct*> getNeighbors() { return neighbors; }
       std::set<DemographicData> getDemo();
       std::set<ElectionData> getElex();

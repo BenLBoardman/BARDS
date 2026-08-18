@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 #include "json.hpp"
 #include "circle.hpp"
@@ -91,7 +92,7 @@ class Geometry : public UntypedGeometry {
         const std::set<GeoLine*> getLines() const { return lines; }
         T& getOwner() { return owner; }
         template <typename K>
-        void mergeGeometry(Geometry<K> other);
+        void mergeGeometry(Geometry<K>& other);
         double getPolsbyPopper();
         double getReock();
 };
@@ -105,9 +106,12 @@ Geometry<T>::Geometry(T& owner) : owner(owner) {
 template <typename T>
 void Geometry<T>::loadGeometry(const JsonValue& json) {
     if(json["type"].asString() == "Polygon") {
-        const JsonArray coordArray = json["coordinates"][0].asArray();
-        for(int i = 0; i < coordArray.size() - 1; i++) {
-            addLine(coordArray[i][0].asNumber(), coordArray[i+1][0].asNumber(), coordArray[i][1].asNumber(), coordArray[i+1][1].asNumber());
+        const JsonArray ringArray = json["coordinates"].asArray();
+        for(int i = 0; i < ringArray.size(); i++) {
+            const JsonArray coordArray = ringArray[i].asArray();
+            for(int j = 0; j < coordArray.size() - 1; j++) {
+                addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
+            }
         }
     }
     else if(json["type"].asString() == "MultiPolygon") {
@@ -121,6 +125,11 @@ void Geometry<T>::loadGeometry(const JsonValue& json) {
                 }
             }
         }
+        //std::cout << "Non-contiguous geometry parsing found " << multiArray.size() << " independent sub-geometries." << std::endl;
+    }
+    else {
+        std::cout << "Unrecognized geometry type!" << std::endl;
+        return;
     }
     updateCached();
 }
@@ -216,23 +225,19 @@ void Geometry<T>::updateCached() {
 
         }
         if (next == nullptr) next = startNeighbor;
-        if (next == nullptr) break;// dead end - malformed boundary
+        if (next == nullptr) {
+            break;// dead end - malformed boundary
+            std::cout << "Dead end reached in contiguity traversal, geometry is malformed." << std::endl;
+        } 
         curr = next;
         arrivedAt = otherEnd;
     } while (curr != start);
-
-    for(GeoLine* l : lines) {
-//    if(!visited.count(l)) {
-//        std::cout << "Unreached line: (" 
-//            << l->getP1()->getX() << "," << l->getP1()->getY() << ") -> ("
-//            << l->getP2()->getX() << "," << l->getP2()->getY() << ")" << std::endl;
-//    }
-}
     //contiguity calcs
     contiguous = (vertices.size() == lines.size());
 
     if(!contiguous) {
         cached = true;
+        std::cout << "Found " << visited.size() << " lines, expected " << lines.size() << std::endl;
         //TODO emit error/warning
         return;
     }
@@ -277,7 +282,7 @@ std::vector<const GeoPoint*> Geometry<T>::getOrderedVertices() {
 
 template <typename T>
 template <typename K>
-void Geometry<T>::mergeGeometry(Geometry<K> other) {
+void Geometry<T>::mergeGeometry(Geometry<K>& other) {
     for(GeoLine *l : other.getLines()) {
         auto it = lines.find(l);
         if(it != lines.end()) {
