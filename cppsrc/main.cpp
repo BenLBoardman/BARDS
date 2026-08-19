@@ -111,7 +111,7 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
 }
 
 void outputDistricts(State s) {
-    std::ofstream out(DATAPATH_OUT+s.abbr + ".csv");
+    std::ofstream out(DATAPATH_OUT+s.id + ".csv");
     out << "GEOID20,District" << std::endl;
     for(auto d : s.getDistricts()) {
         for(auto p : d->getPrecincts()) {

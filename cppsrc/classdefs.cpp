@@ -3,7 +3,8 @@
 std::random_device rd;
 
 #include <iostream>
-Precinct::Precinct(State& state, const JsonValue& json) : state(state), id(json["properties"]["id"].asString()), name(json["properties"]["name"].asString()), geo(*this) {
+
+Precinct::Precinct(State& state, const JsonValue& json) : state(state), ElectoralEntity(json["properties"]["id"].asString(), json["properties"]["name"].asString()), geo(*this) {
     district = nullptr;
     const JsonValue& properties = json["properties"];
 
@@ -44,18 +45,6 @@ void Precinct::computeNeighbors() {
     }
 }
 
-int Precinct::getPopulation() {
-    return population;
-}
-
-std::set<DemographicData> Precinct::getDemo() {
-    return demo;
-}
-
-std::set<ElectionData> Precinct::getElex() {
-    return elex;
-}
-
 Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
     std::uniform_int_distribution<int> rand(0, neighbors.size());
     Precinct *p;
@@ -65,7 +54,7 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
     return p;
 }
 
-District::District(State& state, int id, int target) : state(state), id(id), target(target), geo(*this) { population = 0; }
+District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop), geo(*this) { population = 0; }
 
 bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
@@ -92,7 +81,7 @@ bool District::removePrecinct(Precinct* p) {
     return true;
 }
 
-State::State(std::string abbr, std::string name, int districtCount) : abbr(abbr), name(name), districtCount(districtCount) {
+State::State(std::string id, std::string name, int districtCount) : ElectoralEntity(id, name), districtCount(districtCount) {
     districts = std::vector<District*>();
     population = 0;
 }
@@ -115,7 +104,7 @@ void State::finishProcessing() {
     int target = population / districtCount;
     int rem = population % districtCount;
     for(int i = 0; i < districtCount; i++) {
-        districts.push_back(new District(*this, i+1, target + (rem != 0)));
+        districts.push_back(new District(*this, std::to_string(i+1), target + (rem != 0)));
         rem -= (rem != 0);
     }
 
