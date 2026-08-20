@@ -34,7 +34,7 @@ Below is a more detailed explanation of planned required and optional arguments:
 - NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
 
 ## Known Issues
-- There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
+- (Known Issue 1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
 
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved. As they are, they will be described here.
@@ -42,9 +42,10 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
 <RELEASE 1 - INITIAL OPEN SOURCE>
-- All state data - not started
+- All state data - in progress
 - Compactness calculation - completed
 - Command-line argument processor - completed
+- More command line arguments - not started
 - Algorithm selection system - not started
 - Fully realized BFS-based algorithm - not started
 - Better error messages - not started
@@ -53,7 +54,10 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Partisan fairness calculation - not started
 - Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - Toggleable debug logging - not started
-<RELEASE 2 - Multithreaded Support>
+<FUTURE RELEASES>
+- Multithreaded support - not started
+- Multithreaded precinct load - not started
+- Better contiguity checks (fixing Known Issue 1) - not started
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:

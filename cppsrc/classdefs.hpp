@@ -25,15 +25,19 @@ class ElectoralEntity {
     const ElectionData* canonicalElex;
     std::set<DemographicData> demo;
     std::set<ElectionData> elex;
+    Geometry geo;
 
   public:
     virtual ~ElectoralEntity() = default;
-    ElectoralEntity(std::string id, std::string name) : name(name), id(id) {};
+    ElectoralEntity(std::string id, std::string name) : name(name), id(id), geo(*this) {};
     const std::string id;
     const std::string name;
     const std::set<DemographicData> &getDemo() const { return demo; };
     const std::set<ElectionData> &getElex() const { return elex; };
+    const ElectionData* getCanonicalElex() const { return canonicalElex; }
+    const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
     int getPopulation() { return population; };
+    Geometry& getGeo() { return geo; }
 };
 
 class Precinct : public ElectoralEntity {
@@ -41,16 +45,12 @@ class Precinct : public ElectoralEntity {
       std::vector<Precinct*> neighbors;
       State& state;
       District* district;
-      Geometry<Precinct> geo;
-      
       
     public:
-
       Precinct(State& state, const JsonValue& json);
       void computeNeighbors();
       void setDistrict(District *d) { district = d; }
       bool isAssigned() { return district != nullptr; }
-      Geometry<Precinct>& getGeo() { return geo; } //return by value since we should never be modifying precinct geometry once initialized
       std::vector<Precinct*> getNeighbors() { return neighbors; }
       Precinct *getRandNeighbor(bool requireUnassigned);
 };
@@ -60,7 +60,6 @@ class District : public ElectoralEntity {
   private:    
     State& state;
     std::vector<Precinct*> precincts;
-    Geometry<District> geo;
 
 
   public:

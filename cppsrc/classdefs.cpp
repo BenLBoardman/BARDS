@@ -4,7 +4,7 @@ std::random_device rd;
 
 #include <iostream>
 
-Precinct::Precinct(State& state, const JsonValue& json) : state(state), ElectoralEntity(json["properties"]["id"].asString(), json["properties"]["name"].asString()), geo(*this) {
+Precinct::Precinct(State& state, const JsonValue& json) : state(state), ElectoralEntity(json["properties"]["id"].asString(), json["properties"]["name"].asString()) {
     district = nullptr;
     const JsonValue& properties = json["properties"];
 
@@ -38,9 +38,9 @@ void Precinct::computeNeighbors() {
     const std::set<GeoLine*> boundaries = geo.getLines();
     for(auto segment : boundaries) {
         for(auto owner : segment->getOwners()) {
-            Geometry<Precinct>* neighbor = dynamic_cast<Geometry<Precinct>*>(owner);
+            Geometry* neighbor = dynamic_cast<Geometry*>(owner);
             if(owner == &geo || neighbor == nullptr) continue;
-            neighbors.push_back(&neighbor->getOwner());
+            neighbors.push_back(dynamic_cast<Precinct *>(&neighbor->getOwner()));
         }
     }
 }
@@ -54,7 +54,7 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
     return p;
 }
 
-District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop), geo(*this) { population = 0; }
+District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { population = 0; }
 
 bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
