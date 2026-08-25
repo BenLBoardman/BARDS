@@ -29,6 +29,10 @@ DemographicData::DemographicData(DemographicData& schema, const JsonValue& json)
     schema.mergeData(*this);
 }
 
+DemographicData::DemographicData(DemographicData& schema) : DataSet(schema.year, schema.type, schema.title) {
+    votingAge = schema.votingAge;
+}
+
 
 ElectionData::ElectionData(ElectionData& schema, const JsonValue& json) : DataSet(schema.year, schema.type, schema.title) {
     composite = schema.composite;
@@ -37,6 +41,11 @@ ElectionData::ElectionData(ElectionData& schema, const JsonValue& json) : DataSe
     rep   = json["Rep"].isNull()   ? 0 : json["Rep"].asInt();
 
     schema.mergeData(*this);
+}
+
+ElectionData::ElectionData(ElectionData& schema) : DataSet(schema.year, schema.type, schema.title) {
+    composite = schema.composite;
+
 }
 
 DemographicData::DemographicData(const std::string& name, const JsonValue& json) : DataSet(json["year"].asInt(), parseDataType(name, json), json["title"].asString()) {

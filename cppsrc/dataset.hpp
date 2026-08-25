@@ -61,6 +61,7 @@ class DemographicData : public DataSet {
 
     public:
         DemographicData(DemographicData& schema, const JsonValue& json);
+        DemographicData(DemographicData& schema);
         DemographicData(const std::string& name, const JsonValue& json);
         void mergeData(DemographicData target);
         bool isDemographic() const override { return true; };
@@ -73,6 +74,7 @@ class ElectionData : public DataSet {
         unsigned int dem, rep, total;
     public:
         ElectionData(ElectionData& schema, const JsonValue& json);
+        DemographicData(DemographicData& schema);
         ElectionData(const std::string& name, const JsonValue& json);
         void mergeData(ElectionData target);
         bool isDemographic() const override { return false; };

@@ -56,6 +56,24 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
 
 District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
     population = 0;
+    //generate empty data sets
+    for(std::string dataName : state.getDatasetNames) {
+        if(state.getDataSet(dataName).isDemographic()) {
+            demo.emplace(static_cast<DemographicData&>(state.getDataSet(dataName)));
+        }
+        else {
+            elex.emplace(static_cast<ElectionData&>(state.getDataSet(dataName)));
+        }
+    }
+    auto d = demo.find(*state.getCanonicalDemo());
+    if (d != demo.end()) {
+        canonicalDemo = &(*d);
+        population = canonicalDemo->getTotal();
+    }
+    auto e = elex.find(*state.getCanonicalElex());
+    if (e != elex.end()) {
+        canonicalElex = &(*e);
+    }
  }
 
 bool District::addPrecinct(Precinct* p) {
