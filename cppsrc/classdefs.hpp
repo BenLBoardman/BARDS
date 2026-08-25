@@ -51,6 +51,7 @@ class District : public ElectoralEntity {
     bool isContiguous() {return geo.isContiguous(); }
     double compactnessPolsbyPopper(){ return geo.getPolsbyPopper(); }
     double compactnessReock(){ return geo.getReock(); }
+    double popDeviation() { return 1.0*(population-targetPop)/targetPop; }
 };
 
 class State : public ElectoralEntity {
@@ -76,4 +77,6 @@ class State : public ElectoralEntity {
     District* getDistrict(int i) { return districts[i-1]; }
     double compactnessPolsbyPopper();
     double compactnessReock();
+    bool isComplete();
+    double popDeviation();
 };

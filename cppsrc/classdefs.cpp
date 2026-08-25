@@ -54,7 +54,9 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
     return p;
 }
 
-District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { population = 0; }
+District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
+    population = 0;
+ }
 
 bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
@@ -65,6 +67,7 @@ bool District::addPrecinct(Precinct* p) {
     precincts.push_back(p);
     population += p->getPopulation();
     geo.mergeGeometry(p->getGeo());
+
     return true;
 }
 
@@ -186,4 +189,24 @@ double State::compactnessReock() {
         tot += d->compactnessReock();
     }
     return tot / districtCount;
+}
+
+bool State::isComplete() {
+    for(auto p : precincts) {
+        if(!p->isAssigned())
+            return false;
     }
+    return true;
+}
+
+double State::popDeviation() {
+    double smallest = -1, largest = -1;
+    double avgTarget = 1.0*population / districts.size();
+    for(auto d : districts) {
+        if(smallest == -1 || d->getPopulation() < smallest)
+            smallest = d->getPopulation();
+        if(largest == -1 || d->getPopulation() > largest)
+            largest = d->getPopulation();
+    }
+    return (largest - smallest)/avgTarget;
+}
