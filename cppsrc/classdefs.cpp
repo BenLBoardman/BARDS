@@ -13,13 +13,13 @@ Precinct::Precinct(State& state, const JsonValue& json) : state(state), Electora
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            auto s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
+            auto& s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
             demo.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
             auto d = demo.at(s.name);
             s.mergeData(d);
         }
         else {
-            auto s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
+            auto& s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
             elex.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
             auto e = elex.at(s.name);
             s.mergeData(e);
@@ -62,11 +62,11 @@ District::District(State& state, std::string id, int targetPop) : state(state), 
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            auto s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
+            auto& s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
             demo.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s));
         }
         else {
-            auto s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
+            auto& s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
             elex.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s));
         }
     }
@@ -88,6 +88,12 @@ bool District::addPrecinct(Precinct* p) {
     precincts.push_back(p);
     population += p->getPopulation();
     geo.mergeGeometry(p->getGeo());
+    for(auto& [key, d] : p->getDemo()) {
+        demo.at(key).mergeData(d);
+    }
+    for(auto& [key, e] : p->getElex()) {
+        elex.at(key).mergeData(e);
+    }
 
     return true;
 }
@@ -102,6 +108,12 @@ bool District::removePrecinct(Precinct* p) {
     p->setDistrict(nullptr);
     population -= p->getPopulation();
     geo.mergeGeometry(p->getGeo());
+    for(auto& [key, d] : p->getDemo()) {
+        demo.at(key).subtractData(d);
+    }
+    for(auto& [key, e] : p->getElex()) {
+        elex.at(key).subtractData(e);
+    }
     return true;
 }
 

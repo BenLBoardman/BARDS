@@ -34,7 +34,7 @@ Below is a more detailed explanation of planned required and optional arguments:
 - NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
 
 ## Known Issues
-- (Known Issue 1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
+- (KI.1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
 
 ## Algorithms
 Currently, BARDS supports one algorithm. Algorithms may be added periodically as pull requests containing new ones are approved. As they are, they will be described here.
@@ -42,22 +42,23 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
 <RELEASE 1 - INITIAL OPEN SOURCE>
-- All state data - in progress
+- District-level demographic/electoral data - completed
+- Population deviation calculation - completed
 - Compactness calculation - completed
 - Command-line argument processor - completed
+- All state data - in progress
+- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - More command line arguments - not started
 - Algorithm selection system - not started
 - Fully realized BFS-based algorithm - not started
 - Better error messages - not started
 - Well established documentation - not started
-- Population deviation calculation - completed
 - Partisan fairness calculation - not started
-- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - Toggleable debug logging - not started
 <FUTURE RELEASES>
 - Multithreaded support - not started
 - Multithreaded precinct load - not started
-- Better contiguity checks (fixing Known Issue 1) - not started
+- Better contiguity checks (fixing KI.1) - not started
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:

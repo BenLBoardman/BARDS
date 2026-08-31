@@ -22,8 +22,8 @@ class ElectoralEntity {
     ElectoralEntity(std::string id, std::string name) : name(name), id(id), geo(*this) {};
     const std::string id;
     const std::string name;
-    std::unordered_map<std::string, DemographicData> getDemo() { return demo; }
-    std::unordered_map<std::string, ElectionData> getElex() { return elex; }
+    std::unordered_map<std::string, DemographicData>& getDemo() { return demo; }
+    std::unordered_map<std::string, ElectionData>& getElex() { return elex; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }
     const DemographicData* getCanonicalDemo() const { return canonicalDemo; }
     int getPopulation() { return population; };
