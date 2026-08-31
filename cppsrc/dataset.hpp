@@ -30,17 +30,20 @@ enum DataType {
 
 class DataSet {
     protected:
-        const unsigned int year;
-        const DataType type;
         std::string title;
+        unsigned int total;
     
     public:
+        const std::string name;
+        const unsigned int year;
+        const DataType type;
+
         DataSet() : year(0), type(ERR) {}
-        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type) {
+        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type), title(title), name(title) {
             if(type == CENS)
-                this->title = title + " (Census)";
+                this->title = name + " (Census)";
             else
-                this->title = title;
+                this->title = name;
         }
         const unsigned int getYr() const { return year; }
         const DataType getType() const { return type; }
@@ -50,6 +53,10 @@ class DataSet {
             if(type != other.type) return type < other.type;
             return year < other.year;
         }
+        bool operator==(const DataSet& other) const {
+            return type==other.type && year==other.year;
+        }
+        const int getTotal() const { return total; }
 };
 
 bool isDemographic(const JsonValue& json);
@@ -57,26 +64,28 @@ bool isDemographic(const JsonValue& json);
 class DemographicData : public DataSet {
     private:
         bool votingAge;
-        int total, white, hispanic, black, asian, pacific, native, other, mixed;
+        unsigned int white, hispanic, black, asian, pacific, native, other, mixed;
 
     public:
-        DemographicData(DemographicData& schema, const JsonValue& json);
-        DemographicData(DemographicData& schema);
+        DemographicData(const DemographicData& schema, const JsonValue& json);
+        DemographicData(const DemographicData& schema);
         DemographicData(const std::string& name, const JsonValue& json);
-        void mergeData(DemographicData target);
+        void mergeData(const DemographicData& target);
         bool isDemographic() const override { return true; };
-        const int getTotal() const { return total; }
+        const int getWhite() const { return white; }
+        const int getHispanic() const { return hispanic; }
+        //todo more getters
 };
 
 class ElectionData : public DataSet {
     private:
         bool composite; //if true, then yr is the start year and officeID is the end year.
-        unsigned int dem, rep, total;
+        unsigned int dem, rep, other;
     public:
-        ElectionData(ElectionData& schema, const JsonValue& json);
-        DemographicData(DemographicData& schema);
+        ElectionData(const ElectionData& schema, const JsonValue& json);
+        ElectionData(const ElectionData& schema);
         ElectionData(const std::string& name, const JsonValue& json);
-        void mergeData(ElectionData target);
+        void mergeData(const ElectionData& target);
         bool isDemographic() const override { return false; };
 
 };

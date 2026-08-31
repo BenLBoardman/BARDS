@@ -13,22 +13,25 @@ Precinct::Precinct(State& state, const JsonValue& json) : state(state), Electora
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            demo.emplace(static_cast<DemographicData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
+            auto s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
+            demo.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
+            auto d = demo.at(s.name);
+            s.mergeData(d);
         }
         else {
-            elex.emplace(static_cast<ElectionData&>(state.getDataSet(dataName)), properties["datasets"][dataName].asObject());
+            auto s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
+            elex.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
+            auto e = elex.at(s.name);
+            s.mergeData(e);
         }
     }
 
-    auto d = demo.find(*state.getCanonicalDemo());
-    if (d != demo.end()) {
-        canonicalDemo = &(*d);
-        population = canonicalDemo->getTotal();
-    }
-    auto e = elex.find(*state.getCanonicalElex());
-    if (e != elex.end()) {
-        canonicalElex = &(*e);
-    }
+    auto d = &demo.at(state.getCanonicalDemo()->name);
+    canonicalDemo = d;
+    population = canonicalDemo->getTotal();
+
+    auto e = &elex.at(state.getCanonicalElex()->name);
+    canonicalElex = e;
 
     //geometry
     geo.loadGeometry(json["geometry"]);
@@ -38,15 +41,14 @@ void Precinct::computeNeighbors() {
     const std::set<GeoLine*> boundaries = geo.getLines();
     for(auto segment : boundaries) {
         for(auto owner : segment->getOwners()) {
-            Geometry* neighbor = dynamic_cast<Geometry*>(owner);
-            if(owner == &geo || neighbor == nullptr) continue;
-            neighbors.push_back(dynamic_cast<Precinct *>(&neighbor->getOwner()));
+            if(owner == &geo || owner == nullptr || !owner->getOwner().isPrecinct) continue;
+            neighbors.push_back(dynamic_cast<Precinct *>(&owner->getOwner()));
         }
     }
 }
 
 Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
-    std::uniform_int_distribution<int> rand(0, neighbors.size());
+    std::uniform_int_distribution<int> rand(0, neighbors.size()-1);
     Precinct *p;
     do {
         p = neighbors[rand(rd)];
@@ -57,24 +59,25 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
 District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
     population = 0;
     //generate empty data sets
-    for(std::string dataName : state.getDatasetNames) {
+    std::set<std::string> datasets = state.getDatasetNames();
+    for(std::string dataName : datasets) {
         if(state.getDataSet(dataName).isDemographic()) {
-            demo.emplace(static_cast<DemographicData&>(state.getDataSet(dataName)));
+            auto s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
+            demo.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s));
         }
         else {
-            elex.emplace(static_cast<ElectionData&>(state.getDataSet(dataName)));
+            auto s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
+            elex.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s));
         }
     }
-    auto d = demo.find(*state.getCanonicalDemo());
-    if (d != demo.end()) {
-        canonicalDemo = &(*d);
-        population = canonicalDemo->getTotal();
-    }
-    auto e = elex.find(*state.getCanonicalElex());
-    if (e != elex.end()) {
-        canonicalElex = &(*e);
-    }
- }
+
+    auto d = &demo.at(state.getCanonicalDemo()->name);
+    canonicalDemo = d;
+    population = canonicalDemo->getTotal();
+
+    auto e = &elex.at(state.getCanonicalElex()->name);
+    canonicalElex = e;
+}
 
 bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
@@ -113,7 +116,7 @@ void State::addPrecinct(Precinct& p) {
 }
 
 Precinct* State::getRandPrecinct(bool requireUnassigned) {
-    std::uniform_int_distribution<int> rand(0, precincts.size());
+    std::uniform_int_distribution<int> rand(0, precincts.size()-1);
     Precinct *p;
     do {
         p = precincts[rand(rd)];
@@ -152,7 +155,7 @@ void State::loadDatasets(const JsonValue& json) {
     int i = 1;
     std::vector<std::string> demoKeys;
     for (const auto& [key, data] : demo) {
-        std::cout << i++ << ": " << key << " - " << data.getTitle() << std::endl;
+        std::cout << i++ << ": " << key << " - " << data.name << std::endl;
         demoKeys.push_back(key);
     }
 

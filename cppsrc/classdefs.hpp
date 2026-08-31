@@ -27,6 +27,7 @@ class Precinct : public ElectoralEntity {
       District* district;
       
     public:
+      const bool isPrecinct = true;
       Precinct(State& state, const JsonValue& json);
       void computeNeighbors();
       void setDistrict(District *d) { district = d; }
@@ -59,8 +60,6 @@ class State : public ElectoralEntity {
     int districtCount;
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
-    std::unordered_map<std::string, DemographicData> demo;
-    std::unordered_map<std::string, ElectionData> elex;
     std::set<std::string> datasetNames;
   
   public:
