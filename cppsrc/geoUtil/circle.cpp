@@ -1,5 +1,5 @@
 #include "circle.hpp"
-#include "geometry.hpp"
+#include "../geometry.hpp"
 
 Circle circleFromOne(const GeoPoint* p) {
     return Circle(p->getX(), p->getY(), 0);

@@ -10,7 +10,7 @@
 #include <iomanip>
 
 #include "json.hpp"
-#include "circle.hpp"
+#include "geoUtil/circle.hpp"
 
 class GeoPoint;
 class GeoLine;

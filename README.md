@@ -17,7 +17,13 @@ Completed maps are placed in `output/stateAbbr.csv`. Better output systems are p
 ## Installing and Running
 For full functionality, all that is needed is a C++ compiler and Make. Release builds may be available on github at a later time.
 
-To compile, run `make` to build with the default parameters, or `make debug` to compile a version with extra functionality to use with a debugger. 
+To compile and run, one of the following makefile commands is recommended:
+`make` / `make all` — Builds the release binary (same as running make compile).
+`make compile` — Compiles all source files with optimizations and links them into bin/BARDS.
+`make debug` — Compiles all source files with debug symbols and no optimization and links them into bin/BARDS_debug.
+`make gdb` — Builds the debug binary (if needed) and launches it inside gdb for interactive debugging.
+`make run` — Builds the release binary (if needed) and immediately executes it.
+`make clean` — Deletes all compiled object files and both binaries (BARDS and BARDS_debug).
 
 To run BARDS, use the command `make run <state> <year> {optional args}`. Command line arguments are planned as a future feature.
 
