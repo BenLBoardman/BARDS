@@ -17,11 +17,11 @@ class ElectoralEntity {
     Geometry geo;
 
   public:
-    const bool isPrecinct = false;
-    virtual ~ElectoralEntity() = default;
-    ElectoralEntity(std::string id, std::string name) : name(name), id(id), geo(*this) {};
     const std::string id;
     const std::string name;
+    const bool isPrecinct = false;
+    virtual ~ElectoralEntity() = default;
+    ElectoralEntity(std::string id, std::string name) : geo(*this), id(id), name(name) {};
     std::unordered_map<std::string, DemographicData>& getDemo() { return demo; }
     std::unordered_map<std::string, ElectionData>& getElex() { return elex; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }

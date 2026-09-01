@@ -34,12 +34,12 @@ class DataSet {
         unsigned int total;
     
     public:
-        const std::string name;
         const unsigned int year;
         const DataType type;
-
+        const std::string name;
+        
         DataSet() : year(0), type(ERR) {}
-        DataSet(unsigned year, DataType type, std::string title) : year(year), type(type), title(title), name(title) {
+        DataSet(unsigned year, DataType type, std::string title) : title(title), year(year), type(type), name(title) {
             if(type == CENS)
                 this->title = name + " (Census)";
             else
@@ -71,6 +71,7 @@ class DemographicData : public DataSet {
         DemographicData(const DemographicData& schema);
         DemographicData(const std::string& name, const JsonValue& json);
         void mergeData(const DemographicData& target);
+        void unmergeData(const DemographicData& target);
         bool isDemographic() const override { return true; };
         const int getWhite() const { return white; }
         const int getHispanic() const { return hispanic; }
@@ -86,6 +87,7 @@ class ElectionData : public DataSet {
         ElectionData(const ElectionData& schema);
         ElectionData(const std::string& name, const JsonValue& json);
         void mergeData(const ElectionData& target);
+        void unmergeData(const ElectionData& target);
         bool isDemographic() const override { return false; };
 
 };

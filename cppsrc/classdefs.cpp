@@ -109,10 +109,10 @@ bool District::removePrecinct(Precinct* p) {
     population -= p->getPopulation();
     geo.mergeGeometry(p->getGeo());
     for(auto& [key, d] : p->getDemo()) {
-        demo.at(key).subtractData(d);
+        demo.at(key).unmergeData(d);
     }
     for(auto& [key, e] : p->getElex()) {
-        elex.at(key).subtractData(e);
+        elex.at(key).unmergeData(e);
     }
     return true;
 }

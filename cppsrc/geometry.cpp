@@ -72,11 +72,11 @@ void Geometry::loadGeometry(const JsonValue& json) {
     }
     else if(json["type"].asString() == "MultiPolygon") {
         const JsonArray multiArray = json["coordinates"].asArray();
-        for(int k = 0; k < multiArray.size(); k++) {
+        for(unsigned int k = 0; k < multiArray.size(); k++) {
             const JsonArray polyArray = multiArray[k].asArray();
-            for(int i = 0; i < polyArray.size(); i++) {
+            for(unsigned int i = 0; i < polyArray.size(); i++) {
                 const JsonArray coordArray = polyArray[i].asArray();
-                for(int j = 0; j < coordArray.size()-1; j++) {
+                for(unsigned int j = 0; j < coordArray.size()-1; j++) {
                     addLine(coordArray[j][0].asNumber(), coordArray[j+1][0].asNumber(), coordArray[j][1].asNumber(), coordArray[j+1][1].asNumber());
                 }
             }

@@ -104,6 +104,31 @@ void ElectionData::mergeData(const ElectionData& target) {
     rep += target.rep;
 }
 
+void DemographicData::unmergeData(const DemographicData& target) {
+    if(type != target.type || year != target.year) {
+        //can only merge data of the same type & year
+        return;
+    }
+    total -= target.total;
+    white -= target.white;
+    hispanic -= target.hispanic;
+    black -= target.black;
+    asian -= target.asian;
+    pacific -= target.pacific;
+    native -= target.native;
+    other -= target.other;
+    mixed -= target.mixed;
+}
+
+void ElectionData::unmergeData(const ElectionData& target) {
+    if(type != target.type || year != target.year) {
+        //can only merge data of the same type & year
+        return;
+    }
+    total -= target.total;
+    dem -= target.dem;
+    rep -= target.rep;
+}
 
 DataType parseDataType(const std::string& name, const JsonValue& json) {
     if (json["type"].asString() == "election") {
