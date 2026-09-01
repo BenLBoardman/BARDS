@@ -243,3 +243,18 @@ double State::popDeviation() {
     }
     return (largest - smallest)/avgTarget;
 }
+
+double State::efficiencyGap() {
+    int totalR=0, totalD=0, wastedD=0, wastedR=0;
+    for(auto d : districts) {
+        auto e = d->getCanonicalElex();
+        auto D = e->getDem();
+        auto R = e->getRep();
+        auto T = e->getTotal();
+        wastedD += D > R ? D-(((R+D)/2)+1) : D;
+        wastedR += R > D ? R-(((R+D)/2)+1) : R;
+        totalD += D;
+        totalR += R;
+    }
+    return 1.0*(wastedR-wastedD)/(totalD+totalR);
+}

@@ -78,4 +78,5 @@ class State : public ElectoralEntity {
     double compactnessReock();
     bool isComplete();
     double popDeviation();
+    double efficiencyGap();
 };

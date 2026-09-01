@@ -3,6 +3,19 @@ CXX      := g++
 CXXFLAGS := --std=c++23 -Wall -Wextra -MMD -MP
 LDFLAGS  :=
 
+
+# === Runtime Argument Handling === 
+ifneq (,$(filter run gdb,$(firstword $(MAKECMDGOALS))))
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@:)
+  ARGS := $(RUN_ARGS)
+endif
+
+# === Optional Arguments ===
+ifneq ($(strip $(districts)),)
+  ARGS += districts=$(districts)
+endif
+
 # ==== Directories ====
 SRC_DIR  := cppsrc
 ALGO_DIR := cppsrc/algo
@@ -84,4 +97,4 @@ clean:
 
 .PHONY: run
 run: compile
-	$(TARGET)
+	$(TARGET) $(ARGS)

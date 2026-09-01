@@ -89,6 +89,9 @@ class ElectionData : public DataSet {
         void mergeData(const ElectionData& target);
         void unmergeData(const ElectionData& target);
         bool isDemographic() const override { return false; };
+        unsigned int getDem() const { return dem; }
+        unsigned int getRep() const { return rep; }
+        unsigned int getOther() const { return other; }
 
 };
 
