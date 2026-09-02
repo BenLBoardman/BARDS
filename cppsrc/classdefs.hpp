@@ -74,9 +74,14 @@ class State : public ElectoralEntity {
     std::vector<Precinct*> getPrecincts() { return precincts; }
     std::vector<District*> getDistricts() { return districts; }
     District* getDistrict(int i) { return districts[i-1]; }
+
+
+
+    //report functions (defined in reports.cpp)
     double compactnessPolsbyPopper();
     double compactnessReock();
     bool isComplete();
     double popDeviation();
     double efficiencyGap();
+    void partisanExpectedSeatAnalysis();
 };

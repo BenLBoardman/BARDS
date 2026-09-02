@@ -80,7 +80,7 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
     std::ifstream defaultCount(DEFAULT_CSV_PATH);
     do {
         std::getline(defaultCount, line);
-    }while(line.find(stateAbbr) != 0 || !defaultCount.eof());
+    }while(line.find(stateAbbr, 0) != 0);
     std::stringstream linestream(line);
     std::getline(linestream, temp, ',');
     std::getline(linestream, stateName, ',');

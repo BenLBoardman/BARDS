@@ -15,13 +15,13 @@ Precinct::Precinct(State& state, const JsonValue& json) : state(state), Electora
         if(state.getDataSet(dataName).isDemographic()) {
             auto& s = dynamic_cast<DemographicData&>(state.getDataSet(dataName));            
             demo.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
-            auto d = demo.at(s.name);
+            auto& d = demo.at(s.name);
             s.mergeData(d);
         }
         else {
             auto& s = dynamic_cast<ElectionData&>(state.getDataSet(dataName));
             elex.emplace(std::piecewise_construct, std::forward_as_tuple(s.name), std::forward_as_tuple(s, properties["datasets"][dataName].asObject()));
-            auto e = elex.at(s.name);
+            auto& e = elex.at(s.name);
             s.mergeData(e);
         }
     }
@@ -177,7 +177,8 @@ void State::loadDatasets(const JsonValue& json) {
         std::cin >> choice;
     }
 
-    canonicalDemo = &demo.at(demoKeys[choice - 1]);
+    auto d = &demo.at(demoKeys[choice - 1]);
+    canonicalDemo = d;
 
     // present available election datasets to the user
     std::cout << "Available election datasets:" << std::endl;
@@ -194,7 +195,8 @@ void State::loadDatasets(const JsonValue& json) {
         std::cin >> choice;
     }
 
-    canonicalElex = &elex.at(elexKeys[choice - 1]);
+    auto e = &elex.at(elexKeys[choice - 1]);
+    canonicalElex = e;
 }
 
 DataSet& State::getDataSet(const std::string& name) {
