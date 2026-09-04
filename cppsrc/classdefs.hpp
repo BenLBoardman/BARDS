@@ -8,7 +8,7 @@
 
 #include "geometry.hpp"
 #include "dataset.hpp"
-#include "json.hpp"
+#include "util/json.hpp"
 #include "electoralentity.hpp"
 
 class Precinct;
@@ -82,6 +82,6 @@ class State : public ElectoralEntity {
     double compactnessReock();
     bool isComplete();
     double popDeviation();
-    double efficiencyGap();
+    void efficiencyGapAnalysis();
     void partisanExpectedSeatAnalysis();
 };

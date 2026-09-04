@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "json.hpp"
+#include "util/json.hpp"
 
 enum DataType {
     //demographic data types

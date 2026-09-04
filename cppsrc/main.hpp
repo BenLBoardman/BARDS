@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include "classdefs.hpp"
-#include "json.hpp"
+#include "util/json.hpp"
 
 #include "algo/algorithm_definition.hpp"
 
