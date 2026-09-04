@@ -1,6 +1,7 @@
 #include "classdefs.hpp"
 
 std::random_device rd;
+District *unassigned;
 
 #include <iostream>
 
@@ -58,6 +59,9 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
 
 District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
     population = 0;
+    if(id.compare(0) == 0) {
+        unassigned = this;
+    }
     //generate empty data sets
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
@@ -84,6 +88,9 @@ bool District::addPrecinct(Precinct* p) {
         std::cout << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
         return false;
     }
+    if(!this.isUnassigned()) {
+        unassigned->removePrecinct(p);
+    }
     p->setDistrict(this);
     precincts.push_back(p);
     population += p->getPopulation();
@@ -104,6 +111,9 @@ bool District::removePrecinct(Precinct* p) {
         std::cout << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
         return false;
     }
+    if(!this.isUnassigned()) {
+        unassigned->addPrecinct(p);
+    }
     precincts.erase(it);
     p->setDistrict(nullptr);
     population -= p->getPopulation();
@@ -119,12 +129,14 @@ bool District::removePrecinct(Precinct* p) {
 
 State::State(std::string id, std::string name, int districtCount) : ElectoralEntity(id, name), districtCount(districtCount) {
     districts = std::vector<District*>();
+    unassigned = new District(*this, "0", 0);
     population = 0;
 }
 
 void State::addPrecinct(Precinct& p) {
     precincts.emplace_back(&p);
     population += p.getPopulation();
+    unassigned->addPrecinct(&p);
 }
 
 Precinct* State::getRandPrecinct(bool requireUnassigned) {

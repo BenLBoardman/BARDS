@@ -52,14 +52,14 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Population deviation calculation - completed
 - Compactness calculation - completed
 - Command-line argument processor - completed
-- Partisan fairness calculation - in progress
+- Basic partisan fairness calculation - completed
 - All state data - in progress
-- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
+- Report generation (file containing population balance, partisan fairness, compactness info) - in progress]
+- Well established documentation - in progress
 - More command line arguments - not started
 - Algorithm selection system - not started
 - Fully realized BFS-based algorithm - not started
 - Better error messages - not started
-- Well established documentation - not started
 - Toggleable debug logging - not started
 <FUTURE RELEASES>
 - Multithreaded support - not started

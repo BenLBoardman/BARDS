@@ -4,7 +4,11 @@
 #include <iomanip>
 #include <cmath>
 
-
+/**
+ * Calculate and print the two-party efficiency gap across an entire state.
+ * The efficiency gap is the difference between each party's wasted votes as a
+ * fraction of the total two-party votes cast in an election.
+ */
 void State::efficiencyGapAnalysis() {
     int totalR=0, totalD=0, wastedD=0, wastedR=0;
     double gap;
@@ -23,6 +27,10 @@ void State::efficiencyGapAnalysis() {
     std::cout << "Statewide two-party efficiency gap: " << std::abs(gap*100) << "% biased towards " << (gap > 0 ? "Democrats." : "Republicans.") << std::endl;
 }
 
+/**
+ * Calculate and print analysis of the seat count for both parties in a proportional map,
+ * and then use statistics to estimate and print the expected seat count of the current map.
+ */
 void State::partisanExpectedSeatAnalysis() {
     double proportionalDeviation, calculatedD = 0, calculatedR = 0,
     vFracD, vFracR;
@@ -61,5 +69,4 @@ void State::partisanExpectedSeatAnalysis() {
     calculatedR = calculatedR < 0.01 ? 0 : calculatedR;
     std::cout << "\tStatistical analysis estimates that on this map, Democrats would win " << calculatedD << " seats, while Republicans would win " 
         << calculatedR << " seats." << std::endl;
-    
 }

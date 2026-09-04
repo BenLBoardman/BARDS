@@ -18,8 +18,6 @@ class State;
 
 extern std::random_device rd;
 
-
-
 class Precinct : public ElectoralEntity {
     private:
       std::vector<Precinct*> neighbors;
@@ -53,6 +51,7 @@ class District : public ElectoralEntity {
     double compactnessPolsbyPopper(){ return geo.getPolsbyPopper(); }
     double compactnessReock(){ return geo.getReock(); }
     double popDeviation() { return 1.0*(population-targetPop)/targetPop; }
+    bool isUnassigned() { return id.compare("0") == 0; }
 };
 
 class State : public ElectoralEntity {
@@ -61,6 +60,7 @@ class State : public ElectoralEntity {
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
     std::set<std::string> datasetNames;
+    District* unassigned;
   
   public:
 
@@ -83,5 +83,5 @@ class State : public ElectoralEntity {
     bool isComplete();
     double popDeviation();
     void efficiencyGapAnalysis();
-    void partisanExpectedSeatAnalysis();
+    double[] partisanExpectedSeatAnalysis();
 };
