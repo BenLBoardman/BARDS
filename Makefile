@@ -19,7 +19,7 @@ endif
 # ==== Directories ====
 SRC_DIR  := cppsrc
 ALGO_DIR := cppsrc/algo
-UTIL_DIR := cppsrc/geoUtil
+UTIL_DIR := cppsrc/util
 
 BIN_DIR      := bin
 OBJ_DIR      := bin/obj
