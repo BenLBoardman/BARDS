@@ -4,6 +4,8 @@
 std::string state = "NH";
 std::string year = "2020";
 int dists = -1;
+std::string logName = "info.log";
+std::string reportName = "report.log";
 
 
 int main(int argc, char *argv[]) {
@@ -39,6 +41,12 @@ bool handleArgs(int argc, char *argv[]) {
         currArg = argv[i];
         if(currArg.compare(0, 10, "districts=") == 0) {
             dists = std::stoi(currArg.substr(10));
+        }
+        else if(currArg.compare(0, 4, "log=") == 0) {
+            logName = currArg.substr(4);
+        }
+        else if(currArg.compare(0, 7, "report=") == 0) {
+            reportName = currArg.substr(7);
         }
         else {
             std::cout << "Error: Unrecognized argument " << argv[i] << "." << std::endl;

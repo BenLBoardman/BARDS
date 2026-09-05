@@ -17,6 +17,8 @@
 extern std::string state;
 extern std::string year;
 extern int dists;
+extern std::string logName;
+extern std::string reportName;
 
 int main(int argc, char *argv[]);
 bool handleArgs(int argc, char *argv[]);
