@@ -59,7 +59,7 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
 
 District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
     population = 0;
-    if(id.compare(0) == 0) {
+    if(id.compare("0") == 0) {
         unassigned = this;
     }
     //generate empty data sets
@@ -87,8 +87,7 @@ bool District::addPrecinct(Precinct* p) {
     if(p->isAssigned()) {
         std::cout << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
         return false;
-    }
-    if(!this.isUnassigned()) {
+    } else if(!isUnassigned()) {
         unassigned->removePrecinct(p);
     }
     p->setDistrict(this);
@@ -111,7 +110,7 @@ bool District::removePrecinct(Precinct* p) {
         std::cout << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
         return false;
     }
-    if(!this.isUnassigned()) {
+    if(!isUnassigned()) {
         unassigned->addPrecinct(p);
     }
     precincts.erase(it);
@@ -129,7 +128,6 @@ bool District::removePrecinct(Precinct* p) {
 
 State::State(std::string id, std::string name, int districtCount) : ElectoralEntity(id, name), districtCount(districtCount) {
     districts = std::vector<District*>();
-    unassigned = new District(*this, "0", 0);
     population = 0;
 }
 
@@ -209,6 +207,10 @@ void State::loadDatasets(const JsonValue& json) {
 
     auto e = &elex.at(elexKeys[choice - 1]);
     canonicalElex = e;
+
+    //initialize unassigned district
+    auto &x = *this;
+    unassigned = new District(x, std::string("0"), 0);
 }
 
 DataSet& State::getDataSet(const std::string& name) {

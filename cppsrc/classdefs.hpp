@@ -17,6 +17,7 @@ class State;
 
 
 extern std::random_device rd;
+extern District *unassigned;
 
 class Precinct : public ElectoralEntity {
     private:
@@ -29,7 +30,7 @@ class Precinct : public ElectoralEntity {
       Precinct(State& state, const JsonValue& json);
       void computeNeighbors();
       void setDistrict(District *d) { district = d; }
-      bool isAssigned() { return district != nullptr; }
+      bool isAssigned() { return district != nullptr && district != unassigned;  }
       std::vector<Precinct*> getNeighbors() { return neighbors; }
       Precinct *getRandNeighbor(bool requireUnassigned);
 };
@@ -83,5 +84,5 @@ class State : public ElectoralEntity {
     bool isComplete();
     double popDeviation();
     void efficiencyGapAnalysis();
-    double[] partisanExpectedSeatAnalysis();
+    void partisanExpectedSeatAnalysis();
 };
