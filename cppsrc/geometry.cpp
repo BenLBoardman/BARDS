@@ -252,3 +252,9 @@ double Geometry::getReock() {
     updateCached();
     return reock;
 }
+
+double Geometry::distance(Geometry *other) {
+    GeoPoint& oCentroid = other->getCentroid();
+    getCentroid();
+    return std::sqrt(std::pow(centroid.getX() - oCentroid.getX(), 2)+std::pow(centroid.getY()-oCentroid.getY(), 2));
+}

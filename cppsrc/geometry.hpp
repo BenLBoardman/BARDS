@@ -94,4 +94,5 @@ class Geometry {
         void mergeGeometry(Geometry& other);
         double getPolsbyPopper();
         double getReock();
+        double distance (Geometry *other);
 };
