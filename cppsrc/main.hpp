@@ -12,6 +12,7 @@
 
 #define DATAPATH_OUT "output/"
 #define DEFAULT_CSV_PATH "data/2020/default_dist_counts.csv"
+#define DISTRICT_OUTPUT_EXTENSION ".csv"
 
 
 extern std::string state;

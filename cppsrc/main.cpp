@@ -1,8 +1,9 @@
 #include "main.hpp"
 
 
-std::string state = "NH";
-std::string year = "2020";
+std::string state;
+std::string year;
+std::string name = "";
 int dists = -1;
 std::string logName = "info.log";
 std::string reportName = "report.log";
@@ -52,6 +53,9 @@ bool handleArgs(int argc, char *argv[]) {
         else if(currArg.compare(0, 7, "report=") == 0) {
             reportName = currArg.substr(7);
         }
+        else if(currArg.compare(0, 5, "name=") == 0) {
+            name = currArg.substr(5);
+        }
         else {
             std::cout << "Error: Unrecognized argument " << argv[i] << "." << std::endl;
             return false; 
@@ -98,6 +102,7 @@ std::string getStatePath(std::string state, std::string year) {
 
 State processGeoJson(std::string stateAbbr, std::string filename) {
     std::ifstream file(filename);
+    std::filesystem::create_directory(DATAPATH_OUT);
     if(!file.is_open()) {
         throw std::runtime_error("Error: Could not open file. Check to ensure that the state abbreviation and year are valid.");
     }
@@ -137,11 +142,18 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
 }
 
 void outputDistricts(State s) {
-    std::ofstream out(DATAPATH_OUT+s.id + ".csv");
+    int i = 0;
+    std::string outDir;
+    do {
+        outDir = DATAPATH_OUT+s.id+"_"+name+std::to_string(i)+"/";
+        i++;
+    } while(!std::filesystem::create_directory(outDir));
+    std::ofstream out(outDir+(name.compare("") ? name : s.id) + DISTRICT_OUTPUT_EXTENSION);
     out << "GEOID20,District" << std::endl;
     for(auto d : s.getDistricts()) {
         for(auto p : d->getPrecincts()) {
             out << p->id << "," << d->id << std::endl;
         }
     }
+    
 }

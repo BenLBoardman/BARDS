@@ -21,6 +21,9 @@ endif
 ifneq ($(strip $(report)),)
   ARGS += report=$(report)
 endif
+ifneq ($(strip $(name)),)
+  ARGS += name=$(name)
+endif
 
 # ==== Directories ====
 SRC_DIR  := cppsrc

@@ -12,7 +12,7 @@ Data comes primarily from DRA's database - https://github.com/dra2020/vtd_data/t
 BARDS currently has 2020 precinct data for New Hampshire. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
 
 ## Output
-Completed maps are placed in `output/stateAbbr.csv`. Better output systems are planned for the future. custom output locations are a possible future feature, but are not actively planned at present.
+Completed maps are placed in `output/stateAbbr_<name>/`. The map itself is stored in `name.csv` within that directory.
 
 ## Installing and Running
 For full functionality, all that is needed is a C++ compiler and Make. Release builds may be available on github at a later time.
@@ -62,9 +62,11 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Better error messages - not started
 - Toggleable debug logging - not started
 <FUTURE RELEASES>
-- Multithreaded support - not started
-- Multithreaded precinct load - not started
-- Better contiguity checks (fixing KI.1) - not started
+- More algorithms
+- More report metrics
+- Multithreaded support
+- Multithreaded precinct load
+- Better contiguity checks (fixing KI.1)
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:
