@@ -11,6 +11,7 @@
 
 #include "util/json.hpp"
 #include "util/circle.hpp"
+#include "util/ioUtil.hpp"
 
 class GeoPoint;
 class GeoLine;

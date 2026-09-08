@@ -5,10 +5,11 @@ std::string state;
 std::string year;
 std::string name = "";
 int dists = -1;
-std::string logName = "info.log";
-std::string reportName = "report.log";
+std::string logName = "info";
+std::string reportName = "report";
 std::string algo;
 std::vector<DistrictAlgorithm*> algos;
+std::string outDir;
 DistrictAlgorithm* D;
 
 int main(int argc, char *argv[]) {
@@ -48,7 +49,7 @@ bool handleArgs(int argc, char *argv[]) {
             dists = std::stoi(currArg.substr(10));
         }
         else if(currArg.compare(0, 4, "log=") == 0) {
-            logName = currArg.substr(4);
+            logName = currArg.substr(4)+".log";
         }
         else if(currArg.compare(0, 7, "report=") == 0) {
             reportName = currArg.substr(7);
@@ -78,6 +79,14 @@ bool validateArgs() {
     if(dists < 1) {
         std::cout << "Maps must be drawn with at least one district, entered " << dists <<". Value will be set to the default for this state." << std::endl;
     }
+
+    int i = 0;
+    do {
+        outDir = DATAPATH_OUT+state+"_"+name+std::to_string(i)+"/";
+        i++;
+    } while(!std::filesystem::create_directory(outDir));
+
+    logs::initialize(logName, outDir);
     return true;
 }
 
@@ -142,12 +151,6 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
 }
 
 void outputDistricts(State s) {
-    int i = 0;
-    std::string outDir;
-    do {
-        outDir = DATAPATH_OUT+s.id+"_"+name+std::to_string(i)+"/";
-        i++;
-    } while(!std::filesystem::create_directory(outDir));
     std::ofstream out(outDir+(name.compare("") ? name : s.id) + DISTRICT_OUTPUT_EXTENSION);
     out << "GEOID20,District" << std::endl;
     for(auto d : s.getDistricts()) {

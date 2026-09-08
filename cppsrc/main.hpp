@@ -7,10 +7,10 @@
 
 #include "classdefs.hpp"
 #include "util/json.hpp"
+#include "util/ioUtil.hpp"
 
 #include "algo/algorithm_definition.hpp"
 
-#define DATAPATH_OUT "output/"
 #define DEFAULT_CSV_PATH "data/2020/default_dist_counts.csv"
 #define DISTRICT_OUTPUT_EXTENSION ".csv"
 
