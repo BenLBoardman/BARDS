@@ -1,4 +1,4 @@
-/*
+
 TO IMPLEMENT YOUR OWN ALGORITHM USING THIS AS A TEMPLATE, FOLLOW THE FOLLOWING STEPS:
 
 
@@ -7,6 +7,7 @@ TO IMPLEMENT YOUR OWN ALGORITHM USING THIS AS A TEMPLATE, FOLLOW THE FOLLOWING S
 ******************************************************
 class ExampleAlgorithm : public DistrictAlgorithm {
     public:
+        ExampleAlgorithm() : DistrictAlgorithm("Your Algorithm Name For Printing", "Brief description of your algorithm") {}
         void drawMap(State& s);
 };
 ******************************************************
@@ -23,4 +24,8 @@ void ExampleAlgorithm::drawMap(State& s) {
 }
 ########################################################
 
-*/
+
+3. Add the following line to loadAlgorithms() in algorithm_definition.cpp.
+########################################################
+        algos.push_back(new ExampleAlgorithm());
+########################################################

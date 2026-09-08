@@ -6,22 +6,26 @@ std::string year = "2020";
 int dists = -1;
 std::string logName = "info.log";
 std::string reportName = "report.log";
-
+std::string algo;
+std::vector<DistrictAlgorithm*> algos;
+DistrictAlgorithm* D;
 
 int main(int argc, char *argv[]) {
-
+    
+    loadAlgorithms();
 
     if(!handleArgs(argc, argv) || !validateArgs()) {
         return 1;
     }
+
+    pickAlgorithm();
 
     std::string fpath = getStatePath(state, year);
     std::cout << "Retrieving data at " << fpath << "..." << std::endl;
     State s = processGeoJson(state, fpath);
 
     std::cout << "Drawing districts..." << std::endl;
-    MonoDistrictTest m;
-    m.drawMap(s);
+    D->drawMap(s);
 
     std::cout << "District drawing complete..." << std::endl;
     outputDistricts(s);
@@ -71,6 +75,20 @@ bool validateArgs() {
         std::cout << "Maps must be drawn with at least one district, entered " << dists <<". Value will be set to the default for this state." << std::endl;
     }
     return true;
+}
+
+void pickAlgorithm() {
+    unsigned int i = 1, selection;
+    for(auto a : algos) {
+            std::cout << "\t" <<  i << ": " << a->name << " (" << a->desc << ")" << std::endl;
+            i++;
+        }
+        
+    do {
+        std::cout << "Select an algorithm to use." << std::endl;
+        std::cin >> selection;
+    } while (selection < 1 || selection > algos.size());
+    D = algos[selection-1];
 }
 
 std::string getStatePath(std::string state, std::string year) {

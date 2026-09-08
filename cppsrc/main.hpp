@@ -23,6 +23,7 @@ extern std::string reportName;
 int main(int argc, char *argv[]);
 bool handleArgs(int argc, char *argv[]);
 bool validateArgs();
+void pickAlgorithm();
 std::string getStatePath(std::string state, std::string year);
 State processGeoJson(std::string stateName, std::string filename);
 void outputDistricts(State s);

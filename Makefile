@@ -16,7 +16,7 @@ ifneq ($(strip $(districts)),)
   ARGS += districts=$(districts)
 endif
 ifneq ($(strip $(log)),)
-  ARGS += log=$(log)
+  ARGS += log=$(log )
 endif
 ifneq ($(strip $(report)),)
   ARGS += report=$(report)
