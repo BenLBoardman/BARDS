@@ -27,8 +27,8 @@ class MonoDistrictTest : public DistrictAlgorithm {
         void drawMap(State& s);
 };
 
-class NeighborDistrictTest : public DistrictAlgorithm {
+class SimpleBFS : public DistrictAlgorithm {
     public:
-        NeighborDistrictTest() : DistrictAlgorithm("NeighborTest", "Test Algorithm that draws a single district by neighbors") {}
+        SimpleBFS() : DistrictAlgorithm("SimpleBFS", "Algorithm that sequentially builds districts by BFS-ing from a random starting point") {}
         void drawMap(State& s);
 };

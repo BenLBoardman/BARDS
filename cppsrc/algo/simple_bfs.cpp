@@ -5,22 +5,28 @@
  
 
 //Draw one district from a random starting precinct
-void NeighborDistrictTest::drawMap(State& s) {
-    District* d = s.getDistrict(1);
+void SimpleBFS::drawMap(State& s) {
+    auto dists = s.getDistricts();
     auto origin = s.getRandPrecinct(true);
-    int count = 25;
+    int i = 0;
+    District *d = dists[0];
     std::queue<Precinct*> queue;
     queue.push(origin);
-    while(!queue.empty() && d->getPopulation() < d->targetPop) {
+    while(!queue.empty()) {
+        if((d->getPopulation() + s.getAveragePrecinctPop()) > d->targetPop && i < dists.size()-1) {
+            i++;
+            d = dists[i];
+        }
         auto curr = queue.front();
-        std::cout << "Processing precinct " << curr->name << "..." << std::endl;
         queue.pop();
+        if(curr->isAssigned()) continue;
+        logs::info << "Processing precinct " << curr->name << "..." << std::endl;
         if(d->addPrecinct(curr)) {
-            count--;
             for(auto n : curr->getNeighbors()) {
-                std::cout << "\tFound neighbor " << n->name << "..." << std::endl;
-                if(!n->isAssigned())
+                if(!n->isAssigned()) {
+                    logs::info << "\tAdding neighbor " << n->name << " to queue..." << std::endl;
                     queue.push(n);
+                }
             }
         }
     }
@@ -31,6 +37,9 @@ void NeighborDistrictTest::drawMap(State& s) {
         std::cout << "\tCOMPACTNESS(P.P.)" << std::round(d->compactnessPolsbyPopper()*1000)/1000 
             << ", COMPACTNESS(R.)" << std::round(d->compactnessReock()*1000)/1000 << std::endl;
     }
+
+    s.efficiencyGapAnalysis();
+    s.partisanExpectedSeatAnalysis();
 
 
 }
