@@ -58,6 +58,7 @@ class District : public ElectoralEntity {
 class State : public ElectoralEntity {
   private:
     int districtCount;
+    int averagePrecinctPop;
     std::vector<District*> districts;
     std::vector<Precinct*> precincts;
     std::set<std::string> datasetNames;
@@ -75,6 +76,7 @@ class State : public ElectoralEntity {
     std::vector<Precinct*> getPrecincts() { return precincts; }
     std::vector<District*> getDistricts() { return districts; }
     District* getDistrict(int i) { return districts[i-1]; }
+    int getAveragePrecinctPop() { return averagePrecinctPop; }
 
 
 

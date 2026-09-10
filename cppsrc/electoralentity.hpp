@@ -21,7 +21,7 @@ class ElectoralEntity {
     const std::string name;
     const bool isPrecinct = false;
     virtual ~ElectoralEntity() = default;
-    ElectoralEntity(std::string id, std::string name) : geo(*this), id(id), name(name) {};
+    ElectoralEntity(std::string id, std::string name) : geo(this), id(id), name(name) {};
     std::unordered_map<std::string, DemographicData>& getDemo() { return demo; }
     std::unordered_map<std::string, ElectionData>& getElex() { return elex; }
     const ElectionData* getCanonicalElex() const { return canonicalElex; }

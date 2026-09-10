@@ -54,13 +54,13 @@ bool GeoPoint::operator<(const GeoPoint& other) const {
 }
 
 
-Geometry::Geometry(ElectoralEntity& owner) : owner(owner) {
+Geometry::Geometry(ElectoralEntity *owner) : owner(owner) {
     cached = false; 
     
 }
 
 void Geometry::loadGeometry(const JsonValue& json) {
-    logs::info << "Loading geometry for " << owner.name << " (id: " << owner.id << ")" << std::endl;
+    logs::info << "Loading geometry for " << owner->name << " (id: " << owner->id << ")" << std::endl;
     if(json["type"].asString() == "Polygon") {
         const JsonArray ringArray = json["coordinates"].asArray();
         for(int i = 0; i < ringArray.size(); i++) {
@@ -186,7 +186,7 @@ void Geometry::updateCached() {
 
     if(!contiguous) {
         cached = true;
-        logs::info << "Contiguity check failed on " << owner.name << " (id: " << owner.id << "). Found " << visited.size() << " lines, expected " << lines.size() << "." << std::endl;
+        logs::info << "Contiguity check failed on " << owner->name << " (id: " << owner->id << "). Found " << visited.size() << " lines, expected " << lines.size() << "." << std::endl;
         //TODO emit error/warning
         return;
     }

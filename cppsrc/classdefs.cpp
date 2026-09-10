@@ -42,8 +42,10 @@ void Precinct::computeNeighbors() {
     const std::set<GeoLine*> boundaries = geo.getLines();
     for(auto segment : boundaries) {
         for(auto owner : segment->getOwners()) {
-            if(owner == &geo || owner == nullptr || !owner->getOwner().isPrecinct) continue;
-            neighbors.push_back(dynamic_cast<Precinct *>(&owner->getOwner()));
+            if(owner == &geo || owner == nullptr) continue;
+            auto p = dynamic_cast<Precinct *>(owner->getOwner());
+            if(p && std::find(neighbors.begin(), neighbors.end(), p) == neighbors.end())
+                neighbors.push_back(p);
         }
     }
 }
@@ -129,12 +131,14 @@ bool District::removePrecinct(Precinct* p) {
 State::State(std::string id, std::string name, int districtCount) : ElectoralEntity(id, name), districtCount(districtCount) {
     districts = std::vector<District*>();
     population = 0;
+    averagePrecinctPop = 0;
 }
 
 void State::addPrecinct(Precinct& p) {
     precincts.emplace_back(&p);
     population += p.getPopulation();
     unassigned->addPrecinct(&p);
+    averagePrecinctPop = population / precincts.size();
 }
 
 Precinct* State::getRandPrecinct(bool requireUnassigned) {

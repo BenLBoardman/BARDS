@@ -67,7 +67,7 @@ extern std::set<GeoPoint> pointRegister;
 
 class Geometry {
     private:
-        ElectoralEntity& owner;           
+        ElectoralEntity *owner;           
         std::set<GeoLine*> lines;
         bool cached; //has this Geometry been changed since the last time the centroid or perimeter has been calculated
         bool contiguous;
@@ -83,7 +83,7 @@ class Geometry {
         std::vector<const GeoPoint*> getOrderedVertices();
     
     public:
-        Geometry(ElectoralEntity& owner);
+        Geometry(ElectoralEntity *owner);
         void loadGeometry(const JsonValue& json);
         GeoLine& addLine(double x1, double x2, double y1, double y2);
         double getPerimeter();
@@ -91,7 +91,7 @@ class Geometry {
         double getArea();
         bool isContiguous();
         const std::set<GeoLine*> getLines() const { return lines; }
-        ElectoralEntity& getOwner() { return owner; }
+        ElectoralEntity *getOwner() { return owner; }
         void mergeGeometry(Geometry& other);
         double getPolsbyPopper();
         double getReock();
