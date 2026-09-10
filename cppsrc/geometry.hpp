@@ -1,3 +1,15 @@
+/**
+ * @file geometry.hpp
+ * @brief Core geometric primitives (points, lines, and composite geometries)
+ *        used to represent electoral district boundaries.
+ *
+ * Provides GeoPoint and GeoLine as deduplicated, registry-backed primitives
+ * (see lineRegister, endpointMap, and pointRegister), and Geometry as a
+ * composite polygon/multipolygon built from shared GeoLine instances. Geometry
+ * exposes cached derived quantities (perimeter, area, centroid, contiguity,
+ * and compactness scores such as Polsby-Popper and Reock) that are lazily
+ * recomputed via updateCached() when the underlying line set changes.
+ */
 #pragma once
 
 #include <set>
@@ -17,8 +29,20 @@ class GeoPoint;
 class GeoLine;
 class Geometry;
 
+/**
+ * @copydoc ElectoralEntity
+ */
 class ElectoralEntity;
 
+/**
+ * @class GeoPoint
+ * @brief An immutable 2D Cartesian point (x, y).
+ *
+ * GeoPoint instances are deduplicated via pointRegister: distinct GeoLine
+ * endpoints that share the same coordinates resolve to the same GeoPoint
+ * instance, which allows adjacency between lines to be detected by pointer
+ * equality via endpointMap.
+ */
 class GeoPoint {
     private:
         double x, y;
@@ -31,7 +55,15 @@ class GeoPoint {
         bool operator<(const GeoPoint& other) const;
 };
 
-
+/**
+ * @class GeoLine
+ * @brief A line segment between two registered GeoPoint endpoints.
+ *
+ * GeoLine instances are stored by value in lineRegister, keyed by midpoint,
+ * and referenced elsewhere by pointer. Each GeoLine tracks the set of
+ * Geometry objects that currently claim it as a boundary edge (owners),
+ * which supports shared-edge detection when merging or splitting districts.
+ */
 class GeoLine {
     private:
         const GeoPoint *p1, *p2;
@@ -50,6 +82,13 @@ class GeoLine {
         const GeoPoint* getP2() const { return p2; }
 };
 
+/**
+ * @brief Hash specialization enabling GeoPoint to be used as an
+ *        unordered_map/unordered_set key.
+ *
+ * Combines the hashes of the x and y coordinates using a boost-style
+ * combine function, which avoids collapsing to zero when hx == hy.
+ */
 template <>
 struct std::hash<GeoPoint> {
     std::size_t operator()(const GeoPoint& p) const noexcept {
@@ -60,11 +99,46 @@ struct std::hash<GeoPoint> {
     }
 };
 
-//should be private to geometry code
+/**
+ * @brief Global registry mapping each unique line midpoint to its GeoLine.
+ *
+ * Used to deduplicate line segments so that boundary edges shared between
+ * adjacent Geometry instances are represented by a single GeoLine object.
+ * Should be treated as private to geometry code.
+ */
 extern std::unordered_map<GeoPoint, GeoLine> lineRegister;
+
+/**
+ * @brief Global registry mapping each GeoPoint to the set of GeoLine
+ *        pointers that touch it as an endpoint.
+ *
+ * Used during contiguity traversal to find the next connected line when
+ * walking a Geometry's boundary. Should be treated as private to geometry
+ * code.
+ */
 extern std::unordered_map<GeoPoint, std::set<GeoLine*>> endpointMap;
+
+/**
+ * @brief Global registry of all unique GeoPoint coordinates in use.
+ *
+ * Ensures that GeoLine endpoints sharing the same coordinates resolve to
+ * a single canonical GeoPoint instance. Should be treated as private to
+ * geometry code.
+ */
 extern std::set<GeoPoint> pointRegister;
 
+
+/**
+ * @class Geometry
+ * @brief A composite polygon or multipolygon built from shared GeoLine edges.
+ *
+ * A Geometry owns a set of GeoLine pointers representing its boundary. It
+ * lazily computes and caches derived properties -- perimeter, area,
+ * centroid, contiguity, minimum bounding circle, and compactness scores
+ * (Polsby-Popper and Reock) -- via updateCached(), which is invoked whenever
+ * one of those properties is requested after the geometry has changed
+ * (tracked by the cached flag).
+ */
 class Geometry {
     private:
         ElectoralEntity *owner;           

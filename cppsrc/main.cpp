@@ -10,6 +10,7 @@ std::string reportName = "report";
 std::string algo;
 std::vector<DistrictAlgorithm*> algos;
 std::string outDir;
+int nameIndex;
 DistrictAlgorithm* D;
 
 int main(int argc, char *argv[]) {
@@ -80,10 +81,10 @@ bool validateArgs() {
         std::cout << "Maps must be drawn with at least one district, entered " << dists <<". Value will be set to the default for this state." << std::endl;
     }
 
-    int i = 0;
+    nameIndex = 0;
     do {
-        outDir = DATAPATH_OUT+state+"_"+name+std::to_string(i)+"/";
-        i++;
+        outDir = DATAPATH_OUT+state+"_"+name+std::to_string(nameIndex)+"/";
+        nameIndex++;
     } while(!std::filesystem::create_directory(outDir));
 
     logs::initialize(logName, outDir);
@@ -151,7 +152,7 @@ State processGeoJson(std::string stateAbbr, std::string filename) {
 }
 
 void outputDistricts(State s) {
-    std::ofstream out(outDir+(name.compare("") ? name : s.id) + DISTRICT_OUTPUT_EXTENSION);
+    std::ofstream out(outDir+(name.compare("") ? name : s.id) + "_" + std::to_string(nameIndex) + DISTRICT_OUTPUT_EXTENSION);
     out << "GEOID20,District" << std::endl;
     for(auto d : s.getDistricts()) {
         for(auto p : d->getPrecincts()) {
