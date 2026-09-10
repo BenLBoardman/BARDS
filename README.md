@@ -59,7 +59,7 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - All state data - in progress
 - Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - Well established documentation - in progress
-- Fully realized BFS-based algorithm - not started
+- Fully realized BFS-based algorithm - in progress
 - Better error messages - not started
 <FUTURE RELEASES>
 - More algorithms
