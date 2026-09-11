@@ -33,6 +33,7 @@ class Precinct : public ElectoralEntity {
       bool isAssigned() { return district != nullptr && district != unassigned;  }
       std::vector<Precinct*> getNeighbors() { return neighbors; }
       Precinct *getRandNeighbor(bool requireUnassigned);
+      void permuteNeighbors();
 };
 
 
