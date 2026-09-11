@@ -20,6 +20,7 @@ void SimpleBFS::drawMap(State& s) {
         auto curr = queue.front();
         queue.pop();
         if(curr->isAssigned()) continue;
+        curr->permuteNeighbors();
         logs::info << "Processing precinct " << curr->name << "..." << std::endl;
         if(d->addPrecinct(curr)) {
             for(auto n : curr->getNeighbors()) {

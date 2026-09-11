@@ -32,3 +32,15 @@ class SimpleBFS : public DistrictAlgorithm {
         SimpleBFS() : DistrictAlgorithm("SimpleBFS", "Algorithm that sequentially builds districts by BFS-ing from a random starting point") {}
         void drawMap(State& s);
 };
+
+class SimpleDFS : public DistrictAlgorithm {
+    private:
+        int distIndex;
+        District *currDist;
+        std::vector<District *> dists;
+        State *st;
+    public:
+        SimpleDFS() : DistrictAlgorithm("SimpleDFS", "Algorithm that sequentially builds districts by DFS-ing from a random starting point") {}
+        void process(Precinct *prec);
+        void drawMap(State& s);
+};
