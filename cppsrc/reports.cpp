@@ -32,8 +32,8 @@ void State::efficiencyGapAnalysis() {
  * and then use statistics to estimate and print the expected seat count of the current map.
  */
 void State::partisanExpectedSeatAnalysis() {
-    double proportionalDeviation, calculatedD = 0, calculatedR = 0,
-    vFracD, vFracR;
+    double proportionalDeviation, calculatedD, calculatedR, dSum = 0, rSum = 0,
+    vFracD, vFracR, disprop;
     int proportionalD, proportionalR, D, R;
 
     D = canonicalElex->getDem();
@@ -52,21 +52,30 @@ void State::partisanExpectedSeatAnalysis() {
         proportionalR++;
     }
     std::cout << std::setprecision(4);
-    std::cout << "\tIn the selected election, democrats won " << vFracD*100 << "\% of the vote, while Republicans won " 
+    std::cout << "\tIn the selected election, Democrats won " << vFracD*100 << "\% of the vote, while Republicans won " 
         << vFracR*100 << "\%." << std::endl;
     std::cout << "\tIn a truly proportional map, Democrats would win " << proportionalD << " seats, while Republicans would win " 
         << proportionalR << " seats." << std::endl;
+    std::cout << "\tBelow are seat-by-seat two party percentages and win probabilities (excluding third parties)." <<std::endl;
     for(auto d : districts) {
         auto e = d->getCanonicalElex();
-        auto _D = 1.0 * canonicalElex->getDem() / canonicalElex->getTotal();
-        auto _R = 1.0 * canonicalElex->getRep() / canonicalElex->getTotal();
-        calculatedD += 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
-        calculatedR += 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
+        auto _D = 1.0 * e->getDem() / (e->getDem()+e->getRep());
+        auto _R = 1.0 * e->getRep() / (e->getDem()+e->getRep());
+        calculatedD = 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
+        calculatedR = 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
 
+        std::cout << "\t\tDistrict 1: " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
+        std::cout <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
+            (_D > _R ? " Democratic " : " Republican") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
         //optional - print out per district analysis here
+
+        dSum += calculatedD;
+        rSum += calculatedR;
     }
-    calculatedD = calculatedD < 0.01 ? 0 : calculatedD;
-    calculatedR = calculatedR < 0.01 ? 0 : calculatedR;
-    std::cout << "\tStatistical analysis estimates that on this map, Democrats would win " << calculatedD << " seats, while Republicans would win " 
-        << calculatedR << " seats." << std::endl;
+    dSum = dSum < 0.01 ? 0 : dSum;
+    rSum = rSum < 0.01 ? 0 : rSum;
+    std::cout << "\tStatistical analysis estimates that on this map, Democrats would win " << dSum << " seats, while Republicans would win " 
+        << rSum << " seats." << std::endl;
+    disprop = (dSum - proportionalD)/districtCount;
+    std::cout << "\tThis represents a " << (std::abs(disprop*100)) << "\% disproportionality in favor of" << ((disprop > 0) ? " Democrats." : " Republicans.") << std::endl;
 }
