@@ -81,10 +81,10 @@ bool validateArgs() {
         std::cout << "Maps must be drawn with at least one district, entered " << dists <<". Value will be set to the default for this state." << std::endl;
     }
 
-    nameIndex = 0;
+    nameIndex = -1;
     do {
-        outDir = DATAPATH_OUT+state+"_"+name+std::to_string(nameIndex)+"/";
         nameIndex++;
+        outDir = DATAPATH_OUT+state+"_"+name+std::to_string(nameIndex)+"/";
     } while(!std::filesystem::create_directory(outDir));
 
     logs::initialize(logName, outDir);

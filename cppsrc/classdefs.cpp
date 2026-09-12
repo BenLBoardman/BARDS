@@ -60,11 +60,7 @@ Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
 }
 
 void Precinct::permuteNeighbors() {
-        std::uniform_int_distribution<int> rand(0, neighbors.size()-1);
-        std::vector<Precinct *> tmp;
-        for(int i = 0; i < neighbors.size(); i++)
-            tmp.push_back(neighbors[rand(rd)]);
-        neighbors = tmp;
+         std::ranges::shuffle(neighbors, rd);
 }
 
 District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 

@@ -29,6 +29,7 @@ void SimpleDFS::process(Precinct *prec) {
             currDist = dists[distIndex];
         }
     if(prec->isAssigned()) return;
+    logs::info << "Processing precinct " << prec->name << "..." << std::endl;
     currDist->addPrecinct(prec);
     prec->permuteNeighbors();
     for(auto n : prec->getNeighbors())
