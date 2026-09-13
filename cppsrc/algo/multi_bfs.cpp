@@ -11,9 +11,10 @@ void MultiBFS::drawMap(State& s) {
     int i = 0;
     District *d;
     std::vector<std::queue<Precinct*>*> queues;
+    auto origins = s.getRandPrecincts(true, dists.size());
     for(int j = 0; j < dists.size(); j++) {
         queues.emplace_back(new std::queue<Precinct*>());
-        auto origin = s.getRandPrecinct(true);
+        auto origin = origins[j];
         queues[j]->push(origin);
         logs::info << "District " << j+1 << "'s origin will be " << origin->name << std::endl;
     }

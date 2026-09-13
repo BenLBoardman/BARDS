@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <random>
+#include <functional>
 
 #include "geometry.hpp"
 #include "dataset.hpp"
@@ -70,6 +71,8 @@ class State : public ElectoralEntity {
     State(std::string id, std::string name, int districtCount);
     void addPrecinct(Precinct& p);
     Precinct* getRandPrecinct(bool requireUnassigned);
+    std::vector<Precinct*> getRandPrecincts(bool requireUnassigned, int cnt, 
+      const std::function<bool(Precinct*, std::vector<Precinct*>)>& customPred = [](Precinct *p, std::vector<Precinct*> precs){return true; });
     void finishProcessing();
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }

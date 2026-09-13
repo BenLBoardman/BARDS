@@ -154,6 +154,26 @@ Precinct* State::getRandPrecinct(bool requireUnassigned) {
     return p;
 }
 
+/**
+ * @brief Get an arbitrary number of unique randomly-selected precincts conforming to a custom predicate.
+ * @param requireUnassigned If true, will additionally require that the precincts selected are not assigned to any district.
+ * @param cnt The number of precincts to return.
+ * @param customPred A custom predicate taking as parameters the list of precincts already selected and the most recently selected candidate precinct. 
+ *    If not passed in, it will always return "true".
+ * @return A vector of pointers to the selected precincts.
+ */
+std::vector<Precinct*> State::getRandPrecincts(bool requireUnassigned, int cnt, const std::function<bool(Precinct*, std::vector<Precinct*>)>& customPred) {
+    std::uniform_int_distribution<int> rand(0, precincts.size()-1);
+    std::vector<Precinct*> precs;
+    Precinct *p;
+    do {
+        p = precincts[rand(rd)];
+        if(!(requireUnassigned && p->isAssigned()) && customPred(p, precs) && std::find(precs.begin(), precs.end(), p) == precs.end())
+            precs.push_back(p);
+    } while(precs.size() < cnt);
+    return precs;
+}
+
 void State::finishProcessing() {
     int target = population / districtCount;
     int rem = population % districtCount;
