@@ -64,9 +64,9 @@ void State::partisanExpectedSeatAnalysis() {
         calculatedD = 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
         calculatedR = 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
 
-        std::cout << "\t\tDistrict 1: " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
+        std::cout << "\t\tDistrict "<< d->id << ": " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
         std::cout <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
-            (_D > _R ? " Democratic " : " Republican") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
+            (_D > _R ? " Democratic " : " Republican ") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
         //optional - print out per district analysis here
 
         dSum += calculatedD;

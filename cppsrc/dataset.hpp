@@ -45,9 +45,9 @@ class DataSet {
             else
                 this->title = name;
         }
-        const unsigned int getYr() const { return year; }
-        const DataType getType() const { return type; }
-        const std::string getTitle() const { return title; }
+        unsigned int getYr() const { return year; }
+        DataType getType() const { return type; }
+        std::string getTitle() const { return title; }
         virtual bool isDemographic() const = 0;
         bool operator<(const DataSet& other) const {
             if(type != other.type) return type < other.type;
@@ -56,7 +56,7 @@ class DataSet {
         bool operator==(const DataSet& other) const {
             return type==other.type && year==other.year;
         }
-        const int getTotal() const { return total; }
+        int getTotal() const { return total; }
 };
 
 bool isDemographic(const JsonValue& json);
@@ -73,8 +73,8 @@ class DemographicData : public DataSet {
         void mergeData(const DemographicData& target);
         void unmergeData(const DemographicData& target);
         bool isDemographic() const override { return true; };
-        const int getWhite() const { return white; }
-        const int getHispanic() const { return hispanic; }
+        int getWhite() const { return white; }
+        int getHispanic() const { return hispanic; }
         //todo more getters
 };
 

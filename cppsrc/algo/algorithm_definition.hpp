@@ -6,6 +6,7 @@
 
 #include <vector>
 
+
 void loadAlgorithms();
 
 /**
@@ -42,5 +43,11 @@ class SimpleDFS : public DistrictAlgorithm {
     public:
         SimpleDFS() : DistrictAlgorithm("SimpleDFS", "Algorithm that sequentially builds districts by DFS-ing from a random starting point") {}
         void process(Precinct *prec);
+        void drawMap(State& s);
+};
+
+class MultiBFS : public DistrictAlgorithm {
+    public:
+        MultiBFS() : DistrictAlgorithm("MultiBFS", "Algorithm that independently builds districts by BFS-ing from a random starting point per-district") {}
         void drawMap(State& s);
 };
