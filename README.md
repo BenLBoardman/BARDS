@@ -9,7 +9,7 @@ This is a programming package/library to support and use as a baseline for algor
 Data comes primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 ## States Supported
-BARDS currently has 2020 precinct data for New Hampshire. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
+BARDS currently has 2020 precinct data for California, Colorado, Hawaii, New Hampshire, Vermont, and Wyoming. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
 
 ## Output
 Completed maps are placed in `output/stateAbbr_<name>/`. The map itself is stored in `name.csv` within that directory.
@@ -29,15 +29,14 @@ To run BARDS, use the command `make run <state> <year> {optional args}`. Command
 
 Below is a more detailed explanation of planned required and optional arguments:
 
--  NOT YET IMPLEMENTED `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
 - `state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
 - `year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
 **Optional Arguments**
-- NOT YET IMPLEMENTED `name=<name>`: Give the output geoJSON a specific file name.
+- `name=<name>`: Give the output geoJSON a specific file name.
 - `districts=<numDists>`: Make the map with a specified number of districts instead of the default number for the state.
-- NOT YET IMPLEMENTED `debug=<file>`: Output all debug logging to a file with a given name and the `.log` extension. If this is instead `debug=true`, it will be outputted to `debug.log`.
-- NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
+- `info=<file>`: Output all info/debug logging to a file with a given name and the `.log` extension. If this is `log=console`, it will be outputted to the console. If no value is given, it will output to `info.log`.
+- `report=<file>`: Output the summary report to a custom filename. If this is `report=console`, it will be outputted to the console. If no value is given, it will output to `report.log`.
 
 ## Known Issues
 - (KI.1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
@@ -47,7 +46,8 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
-<RELEASE 1 - INITIAL OPEN SOURCE>
+
+<Initial Features>
 - District-level demographic/electoral data - completed
 - Population deviation calculation - completed
 - Compactness calculation - completed
@@ -61,7 +61,8 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - All state data - in progress
 - Well established documentation - in progress
 - Better error messages - not started
-<FUTURE RELEASES>
+
+<Future Goals>
 - More algorithms
 - County tracking
 - Report customizability
