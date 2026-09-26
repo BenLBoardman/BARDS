@@ -26,9 +26,9 @@ ifneq ($(strip $(name)),)
 endif
 
 # ==== Directories ====
-SRC_DIR  := cppsrc
-ALGO_DIR := cppsrc/algo
-UTIL_DIR := cppsrc/util
+SRC_DIR  := src
+ALGO_DIR := src/algo
+UTIL_DIR := src/util
 
 BIN_DIR      := bin
 OBJ_DIR      := bin/obj

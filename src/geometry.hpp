@@ -49,9 +49,31 @@ class GeoPoint {
     public:
         GeoPoint() : x(0), y(0) {}
         GeoPoint(double x, double y) : x(x), y(y) {}
+        /**
+         * @brief Get the point's x-coordinate.
+         * @return The x-coordinate.
+         */
         double getX() const;
+        /**
+         * @brief Get the point's y-coordinate.
+         * @return The y-coordinate.
+         */
         double getY() const;
+        /**
+         * @brief Exact equality comparison of coordinates.
+         * @param other The point to compare against.
+         * @return True if both x and y coordinates match exactly.
+         */
         bool operator==(const GeoPoint& other) const;
+        /**
+         * @brief Strict weak ordering over points, primarily by x then y.
+         *
+         * Used to allow GeoPoint to serve as a key in ordered containers
+         * (e.g. pointRegister).
+         *
+         * @param other The point to compare against.
+         * @return True if this point sorts before other.
+         */
         bool operator<(const GeoPoint& other) const;
 };
 
@@ -66,12 +88,28 @@ class GeoPoint {
  */
 class GeoLine {
     private:
+        /** Pointers into pointRegister for this line's two endpoints. */
         const GeoPoint *p1, *p2;
+        /** Precomputed midpoint of the line, used as its registry key. */
         GeoPoint midpoint;
+        /** Precomputed Euclidean length of the line. */
         double length;
+        /** Geometry objects that currently include this line as a boundary edge. */
         std::set<Geometry*> owners;
     public:
+        /** @brief Construct an empty/default line with no endpoints. */
         GeoLine(){}
+        /**
+         * @brief Construct a line from two endpoint coordinates.
+         *
+         * Registers (or reuses) both endpoints in pointRegister, and
+         * precomputes the line's midpoint and length.
+         *
+         * @param x1 X-coordinate of the first endpoint.
+         * @param x2 X-coordinate of the second endpoint.
+         * @param y1 Y-coordinate of the first endpoint.
+         * @param y2 Y-coordinate of the second endpoint.
+         */
         GeoLine(double x1, double x2, double y1, double y2);
         const GeoPoint& getMidpoint() const;
         double getLength();
