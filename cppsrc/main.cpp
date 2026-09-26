@@ -50,10 +50,12 @@ bool handleArgs(int argc, char *argv[]) {
             dists = std::stoi(currArg.substr(10));
         }
         else if(currArg.compare(0, 4, "log=") == 0) {
-            logName = currArg.substr(4)+".log";
+            logName = currArg.substr(4);
+            transform(logName.begin(), logName.end(), logName.begin(), ::tolower);
         }
         else if(currArg.compare(0, 7, "report=") == 0) {
             reportName = currArg.substr(7);
+            transform(reportName.begin(), reportName.end(), reportName.begin(), ::tolower);
         }
         else if(currArg.compare(0, 5, "name=") == 0) {
             name = currArg.substr(5);
@@ -87,7 +89,7 @@ bool validateArgs() {
         outDir = DATAPATH_OUT+state+"_"+name+std::to_string(nameIndex)+"/";
     } while(!std::filesystem::create_directory(outDir));
 
-    logs::initialize(logName, outDir);
+    logs::initialize(logName, outDir, reportName);
     return true;
 }
 

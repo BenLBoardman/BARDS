@@ -1,4 +1,5 @@
 #include "classdefs.hpp"
+#include "util/ioUtil.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -8,17 +9,17 @@
 void State::populationDeviationAnalysis() {
     District *smallest = nullptr, *largest = nullptr;
     double avgTarget = 1.0*population / districts.size();
-    std::cout << std::setprecision(4) << "Population Deviation Analysis:" << std::endl;
+    logs::report << std::setprecision(4) << "Population Deviation Analysis:" << std::endl;
     for(auto d : districts) {
         if(smallest == nullptr || d->getPopulation() < smallest->getPopulation())
             smallest = d;
         if(largest == nullptr || d->getPopulation() > largest->getPopulation())
             largest = d;
-        std::cout << "\tDistrict " << d->id << ": Population " << d->getPopulation() << "(Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
+        logs::report << "\tDistrict " << d->id << ": Population " << d->getPopulation() << "(Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
     }
     double dev = (largest->getPopulation() - smallest->getPopulation())/avgTarget;
-    std::cout << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) > 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
-    std::cout << "\t The largest district is District " << largest->id << ", while the smallest district is District " << smallest->id << "." << std::endl;
+    logs::report << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) > 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
+    logs::report << "\t The largest district is District " << largest->id << ", while the smallest district is District " << smallest->id << "." << std::endl;
 }   
 
 /**
@@ -40,8 +41,8 @@ void State::efficiencyGapAnalysis() {
         totalR += R;
     }
     gap =  1.0*(wastedR-wastedD)/(totalD+totalR);
-    std::cout << std::setprecision(4);
-    std::cout << "Statewide two-party efficiency gap: " << std::abs(gap*100) << "% biased towards " << (gap > 0 ? "Democrats." : "Republicans.") << std::endl;
+    logs::report << std::setprecision(4);
+    logs::report << "Statewide two-party efficiency gap: " << std::abs(gap*100) << "% biased towards " << (gap > 0 ? "Democrats." : "Republicans.") << std::endl;
 }
 
 /**
@@ -55,7 +56,7 @@ void State::partisanExpectedSeatAnalysis() {
 
     D = canonicalElex->getDem();
     R = canonicalElex->getRep();
-    std::cout << "Statewide Partisan Fairness Analysis: " << std::endl;
+    logs::report << "Statewide Partisan Fairness Analysis: " << std::endl;
     //calculate proportional Democratic seat wins
     vFracD = 1.0 * D / canonicalElex->getTotal();
     vFracR = 1.0 * R / canonicalElex->getTotal();
@@ -68,12 +69,12 @@ void State::partisanExpectedSeatAnalysis() {
     } else if (proportionalD+proportionalR < districtCount) {
         proportionalR++;
     }
-    std::cout << std::setprecision(4);
-    std::cout << "\tIn the selected election, Democrats won " << vFracD*100 << "\% of the vote, while Republicans won " 
+    logs::report << std::setprecision(4);
+    logs::report << "\tIn the selected election, Democrats won " << vFracD*100 << "\% of the vote, while Republicans won " 
         << vFracR*100 << "\%." << std::endl;
-    std::cout << "\tIn a truly proportional map, Democrats would win " << proportionalD << " seats, while Republicans would win " 
+    logs::report << "\tIn a truly proportional map, Democrats would win " << proportionalD << " seats, while Republicans would win " 
         << proportionalR << " seats." << std::endl;
-    std::cout << "\tBelow are seat-by-seat two party percentages and win probabilities (excluding third parties)." <<std::endl;
+    logs::report << "\tBelow are seat-by-seat two party percentages and win probabilities (excluding third parties)." <<std::endl;
     for(auto d : districts) {
         auto e = d->getCanonicalElex();
         auto _D = 1.0 * e->getDem() / (e->getDem()+e->getRep());
@@ -81,8 +82,8 @@ void State::partisanExpectedSeatAnalysis() {
         calculatedD = 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
         calculatedR = 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
 
-        std::cout << "\t\tDistrict "<< d->id << ": " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
-        std::cout <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
+        logs::report << "\t\tDistrict "<< d->id << ": " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
+        logs::report <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
             (_D > _R ? " Democratic " : " Republican ") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
         //optional - print out per district analysis here
 
@@ -91,8 +92,8 @@ void State::partisanExpectedSeatAnalysis() {
     }
     dSum = dSum < 0.01 ? 0 : dSum;
     rSum = rSum < 0.01 ? 0 : rSum;
-    std::cout << "\tStatistical analysis estimates that on this map, Democrats would win " << dSum << " seats, while Republicans would win " 
+    logs::report << "\tStatistical analysis estimates that on this map, Democrats would win " << dSum << " seats, while Republicans would win " 
         << rSum << " seats." << std::endl;
     disprop = (dSum - proportionalD)/districtCount;
-    std::cout << "\tThis represents a " << (std::abs(disprop*100)) << "\% disproportionality in favor of" << ((disprop > 0) ? " Democrats." : " Republicans.") << std::endl;
+    logs::report << "\tThis represents a " << (std::abs(disprop*100)) << "\% disproportionality in favor of" << ((disprop > 0) ? " Democrats." : " Republicans.") << std::endl;
 }
