@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << "District drawing complete..." << std::endl;
     outputDistricts(s);
+    s.fullReport();
 }
 
 bool handleArgs(int argc, char *argv[]) {

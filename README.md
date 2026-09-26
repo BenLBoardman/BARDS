@@ -56,13 +56,16 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - More command line arguments - completed
 - Algorithm selection system - completed
 - Better logging framework - completed
+- Report generation (file containing population balance, partisan fairness, compactness info) - complete
+- Fully realized BFS-based algorithm - complete
 - All state data - in progress
-- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
 - Well established documentation - in progress
-- Fully realized BFS-based algorithm - in progress
 - Better error messages - not started
 <FUTURE RELEASES>
 - More algorithms
+- County tracking
+- Report customizability
+- Default configs
 - More report metrics
 - Multithreaded support
 - Multithreaded precinct load

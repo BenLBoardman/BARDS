@@ -15,7 +15,6 @@ void State::populationDeviationAnalysis() {
             smallest = d;
         if(largest == nullptr || d->getPopulation() > largest->getPopulation())
             largest = d;
-        logs::report << "\tDistrict " << d->id << ": Population " << d->getPopulation() << "(Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
     }
     double dev = (largest->getPopulation() - smallest->getPopulation())/avgTarget;
     logs::report << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) < 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
@@ -82,11 +81,6 @@ void State::partisanExpectedSeatAnalysis() {
         calculatedD = 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
         calculatedR = 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
 
-        logs::report << "\t\tDistrict "<< d->id << ": " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
-        logs::report <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
-            (_D > _R ? " Democratic " : " Republican ") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
-        //optional - print out per district analysis here
-
         dSum += calculatedD;
         rSum += calculatedR;
     }
@@ -115,4 +109,36 @@ void State::contiguityCompactnessAnalysis() {
 
     logs::report << "\tThis map has a Polsby-Popper compactness of " << polsby <<". Higher numbers are better." << std::endl;
     logs::report << "\tThis map has a Reock compactness of " << reock <<". Higher numbers are better." << std::endl;
+}
+
+void State::districtByDistrictAnalysis() {
+    logs::report << std::setprecision(4) << "District-by-district statistics:" << std::endl;
+    for(auto d : districts) {
+        logs::report << "\tDistrict " << d->id << ":" << std::endl;
+        logs::report << "\t\tContiguous & free of holes: " << (d->isContiguous() ? "Yes" : "No") << std::endl;
+        if(d->isContiguous()) 
+            logs::report << "\t\tCompactness: " << d->compactnessPolsbyPopper() << " Polsby-Popper, " << d->compactnessReock() << " Reock." << std::endl;
+        else 
+            logs::report << "\t\tCannot calculate compactness since this district is not contiguous (or has holes)." << std::endl;
+        logs::report << "\t\tPopulation: " << d->getPopulation() << " (Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
+        auto e = d->getCanonicalElex();
+        auto _D = 1.0 * e->getDem() / (e->getDem()+e->getRep());
+        auto _R = 1.0 * e->getRep() / (e->getDem()+e->getRep());
+        auto calculatedD = 0.5*(std::erfc((_R-0.5)/0.04/std::sqrt(2.0)));
+        auto calculatedR = 0.5*(std::erfc((_D-0.5)/0.04/std::sqrt(2.0)));
+
+        logs::report << "\t\tPartisanship: " << _D*100 << "\% Democrats, " << _R*100 << "% Republicans." << std::endl;
+        logs::report <<  "\t\t\tStatistical analysis suggests this district will vote"  <<
+            (_D > _R ? " Democratic " : " Republican ") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
+    }
+}
+
+
+void State::fullReport() {
+    logs::report << "Map analysis & report using the selected canonical demographic survey " << canonicalDemo->getTitle() << " and election " << canonicalElex->getTitle() << "." << std::endl;
+    contiguityCompactnessAnalysis();
+    populationDeviationAnalysis();
+    partisanExpectedSeatAnalysis();
+    efficiencyGapAnalysis();
+    districtByDistrictAnalysis();
 }

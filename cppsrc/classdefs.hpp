@@ -92,4 +92,7 @@ class State : public ElectoralEntity {
     void populationDeviationAnalysis();
     void efficiencyGapAnalysis();
     void partisanExpectedSeatAnalysis();
+    void contiguityCompactnessAnalysis();
+    void districtByDistrictAnalysis();
+    void fullReport();
 };

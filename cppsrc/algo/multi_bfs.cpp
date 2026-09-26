@@ -47,12 +47,4 @@ void MultiBFS::drawMap(State& s) {
         i = i % dists.size();
     }
 
-    std::cout << "DISTRICTS COMPUTED. DISTRICT REPORT:" << std::endl;
-    
-    s.contiguityCompactnessAnalysis();
-    s.populationDeviationAnalysis();
-    s.efficiencyGapAnalysis();
-    s.partisanExpectedSeatAnalysis();
-
-
 }
