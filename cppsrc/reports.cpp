@@ -18,7 +18,7 @@ void State::populationDeviationAnalysis() {
         logs::report << "\tDistrict " << d->id << ": Population " << d->getPopulation() << "(Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
     }
     double dev = (largest->getPopulation() - smallest->getPopulation())/avgTarget;
-    logs::report << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) > 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
+    logs::report << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) < 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
     logs::report << "\t The largest district is District " << largest->id << ", while the smallest district is District " << smallest->id << "." << std::endl;
 }   
 
@@ -96,4 +96,23 @@ void State::partisanExpectedSeatAnalysis() {
         << rSum << " seats." << std::endl;
     disprop = (dSum - proportionalD)/districtCount;
     logs::report << "\tThis represents a " << (std::abs(disprop*100)) << "\% disproportionality in favor of" << ((disprop > 0) ? " Democrats." : " Republicans.") << std::endl;
+}
+
+void State::contiguityCompactnessAnalysis() {
+    bool isContiguous = true;
+    for(auto d : districts) {
+        if(!d->isContiguous()) {
+            isContiguous = false;
+            break;
+        }
+    }
+    logs::report << std::setprecision(4) << "Statewide Contiguity/Compactness Analysis:" << std::endl;
+    logs::report << "\tThis map " << (isComplete() ? "is" : "is not") << " complete (all precincts assigned to districts)." << std::endl;
+    logs::report << "\tThis map " << (isContiguous ? "is" : "is not") << " contiguous." << std::endl;
+
+    double polsby = compactnessPolsbyPopper();
+    double reock = compactnessReock();
+
+    logs::report << "\tThis map has a Polsby-Popper compactness of " << polsby <<". Higher numbers are better." << std::endl;
+    logs::report << "\tThis map has a Reock compactness of " << reock <<". Higher numbers are better." << std::endl;
 }
