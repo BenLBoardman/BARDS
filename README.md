@@ -47,7 +47,7 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
 
-<Initial Features>
+Initial Features
 - District-level demographic/electoral data - completed
 - Population deviation calculation - completed
 - Compactness calculation - completed
@@ -58,11 +58,11 @@ The basic BARDS is functional but not complete. Below is a list of currently-pla
 - Better logging framework - completed
 - Report generation (file containing population balance, partisan fairness, compactness info) - complete
 - Fully realized BFS-based algorithm - complete
+- Well established documentation - complete
 - All state data - in progress
-- Well established documentation - in progress
 - Better error messages - not started
 
-<Future Goals>
+Future Goals
 - More algorithms
 - County tracking
 - Report customizability

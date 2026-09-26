@@ -1,3 +1,8 @@
+/**
+ * @file algorithm_definition.cpp
+ * @brief Implementation of loadAlgorithms() (see algorithm_definition.hpp
+ *        for function-level documentation).
+ */
 #include "algorithm_definition.hpp"
 
 void loadAlgorithms() {

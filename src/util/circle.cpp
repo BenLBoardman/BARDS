@@ -1,3 +1,8 @@
+/**
+ * @file circle.cpp
+ * @brief Implementation of Circle and the minimum bounding circle helpers
+ *        (see circle.hpp for function-level documentation).
+ */
 #include "circle.hpp"
 #include "../geometry.hpp"
 

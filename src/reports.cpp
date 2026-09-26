@@ -1,3 +1,10 @@
+/**
+ * @file reports.cpp
+ * @brief Implementation of State's statewide and district-by-district
+ *        report-generation methods (see classdefs.hpp for
+ *        method-level documentation).
+ */
+
 #include "classdefs.hpp"
 #include "util/ioUtil.hpp"
 
@@ -21,11 +28,7 @@ void State::populationDeviationAnalysis() {
     logs::report << "\t The largest district is District " << largest->id << ", while the smallest district is District " << smallest->id << "." << std::endl;
 }   
 
-/**
- * Calculate and print the two-party efficiency gap across an entire state.
- * The efficiency gap is the difference between each party's wasted votes as a
- * fraction of the total two-party votes cast in an election.
- */
+
 void State::efficiencyGapAnalysis() {
     int totalR=0, totalD=0, wastedD=0, wastedR=0;
     double gap;
@@ -44,10 +47,7 @@ void State::efficiencyGapAnalysis() {
     logs::report << "Statewide two-party efficiency gap: " << std::abs(gap*100) << "% biased towards " << (gap > 0 ? "Democrats." : "Republicans.") << std::endl;
 }
 
-/**
- * Calculate and print analysis of the seat count for both parties in a proportional map,
- * and then use statistics to estimate and print the expected seat count of the current map.
- */
+
 void State::partisanExpectedSeatAnalysis() {
     double proportionalDeviation, calculatedD, calculatedR, dSum = 0, rSum = 0,
     vFracD, vFracR, disprop;
@@ -60,7 +60,6 @@ void State::partisanExpectedSeatAnalysis() {
     vFracD = 1.0 * D / canonicalElex->getTotal();
     vFracR = 1.0 * R / canonicalElex->getTotal();
     
-    //todo - assign
     proportionalD = std::round(vFracD * districtCount);
     proportionalR = std::round(vFracR * districtCount);
     if(proportionalD+proportionalR < districtCount && (D-D/districtCount*proportionalD > R-R/districtCount*proportionalR)) {
@@ -132,7 +131,6 @@ void State::districtByDistrictAnalysis() {
             (_D > _R ? " Democratic " : " Republican ") << (_D > _R ?  calculatedD*100 : calculatedR*100) << "\% of the time." << std::endl; 
     }
 }
-
 
 void State::fullReport() {
     logs::report << "Map analysis & report using the selected canonical demographic survey " << canonicalDemo->getTitle() << " and election " << canonicalElex->getTitle() << "." << std::endl;

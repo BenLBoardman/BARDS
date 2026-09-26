@@ -1,3 +1,9 @@
+/**
+ * @file dataset.cpp
+ * @brief Implementation of DemographicData, ElectionData, and the dataset
+ *        type-parsing helpers (see dataset.hpp for class- and
+ *        member-level documentation).
+ */
 #include "dataset.hpp"
 
 bool isDemographic(const JsonValue& json) {

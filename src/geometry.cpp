@@ -1,3 +1,10 @@
+/**
+ * @file geometry.cpp
+ * @brief Implementation of GeoPoint, GeoLine, and Geometry.
+ *
+ * See geometry.hpp for documentation of the types, functions, and globals
+ * defined here.
+ */
 #include "geometry.hpp"
 #include "electoralentity.hpp"
 
@@ -128,9 +135,7 @@ Circle Geometry::getMinimumBoundingCircle() {
     return minimumBoundingCircle;
 }
 
-/**
- * Update Geometry perimeter length, centroid, and contiguity information
- */
+
 void Geometry::updateCached() {
     if(cached) {
         return;

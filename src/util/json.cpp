@@ -1,33 +1,69 @@
+/**
+ * @file json.cpp
+ * @brief Recursive-descent JSON parser implementation. Defines the
+ *        internal Parser struct used to build a JsonValue tree, and
+ *        implements parseJson() (see json.hpp for its documentation).
+ */
 #include "json.hpp"
 #include <cctype>
 #include <cstdlib>
 
 // ── parser state ─────────────────────────────────────────────────────────────
 
+/**
+ * @struct Parser
+ * @brief Internal recursive-descent parser state for turning a JSON source
+ *        string into a JsonValue tree. Not exposed outside this file; used
+ *        only by parseJson().
+ */
 struct Parser {
+    /** @brief The JSON source text being parsed. */
     const std::string& src;
+    /** @brief The current read offset into src. */
     std::size_t pos = 0;
 
+    /**
+     * @brief Construct a parser over the given source text, starting at position 0.
+     * @param src The JSON source text to parse.
+     */
     Parser(const std::string& src) : src(src) {}
 
     // ── helpers ───────────────────────────────────────────────────────────────
 
+    /**
+     * @brief Look at the character at the current position without consuming it.
+     * @return The character at pos.
+     * @throws std::runtime_error if pos is at or past the end of the input.
+     */
     char peek() const {
         if (pos >= src.size()) throw std::runtime_error("JSON: unexpected end of input");
         return src[pos];
     }
 
+    /**
+     * @brief Consume and return the character at the current position, advancing pos.
+     * @return The character that was at pos.
+     * @throws std::runtime_error if pos is at or past the end of the input.
+     */
     char consume() {
         if (pos >= src.size()) throw std::runtime_error("JSON: unexpected end of input");
         return src[pos++];
     }
 
+    /**
+     * @brief Consume the next character and verify it matches an expected character.
+     * @param c The expected character.
+     * @throws std::runtime_error if the consumed character does not equal c.
+     */
     void expect(char c) {
         char got = consume();
         if (got != c) throw std::runtime_error(
             std::string("JSON: expected '") + c + "', got '" + got + "' at pos " + std::to_string(pos-1));
     }
 
+    /**
+     * @brief Advance pos past any run of whitespace characters.
+     */
     void skipWhitespace() {
         while (pos < src.size() && std::isspace((unsigned char)src[pos]))
             ++pos;
@@ -35,6 +71,11 @@ struct Parser {
 
     // ── value parsers ─────────────────────────────────────────────────────────
 
+    /**
+     * @brief Parse a single JSON value of any type, dispatching on the next non-whitespace character.
+     * @return The parsed JsonValue.
+     * @throws std::runtime_error if the next character does not begin a valid JSON value.
+     */
     JsonValue parseValue() {
         skipWhitespace();
         char c = peek();
@@ -48,11 +89,23 @@ struct Parser {
         throw std::runtime_error(std::string("JSON: unexpected character '") + c + "' at pos " + std::to_string(pos));
     }
 
+    /**
+     * @brief Consume a fixed keyword literal (e.g. "true", "false", "null") character by character.
+     * @param literal The exact keyword expected at the current position.
+     * @param result The JsonValue to return once the literal has been consumed.
+     * @return result, once the literal has matched.
+     * @throws std::runtime_error if any character does not match the expected literal.
+     */
     JsonValue parseLiteral(const std::string& literal, JsonValue result) {
         for (char c : literal) expect(c);
         return result;
     }
 
+    /**
+     * @brief Parse a JSON number (integer, decimal, and/or exponent parts) into a numeric JsonValue.
+     * @return The parsed JsonValue holding a double.
+     * @throws std::runtime_error if the number's integer part is missing a digit.
+     */
     JsonValue parseNumber() {
         std::size_t start = pos;
         if (peek() == '-') ++pos;
@@ -72,6 +125,15 @@ struct Parser {
         return JsonValue(std::stod(numStr));
     }
 
+    /**
+     * @brief Parse a double-quoted JSON string, resolving backslash escape sequences.
+     *
+     * Unicode ("\\uXXXX") escapes are recognized and skipped over but not
+     * decoded; each is emitted as a literal '?' placeholder character.
+     *
+     * @return The parsed JsonValue holding the decoded string.
+     * @throws std::runtime_error if the string or an escape sequence is unterminated, or an unknown escape character is used.
+     */
     JsonValue parseString() {
         expect('"');
         std::string result;
@@ -110,6 +172,11 @@ struct Parser {
         return JsonValue(std::move(result));
     }
 
+    /**
+     * @brief Parse a JSON array ("[...]") of comma-separated values.
+     * @return The parsed JsonValue holding a JsonArray.
+     * @throws std::runtime_error if elements are not separated by ',' or the array is not properly closed with ']'.
+     */
     JsonValue parseArray() {
         expect('[');
         JsonArray arr;
@@ -126,6 +193,11 @@ struct Parser {
         return JsonValue(std::move(arr));
     }
 
+    /**
+     * @brief Parse a JSON object ("{...}") of comma-separated "key": value pairs.
+     * @return The parsed JsonValue holding a JsonObject.
+     * @throws std::runtime_error if a key/value pair is malformed, members are not separated by ',', or the object is not properly closed with '}'.
+     */
     JsonValue parseObject() {
         expect('{');
         JsonObject obj;

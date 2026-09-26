@@ -1,3 +1,8 @@
+/**
+ * @file classdefs.cpp
+ * @brief Implementation of Precinct, District, and State (see classdefs.hpp
+ *        for class- and member-level documentation).
+ */
 #include "classdefs.hpp"
 
 std::random_device rd;
@@ -154,14 +159,6 @@ Precinct* State::getRandPrecinct(bool requireUnassigned) {
     return p;
 }
 
-/**
- * @brief Get an arbitrary number of unique randomly-selected precincts conforming to a custom predicate.
- * @param requireUnassigned If true, will additionally require that the precincts selected are not assigned to any district.
- * @param cnt The number of precincts to return.
- * @param customPred A custom predicate taking as parameters a pointer to the calling State, the list of precincts already selected and the most recently selected candidate precinct. 
- *    If not passed in, it will always return "true".
- * @return A vector of pointers to the selected precincts.
- */
 std::vector<Precinct*> State::getRandPrecincts(bool requireUnassigned, int cnt, const std::function<bool(State*, Precinct*, std::vector<Precinct*>)>& customPred) {
     std::uniform_int_distribution<int> rand(0, precincts.size()-1);
     std::vector<Precinct*> precs;

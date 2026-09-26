@@ -1,16 +1,27 @@
+/**
+ * @file main.cpp
+ * @brief Implementation of the program entry point and its supporting
+ *        argument-handling/state-loading functions (see main.hpp for
+ *        function-level documentation).
+ */
 #include "main.hpp"
 
 
 std::string state;
 std::string year;
+/** @brief Optional user-supplied run name (from the name= argument), used to name the output directory and district file; empty if not supplied. */
 std::string name = "";
 int dists = -1;
 std::string logName = "info";
 std::string reportName = "report";
+/** @brief Reserved for a future algorithm-selection command-line argument; currently unused (algorithm selection is done interactively via pickAlgorithm()). */
 std::string algo;
 std::vector<DistrictAlgorithm*> algos;
+/** @brief The output directory for this run's logs, report, and district assignment file, created by validateArgs(). */
 std::string outDir;
+/** @brief Numeric suffix appended to the output directory/file names to keep each run's output unique. */
 int nameIndex;
+/** @brief The district-drawing algorithm selected by the user via pickAlgorithm(). */
 DistrictAlgorithm* D;
 
 int main(int argc, char *argv[]) {
