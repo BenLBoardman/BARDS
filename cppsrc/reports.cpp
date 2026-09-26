@@ -4,6 +4,23 @@
 #include <iomanip>
 #include <cmath>
 
+
+void State::populationDeviationAnalysis() {
+    District *smallest = nullptr, *largest = nullptr;
+    double avgTarget = 1.0*population / districts.size();
+    std::cout << std::setprecision(4) << "Population Deviation Analysis:" << std::endl;
+    for(auto d : districts) {
+        if(smallest == nullptr || d->getPopulation() < smallest->getPopulation())
+            smallest = d;
+        if(largest == nullptr || d->getPopulation() > largest->getPopulation())
+            largest = d;
+        std::cout << "\tDistrict " << d->id << ": Population " << d->getPopulation() << "(Target: " << d->targetPop << "). This is a " << (d->getDeviation()-1)*100 << "\% population deviation." << std::endl;
+    }
+    double dev = (largest->getPopulation() - smallest->getPopulation())/avgTarget;
+    std::cout << "\tThe statewide deviation is " << dev*100 << "\%. Courts typically expect less than 0.75\% deviation, so this map would likely " << (std::abs(dev) > 0.0075 ? "be " : "not be ") << "considered legal." << std::endl;
+    std::cout << "\t The largest district is District " << largest->id << ", while the smallest district is District " << smallest->id << "." << std::endl;
+}   
+
 /**
  * Calculate and print the two-party efficiency gap across an entire state.
  * The efficiency gap is the difference between each party's wasted votes as a

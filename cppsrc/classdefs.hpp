@@ -55,6 +55,7 @@ class District : public ElectoralEntity {
     double compactnessReock(){ return geo.getReock(); }
     double popDeviation() { return 1.0*(population-targetPop)/targetPop; }
     bool isUnassigned() { return id.compare("0") == 0; }
+    double getDeviation() { return 1.0 * population / targetPop; }
 };
 
 class State : public ElectoralEntity {
@@ -72,7 +73,7 @@ class State : public ElectoralEntity {
     void addPrecinct(Precinct& p);
     Precinct* getRandPrecinct(bool requireUnassigned);
     std::vector<Precinct*> getRandPrecincts(bool requireUnassigned, int cnt, 
-      const std::function<bool(Precinct*, std::vector<Precinct*>)>& customPred = [](Precinct *p, std::vector<Precinct*> precs){return true; });
+      const std::function<bool(State*, Precinct*, std::vector<Precinct*>)>& customPred = [](State *s, Precinct *p, std::vector<Precinct*> precs){return true; });
     void finishProcessing();
     void loadDatasets(const JsonValue& json);
     const std::set<std::string>& getDatasetNames() const { return datasetNames; }
@@ -88,7 +89,7 @@ class State : public ElectoralEntity {
     double compactnessPolsbyPopper();
     double compactnessReock();
     bool isComplete();
-    double popDeviation();
+    void populationDeviationAnalysis();
     void efficiencyGapAnalysis();
     void partisanExpectedSeatAnalysis();
 };
