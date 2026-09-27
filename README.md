@@ -37,6 +37,7 @@ Below is a more detailed explanation of planned required and optional arguments:
 - `districts=<numDists>`: Make the map with a specified number of districts instead of the default number for the state.
 - `info=<file>`: Output all info/debug logging to a file with a given name and the `.log` extension. If this is `log=console`, it will be outputted to the console. If no value is given, it will output to `info.log`.
 - `report=<file>`: Output the summary report to a custom filename. If this is `report=console`, it will be outputted to the console. If no value is given, it will output to `report.log`.
+- `map-count=<num>`: If this is set, BARDS will generate `num` maps with the same state data and will output summary statistics across all maps in the report instead of individual map statistics. This is intended to be used to benchmark different algorithms on various values. If this is set, the map itself will not be outputted.
 
 ## Known Issues
 - (KI.1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
@@ -59,6 +60,7 @@ Initial Features
 - Report generation (file containing population balance, partisan fairness, compactness info) - complete
 - Fully realized BFS-based algorithm - complete
 - Well established documentation - complete
+- Generate multiple maps at once - complete
 - All state data - in progress
 - Better error messages - not started
 

@@ -24,6 +24,9 @@ endif
 ifneq ($(strip $(name)),)
   ARGS += name=$(name)
 endif
+ifneq ($(strip $(map-count)),)
+  ARGS += map-count=$(map-count)
+endif
 
 # ==== Directories ====
 SRC_DIR  := src

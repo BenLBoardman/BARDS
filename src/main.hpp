@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <chrono>
 
 #include "classdefs.hpp"
 #include "util/json.hpp"
@@ -27,8 +28,8 @@
 extern std::string state;
 /** @brief The census/data year supplied on the command line, used to locate the input GeoJSON directory. */
 extern std::string year;
-/** @brief The requested number of districts to draw; -1 (the default) selects the state's default district count. */
-extern int dists;
+/** @brief The requested number of districts to draw; 0 (the default) selects the state's default district count. */
+extern unsigned int dists;
 /** @brief The debug log's output file name (without extension), or "console" to log to stdout. */
 extern std::string logName;
 /** @brief The generated report's output file name (without extension), or "console" to log to stdout. */
@@ -77,3 +78,9 @@ State processGeoJson(std::string stateName, std::string filename);
  * @param s The districted state to export.
  */
 void outputDistricts(State s);
+
+/**
+ * @brief Create reports on a list of states produced by a batch run of BARDS.
+ * @param maps A std::vector of the maps to include in the output.
+ */
+void multiMapReport(std::vector<State> maps);

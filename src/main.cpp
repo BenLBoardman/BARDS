@@ -11,18 +11,18 @@ std::string state;
 std::string year;
 /** @brief Optional user-supplied run name (from the name= argument), used to name the output directory and district file; empty if not supplied. */
 std::string name = "";
-int dists = -1;
+unsigned int dists = 0;
 std::string logName = "info";
 std::string reportName = "report";
-/** @brief Reserved for a future algorithm-selection command-line argument; currently unused (algorithm selection is done interactively via pickAlgorithm()). */
-std::string algo;
 std::vector<DistrictAlgorithm*> algos;
 /** @brief The output directory for this run's logs, report, and district assignment file, created by validateArgs(). */
 std::string outDir;
 /** @brief Numeric suffix appended to the output directory/file names to keep each run's output unique. */
-int nameIndex;
+unsigned int nameIndex;
 /** @brief The district-drawing algorithm selected by the user via pickAlgorithm(). */
 DistrictAlgorithm* D;
+/** @brief The number of maps to be generated as part of this run. A value other than one sets up different reporting structures. */
+unsigned int mapCount = 0;
 
 int main(int argc, char *argv[]) {
     
@@ -37,13 +37,44 @@ int main(int argc, char *argv[]) {
     std::string fpath = getStatePath(state, year);
     std::cout << "Retrieving data at " << fpath << "..." << std::endl;
     State s = processGeoJson(state, fpath);
+    if(mapCount == 0) {
 
-    std::cout << "Drawing districts..." << std::endl;
-    D->drawMap(s);
+        std::cout << "Drawing districts..." << std::endl;
+        D->drawMap(s);
 
-    std::cout << "District drawing complete..." << std::endl;
-    outputDistricts(s);
-    s.fullReport();
+        std::cout << "District drawing complete..." << std::endl;
+        outputDistricts(s);
+        s.fullReport();
+    } else {
+        double polsbyPopper = 0, reock = 0, disproportionality = 0, populationDeviation = 0;
+        int numIncomplete = 0;
+        auto elapsed = std::chrono::milliseconds::zero();
+        for(int i = 0; i < mapCount; i++) {
+            auto start = std::chrono::steady_clock::now();
+            D->drawMap(s);
+            auto now = std::chrono::steady_clock::now();
+            elapsed += std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
+            
+            numIncomplete += !s.isComplete();
+            polsbyPopper += s.compactnessPolsbyPopper();
+            reock += s.compactnessReock();
+            disproportionality += s.getSeatDisproportionality();
+            populationDeviation += s.getPopulationDeviation();
+
+            s.clearMap();
+        }
+        
+        double averageTime = elapsed.count() / (mapCount*1000);
+        double avgPolsbyPopper = polsbyPopper/mapCount;
+        double avgReock = reock/mapCount;
+        double avgDisproportionality = disproportionality/mapCount;
+        double avgDeviation = populationDeviation/mapCount;
+        logs::report << std::setprecision(8) << mapCount << " maps for " << s.name << " drawn with " << dists << " districts each using algorithm " << D->name << ":" <<std::endl;
+        logs::report << "Average time per map: " << averageTime << " seconds." << std::setprecision(4) << std::endl;
+        logs::report << numIncomplete << "(" << (100.0*numIncomplete/mapCount) << "\%) of the maps were incomplete." << std::endl;
+        logs::report << "The maps had an average population deviation of " << avgDeviation*100 << "\%." << std::endl;
+        logs::report << "The maps had an average disproportionality of " << avgDisproportionality << "\% in favor of" << (avgDisproportionality > 0 ? " Democrats." : " Republicans.") << std::endl;
+    }
 }
 
 bool handleArgs(int argc, char *argv[]) {
@@ -72,6 +103,9 @@ bool handleArgs(int argc, char *argv[]) {
         else if(currArg.compare(0, 5, "name=") == 0) {
             name = currArg.substr(5);
         }
+        else if(currArg.compare(0, 10, "map-count=") == 0) {
+            mapCount = std::stoi(currArg.substr(10));
+        }
         else {
             std::cout << "Error: Unrecognized argument " << argv[i] << "." << std::endl;
             return false; 
@@ -91,8 +125,8 @@ bool validateArgs() {
         std::cout << "Invalid state parameter " << state << " entered. Aborting." << std::endl;
         return false;
     }
-    if(dists < 1) {
-        std::cout << "Maps must be drawn with at least one district, entered " << dists <<". Value will be set to the default for this state." << std::endl;
+    if(dists == 0) {
+        std::cout << "District count has not been specified, using the default value for this state." << std::endl;
     }
 
     nameIndex = -1;

@@ -28,9 +28,7 @@ class State;
 
 /** @brief Shared random-number source used for random precinct/neighbor selection throughout the program. */
 extern std::random_device rd;
-/** @brief Pointer to the special "unassigned" District (id "0") that holds precincts not currently assigned to a real district. 
- *  Exists as a global to make access easier. */
-extern District *unassigned;
+
 
 /**
  * @class Precinct
@@ -70,7 +68,7 @@ class Precinct : public ElectoralEntity {
        * @brief Determine whether this precinct has been assigned to a real (non-"unassigned") district.
        * @return True if assigned to a non-null district other than the unassigned district.
        */
-      bool isAssigned() { return district != nullptr && district != unassigned;  }
+      bool isAssigned();
       /**
        * @brief Get the list of neighboring precincts.
        * @return A copy of the neighbors vector.
@@ -100,7 +98,22 @@ class District : public ElectoralEntity {
     State& state;
     /** @brief The precincts currently assigned to this district. */
     std::vector<Precinct*> precincts;
-
+    /** @brief A pointer to the unassigned district, which this district stores to keep updated.  */
+    District *unassigned;
+    /** @brief Whether demVoteShare, repVoteShare, demWinProbability, and repWinProbability are up to date with the current canonical election data. */
+    bool statsCached;
+    /** @brief Cached two-party Democratic vote share of this district's canonical election, in [0, 1]. */
+    double demVoteShare;
+    /** @brief Cached two-party Republican vote share of this district's canonical election, in [0, 1]. */
+    double repVoteShare;
+    /** @brief Cached statistically estimated probability that this district votes Democratic, derived from demVoteShare/repVoteShare. */
+    double demWinProbability;
+    /** @brief Cached statistically estimated probability that this district votes Republican, derived from demVoteShare/repVoteShare. */
+    double repWinProbability;
+    /**
+     * @brief Recompute demVoteShare, repVoteShare, demWinProbability, and repWinProbability from the current canonical election data, if not already cached.
+     */
+    void updateStats();
 
   public:
     /** @brief The ideal population for this district, assigned at construction from the statewide population and district count. */
@@ -110,8 +123,9 @@ class District : public ElectoralEntity {
      * @param state The owning State.
      * @param id The district's identifier string ("0" designates the special unassigned district and sets the global `unassigned` pointer).
      * @param target The target population for this district.
+     * @param unassigned The global unassigned district for this State/map.
      */
-    District(State& state, std::string id, int target);
+    District(State& state, std::string id, int target, District *unassigned);
     /**
      * @brief Assign a precinct to this district: merges its demographic/election data and geometry in, and removes it from the unassigned district first if needed.
      * @param p The precinct to add.
@@ -159,6 +173,26 @@ class District : public ElectoralEntity {
      * @return population / targetPop.
      */
     double getDeviation() { return 1.0 * population / targetPop; }
+    /**
+     * @brief Get this district's cached two-party Democratic vote share, recomputing it first if stale.
+     * @return The Democratic vote share, in [0, 1].
+     */
+    double getDemVoteShare();
+    /**
+     * @brief Get this district's cached two-party Republican vote share, recomputing it first if stale.
+     * @return The Republican vote share, in [0, 1].
+     */
+    double getRepVoteShare();
+    /**
+     * @brief Get this district's cached statistically estimated probability of voting Democratic, recomputing it first if stale.
+     * @return The estimated Democratic win probability.
+     */
+    double getDemWinProbability();
+    /**
+     * @brief Get this district's cached statistically estimated probability of voting Republican, recomputing it first if stale.
+     * @return The estimated Republican win probability.
+     */
+    double getRepWinProbability();
 };
 
 /**
@@ -182,8 +216,44 @@ class State : public ElectoralEntity {
     std::set<std::string> datasetNames;
     /** @brief The special district (id "0") holding precincts not yet assigned to a real district. */
     District* unassigned;
-  
+    /** @brief Whether the statewide report cache fields below are up to date with the current precinct/district assignments. */
+    bool reportCached;
+    /** @brief Cached result of isComplete(): whether every precinct is assigned to a district. */
+    bool complete;
+    /** @brief Cached result of whether every district's geometry is contiguous. */
+    bool allDistrictsContiguous;
+    /** @brief Cached statewide average Polsby-Popper compactness across all districts. */
+    double avgPolsbyPopper;
+    /** @brief Cached statewide average Reock compactness across all districts. */
+    double avgReock;
+    /** @brief Cached pointer to the district with the smallest population. */
+    District* smallestDistrict;
+    /** @brief Cached pointer to the district with the largest population. */
+    District* largestDistrict;
+    /** @brief Cached statewide population deviation: the population gap between the largest and smallest district, as a fraction of the average district target population. */
+    double populationDeviation;
+    /** @brief Cached statewide two-party efficiency gap: the difference between each party's wasted votes as a fraction of total two-party votes cast in the canonical election, aggregated across districts. */
+    double efficiencyGap;
+    /** @brief Cached statewide Democratic vote share of the canonical election, in [0, 1]. */
+    double proportionalDemShare;
+    /** @brief Cached statewide Republican vote share of the canonical election, in [0, 1]. */
+    double proportionalRepShare;
+    /** @brief Cached number of seats Democrats would win under a perfectly proportional allocation of the canonical statewide vote. */
+    int proportionalDemSeats;
+    /** @brief Cached number of seats Republicans would win under a perfectly proportional allocation of the canonical statewide vote. */
+    int proportionalRepSeats;
+    /** @brief Cached statistically expected number of seats Democrats would win on the current district map. */
+    double expectedDemSeats;
+    /** @brief Cached statistically expected number of seats Republicans would win on the current district map. */
+    double expectedRepSeats;
+    /** @brief Cached seat disproportionality: the gap between expectedDemSeats and proportionalDemSeats, as a fraction of districtCount. */
+    double seatDisproportionality;
+    /**
+     * @brief Recompute all statewide report cache fields (completeness, contiguity, compactness, population deviation, efficiency gap, and proportional/expected seat counts) in a single pass over precincts and districts, if not already cached.
+     */
+    void updateReportCache();
   public:
+    
     /**
      * @brief Construct a State.
      * @param id The state's identifier.
@@ -254,7 +324,14 @@ class State : public ElectoralEntity {
      * @return The average precinct population.
      */
     int getAveragePrecinctPop() { return averagePrecinctPop; }
- 
+    /**
+     * @brief Mark the statewide report cache (and, transitively, per-district cached partisan stats) as stale, forcing the next report call to recompute it. Called whenever a precinct is assigned to or removed from a district.
+     */
+    void invalidateReportCache() { reportCached = false; }
+    /**
+     * @brief Clear map information from a state by unassigning all Precincts from their Districts.
+     */
+    void clearMap();
  
  
     //report functions (defined in reports.cpp)
@@ -273,6 +350,67 @@ class State : public ElectoralEntity {
      * @return True if all precincts are assigned.
      */
     bool isComplete();
+    //cached report value accessors (recompute the report cache first if stale; see updateReportCache())
+    /**
+     * @brief Get whether every district in the state is contiguous, recomputing the report cache first if stale.
+     * @return True if every district's geometry is contiguous.
+     */
+    bool isContiguous();
+    /**
+     * @brief Get the district with the smallest population, recomputing the report cache first if stale.
+     * @return Pointer to the smallest district.
+     */
+    District* getSmallestDistrict();
+    /**
+     * @brief Get the district with the largest population, recomputing the report cache first if stale.
+     * @return Pointer to the largest district.
+     */
+    District* getLargestDistrict();
+    /**
+     * @brief Get the statewide population deviation between the largest and smallest district, recomputing the report cache first if stale.
+     * @return The population deviation, as a fraction of the average district target population.
+     */
+    double getPopulationDeviation();
+    /**
+     * @brief Get the statewide two-party efficiency gap, recomputing the report cache first if stale.
+     * @return The efficiency gap; positive values are biased towards Democrats, negative towards Republicans.
+     */
+    double getEfficiencyGap();
+    /**
+     * @brief Get the statewide Democratic vote share of the canonical election, recomputing the report cache first if stale.
+     * @return The Democratic vote share, in [0, 1].
+     */
+    double getProportionalDemShare();
+    /**
+     * @brief Get the statewide Republican vote share of the canonical election, recomputing the report cache first if stale.
+     * @return The Republican vote share, in [0, 1].
+     */
+    double getProportionalRepShare();
+    /**
+     * @brief Get the number of seats Democrats would win under a perfectly proportional allocation of the canonical statewide vote, recomputing the report cache first if stale.
+     * @return The proportional Democratic seat count.
+     */
+    int getProportionalDemSeats();
+    /**
+     * @brief Get the number of seats Republicans would win under a perfectly proportional allocation of the canonical statewide vote, recomputing the report cache first if stale.
+     * @return The proportional Republican seat count.
+     */
+    int getProportionalRepSeats();
+    /**
+     * @brief Get the statistically expected number of seats Democrats would win on the current district map, recomputing the report cache first if stale.
+     * @return The expected Democratic seat count.
+     */
+    double getExpectedDemSeats();
+    /**
+     * @brief Get the statistically expected number of seats Republicans would win on the current district map, recomputing the report cache first if stale.
+     * @return The expected Republican seat count.
+     */
+    double getExpectedRepSeats();
+    /**
+     * @brief Get the statewide seat disproportionality between expected and proportional Democratic seats, recomputing the report cache first if stale.
+     * @return The seat disproportionality, as a fraction of the district count; positive values favor Democrats.
+     */
+    double getSeatDisproportionality();
     /**
      * @brief Print a report analyzing statewide population deviation between the largest and smallest districts, including whether it likely meets the typical legal threshold.
      */

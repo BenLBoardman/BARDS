@@ -6,7 +6,6 @@
 #include "classdefs.hpp"
 
 std::random_device rd;
-District *unassigned;
 
 #include <iostream>
 
@@ -55,6 +54,10 @@ void Precinct::computeNeighbors() {
     }
 }
 
+bool Precinct::isAssigned() {
+    return district != nullptr && !district->isUnassigned(); 
+}
+
 Precinct* Precinct::getRandNeighbor(bool requireUnassigned) {
     std::uniform_int_distribution<int> rand(0, neighbors.size()-1);
     Precinct *p;
@@ -68,11 +71,9 @@ void Precinct::permuteNeighbors() {
          std::ranges::shuffle(neighbors, rd);
 }
 
-District::District(State& state, std::string id, int targetPop) : state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop) { 
+District::District(State& state, std::string id, int targetPop, District *unassigned) 
+: state(state), ElectoralEntity(id, std::string("District "+id)), targetPop(targetPop), unassigned(unassigned) { 
     population = 0;
-    if(id.compare("0") == 0) {
-        unassigned = this;
-    }
     //generate empty data sets
     std::set<std::string> datasets = state.getDatasetNames();
     for(std::string dataName : datasets) {
@@ -95,8 +96,8 @@ District::District(State& state, std::string id, int targetPop) : state(state), 
 }
 
 bool District::addPrecinct(Precinct* p) {
-    if(p->isAssigned()) {
-        std::cout << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
+    if(p->isAssigned() && !isUnassigned()) {
+        logs::info << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
         return false;
     } else if(!isUnassigned()) {
         unassigned->removePrecinct(p);
@@ -118,7 +119,7 @@ bool District::addPrecinct(Precinct* p) {
 bool District::removePrecinct(Precinct* p) {
     auto it = std::find(precincts.begin(), precincts.end(), p);
     if(it == precincts.end()) {
-        std::cout << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
+        logs::info  << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
         return false;
     }
     if(!isUnassigned()) {
@@ -135,6 +136,36 @@ bool District::removePrecinct(Precinct* p) {
         elex.at(key).unmergeData(e);
     }
     return true;
+}
+
+void District::updateStats() {
+    if(statsCached) return;
+    auto e = canonicalElex;
+    demVoteShare = 1.0 * e->getDem() / (e->getDem()+e->getRep());
+    repVoteShare = 1.0 * e->getRep() / (e->getDem()+e->getRep());
+    demWinProbability = 0.5*(std::erfc((repVoteShare-0.5)/0.04/std::sqrt(2.0)));
+    repWinProbability = 0.5*(std::erfc((demVoteShare-0.5)/0.04/std::sqrt(2.0)));
+    statsCached = true;
+}
+
+double District::getDemVoteShare() {
+    updateStats();
+    return demVoteShare;
+}
+
+double District::getRepVoteShare() {
+    updateStats();
+    return repVoteShare;
+}
+
+double District::getDemWinProbability() {
+    updateStats();
+    return demWinProbability;
+}
+
+double District::getRepWinProbability() {
+    updateStats();
+    return repWinProbability;
 }
 
 State::State(std::string id, std::string name, int districtCount) : ElectoralEntity(id, name), districtCount(districtCount) {
@@ -175,7 +206,7 @@ void State::finishProcessing() {
     int target = population / districtCount;
     int rem = population % districtCount;
     for(int i = 0; i < districtCount; i++) {
-        districts.push_back(new District(*this, std::to_string(i+1), target + (rem != 0)));
+        districts.push_back(new District(*this, std::to_string(i+1), target + (rem != 0), unassigned));
         rem -= (rem != 0);
     }
 
@@ -235,7 +266,7 @@ void State::loadDatasets(const JsonValue& json) {
 
     //initialize unassigned district
     auto &x = *this;
-    unassigned = new District(x, std::string("0"), 0);
+    unassigned = new District(x, std::string("0"), 0, nullptr);
 }
 
 DataSet& State::getDataSet(const std::string& name) {
@@ -271,4 +302,72 @@ bool State::isComplete() {
             return false;
     }
     return true;
+}
+
+bool State::isContiguous() {
+    updateReportCache();
+    return allDistrictsContiguous;
+}
+
+District* State::getSmallestDistrict() {
+    updateReportCache();
+    return smallestDistrict;
+}
+
+District* State::getLargestDistrict() {
+    updateReportCache();
+    return largestDistrict;
+}
+
+double State::getPopulationDeviation() {
+    updateReportCache();
+    return populationDeviation;
+}
+
+double State::getEfficiencyGap() {
+    updateReportCache();
+    return efficiencyGap;
+}
+
+double State::getProportionalDemShare() {
+    updateReportCache();
+    return proportionalDemShare;
+}
+
+double State::getProportionalRepShare() {
+    updateReportCache();
+    return proportionalRepShare;
+}
+
+int State::getProportionalDemSeats() {
+    updateReportCache();
+    return proportionalDemSeats;
+}
+
+int State::getProportionalRepSeats() {
+    updateReportCache();
+    return proportionalRepSeats;
+}
+
+double State::getExpectedDemSeats() {
+    updateReportCache();
+    return expectedDemSeats;
+}
+
+double State::getExpectedRepSeats() {
+    updateReportCache();
+    return expectedRepSeats;
+}
+
+double State::getSeatDisproportionality() {
+    updateReportCache();
+    return seatDisproportionality;
+}
+
+void State::clearMap() {
+    for(auto d : districts) {
+        for(auto p : d->getPrecincts()) {
+            d->removePrecinct(p);
+        }
+    }
 }
