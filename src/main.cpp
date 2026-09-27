@@ -44,10 +44,12 @@ int main(int argc, char *argv[]) {
 
         std::cout << "District drawing complete..." << std::endl;
         outputDistricts(s);
+
+        std::cout << "The map has been generated.";
         s.fullReport();
     } else {
         double polsbyPopper = 0, reock = 0, disproportionality = 0, populationDeviation = 0;
-        int numIncomplete = 0;
+        int numIncomplete = 0, numDiscontiguous = 0;
         auto elapsed = std::chrono::milliseconds::zero();
         for(int i = 0; i < mapCount; i++) {
             auto start = std::chrono::steady_clock::now();
@@ -56,6 +58,7 @@ int main(int argc, char *argv[]) {
             elapsed += std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
             
             numIncomplete += !s.isComplete();
+            numDiscontiguous += !s.isContiguous();
             polsbyPopper += s.compactnessPolsbyPopper();
             reock += s.compactnessReock();
             disproportionality += s.getSeatDisproportionality();
@@ -63,18 +66,27 @@ int main(int argc, char *argv[]) {
 
             s.clearMap();
         }
+
+        std::cout << "Maps have been generated.";
         
-        double averageTime = elapsed.count() / (mapCount*1000);
+        
+        double averageTime = 1.0*elapsed.count() / (mapCount*1000);
         double avgPolsbyPopper = polsbyPopper/mapCount;
         double avgReock = reock/mapCount;
         double avgDisproportionality = disproportionality/mapCount;
         double avgDeviation = populationDeviation/mapCount;
-        logs::report << std::setprecision(8) << mapCount << " maps for " << s.name << " drawn with " << dists << " districts each using algorithm " << D->name << ":" <<std::endl;
-        logs::report << "Average time per map: " << averageTime << " seconds." << std::setprecision(4) << std::endl;
-        logs::report << numIncomplete << "(" << (100.0*numIncomplete/mapCount) << "\%) of the maps were incomplete." << std::endl;
+        logs::report << std::setprecision(4) << mapCount << " maps for " << s.name << " drawn with " << dists << " districts each using algorithm " << D->name << ":" <<std::endl;
+        logs::report << "Average time per map: " << averageTime << " seconds." << std::endl;
+        logs::report << numIncomplete << " (" << (100.0*numIncomplete/mapCount) << "\%) of the maps were incomplete." << std::endl;
+        logs::report << numDiscontiguous << " (" << (100.0*numDiscontiguous/mapCount) << "\%) of the maps were not fully contiguous." << std::endl;
         logs::report << "The maps had an average population deviation of " << avgDeviation*100 << "\%." << std::endl;
-        logs::report << "The maps had an average disproportionality of " << avgDisproportionality << "\% in favor of" << (avgDisproportionality > 0 ? " Democrats." : " Republicans.") << std::endl;
+        logs::report << "The maps had an average disproportionality of " << std::abs(avgDisproportionality*100) << "\% in favor of" << (avgDisproportionality > 0 ? " Democrats." : " Republicans.") << std::endl;
+        logs::report << "The maps had an average Polsby-Popper compactness of " << avgPolsbyPopper << " and an average Reock compatness of " << avgReock << "." << std::endl;
     }
+
+    if(reportName.compare("console") != 0)
+            std::cout << " The summary report can be found at " << outDir << reportName << ".log.";
+    std::cout << std::endl;
 }
 
 bool handleArgs(int argc, char *argv[]) {

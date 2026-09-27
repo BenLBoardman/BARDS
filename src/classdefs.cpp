@@ -96,6 +96,8 @@ District::District(State& state, std::string id, int targetPop, District *unassi
 }
 
 bool District::addPrecinct(Precinct* p) {
+    statsCached = false;
+    state.invalidateReportCache();
     if(p->isAssigned() && !isUnassigned()) {
         logs::info << "Attempt to add precinct to district when it is already assigned to a district" << std::endl;
         return false;
@@ -117,6 +119,8 @@ bool District::addPrecinct(Precinct* p) {
 }
 
 bool District::removePrecinct(Precinct* p) {
+    statsCached = false;
+    state.invalidateReportCache();
     auto it = std::find(precincts.begin(), precincts.end(), p);
     if(it == precincts.end()) {
         logs::info  << "Attempt to remove precinct from district, but this precinct is not assigned to this district" << std::endl;
