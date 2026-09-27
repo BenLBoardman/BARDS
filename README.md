@@ -62,7 +62,7 @@ Initial Features
 - Well established documentation - complete
 - Generate multiple maps at once - complete
 - All state data - in progress
-- Better error messages - not started
+
 
 Future Goals
 - More algorithms
@@ -73,6 +73,7 @@ Future Goals
 - Multithreaded support
 - Multithreaded precinct load
 - Better contiguity checks (fixing KI.1)
+- Better error messages
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:

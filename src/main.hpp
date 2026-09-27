@@ -19,7 +19,7 @@
 #include "algo/algorithm_definition.hpp"
 
 /** @brief Path to the CSV of default district counts per state, used when no districts= argument is given. */
-#define DEFAULT_CSV_PATH "data/2020/default_dist_counts.csv"
+#define DEFAULT_CSV_PATH "data/2020/_default_dist_counts.csv"
 /** @brief File extension appended to the generated district-assignment output file. */
 #define DISTRICT_OUTPUT_EXTENSION ".csv"
 
