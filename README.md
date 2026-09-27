@@ -1,6 +1,6 @@
 # BARDS
 ### Now in C++!
-**B**en's **A**lgorithmic **R**e**D**istrict **S**oftware
+**B**en's **A**lgorithmic **R**e**D**istricting **S**oftware
 
 
 
@@ -15,7 +15,7 @@ BARDS currently has 2020 precinct data for California, Colorado, Hawaii, New Ham
 Completed maps are placed in `output/stateAbbr_<name>/`. The map itself is stored in `name.csv` within that directory.
 
 ## Installing and Running
-For full functionality, all that is needed is a C++ compiler and Make. Release builds may be available on github at a later time.
+If you are using the source code, all that is needed is a C++ compiler and Make. A precompiled build on github should be natively runnable if you have the right architecture.
 
 To compile and run, one of the following makefile commands is recommended:
 `make` / `make all` — Builds the release binary (same as running make compile).
