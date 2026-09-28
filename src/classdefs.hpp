@@ -281,8 +281,8 @@ class State : public ElectoralEntity {
      * @return A vector of pointers to the selected precincts.
      */
     std::vector<Precinct*> getRandPrecincts(bool requireUnassigned, int cnt, 
-      const std::function<bool(State*, Precinct*, std::vector<Precinct*>)>& customPred = [](State *s, Precinct *p, std::vector<Precinct*> precs){return true; });
-    /**
+      const std::function<bool(State*, Precinct*, std::vector<Precinct*>)>& customPred = [](State*, Precinct*, std::vector<Precinct*>){return true; });
+      /**
      * @brief Finalize state setup after all precincts are loaded: creates districts sized to a target population, then computes precinct adjacency (neighbors) for every precinct.
      */
     void finishProcessing();
