@@ -1,6 +1,6 @@
 # BARDS
 ### Now in C++!
-**B**en's **A**lgorithmic **R**e**D**istrict **S**oftware
+**B**en's **A**lgorithmic **R**e**D**istricting **S**oftware
 
 
 
@@ -9,13 +9,13 @@ This is a programming package/library to support and use as a baseline for algor
 Data comes primarily from DRA's database - https://github.com/dra2020/vtd_data/tree/master. This program should work with GeoJSON data in that repository, but is not guaranteed to work using data in other formats.
 
 ## States Supported
-BARDS currently has 2020 precinct data for New Hampshire. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
+BARDS currently has 2020 precinct data for California, Colorado, Hawaii, New Hampshire, Vermont, and Wyoming. 2020 Precinct data for other states and 2010 precinct data will be added at a later date. This data is stored in the `data/<year>` directory. 
 
 ## Output
-Completed maps are placed in `output/stateAbbr.csv`. Better output systems are planned for the future. custom output locations are a possible future feature, but are not actively planned at present.
+Completed maps are placed in `output/stateAbbr_<name>/`. The map itself is stored in `name.csv` within that directory.
 
 ## Installing and Running
-For full functionality, all that is needed is a C++ compiler and Make. Release builds may be available on github at a later time.
+If you are using the source code, all that is needed is a C++ compiler and Make. A precompiled build on github should be natively runnable if you have the right architecture.
 
 To compile and run, one of the following makefile commands is recommended:
 `make` / `make all` — Builds the release binary (same as running make compile).
@@ -29,15 +29,15 @@ To run BARDS, use the command `make run <state> <year> {optional args}`. Command
 
 Below is a more detailed explanation of planned required and optional arguments:
 
--  NOT YET IMPLEMENTED `algo` refers to the algorithm to use. See "Algorithms" below for a detailed explanation of all options
 - `state` is the two-letter abbreviation for thestate to draw the map for. See "States Supported" above to learn which states yhave precinct shapefiles included in the repository.
 - `year` is the census data year for which data should be use. At present, 2020 is the only accepted option
 
 **Optional Arguments**
-- NOT YET IMPLEMENTED `name=<name>`: Give the output geoJSON a specific file name.
+- `name=<name>`: Give the output geoJSON a specific file name.
 - `districts=<numDists>`: Make the map with a specified number of districts instead of the default number for the state.
-- NOT YET IMPLEMENTED `debug=<file>`: Output all debug logging to a file with a given name and the `.log` extension. If this is instead `debug=true`, it will be outputted to `debug.log`.
-- NOT YET IMPLEMENTED `report=<file>`: Output the summary report (a planned future feature) to a custom filename, instead of the default `report.log`.
+- `info=<file>`: Output all info/debug logging to a file with a given name and the `.log` extension. If this is `log=console`, it will be outputted to the console. If no value is given, it will output to `info.log`.
+- `report=<file>`: Output the summary report to a custom filename. If this is `report=console`, it will be outputted to the console. If no value is given, it will output to `report.log`.
+- `map-count=<num>`: If this is set, BARDS will generate `num` maps with the same state data and will output summary statistics across all maps in the report instead of individual map statistics. This is intended to be used to benchmark different algorithms on various values. If this is set, the map itself will not be outputted.
 
 ## Known Issues
 - (KI.1) There is currently no way to account for non-contiguous states. Districts bridging non-contiguous parts of a state (such as the different Hawaiian islands) will always show with contiguity checks failing & therefore incalculable compactness/area/other cached values. 
@@ -47,24 +47,33 @@ Currently, BARDS supports one algorithm. Algorithms may be added periodically as
 
 ## Current Features
 The basic BARDS is functional but not complete. Below is a list of currently-planned features and their implementation status.
-<RELEASE 1 - INITIAL OPEN SOURCE>
-- District-level demographic/electoral data - completed
-- Population deviation calculation - completed
-- Compactness calculation - completed
-- Command-line argument processor - completed
-- Basic partisan fairness calculation - completed
-- More command line arguments - completed
-- Algorithm selection system - completed
-- All state data - in progress
-- Report generation (file containing population balance, partisan fairness, compactness info) - in progress
-- Well established documentation - in progress
-- Fully realized BFS-based algorithm - not started
-- Better error messages - not started
-- Toggleable debug logging - not started
-<FUTURE RELEASES>
-- Multithreaded support - not started
-- Multithreaded precinct load - not started
-- Better contiguity checks (fixing KI.1) - not started
+
+Initial Features
+- District-level demographic/electoral data - complete
+- Population deviation calculation - complete
+- Compactness calculation - complete
+- Command-line argument processor - complete
+- Basic partisan fairness calculation - complete
+- More command line arguments - complete
+- Algorithm selection system - complete
+- Better logging framework - complete
+- Report generation (file containing population balance, partisan fairness, compactness info) - complete
+- Fully realized BFS-based algorithm - complete
+- Well established documentation - complete
+- Generate multiple maps at once - complete
+- All state data - complete
+
+
+Future Goals
+- More algorithms
+- County tracking
+- Report customizability
+- Default configs
+- More report metrics
+- Multithreaded support
+- Multithreaded precinct load
+- Better contiguity checks (fixing KI.1)
+- Better error messages
 
 ## Planned Algorithms
 As the first developer, there are more algorithms I plan to add as well. These include (but may not be limited to) the following:

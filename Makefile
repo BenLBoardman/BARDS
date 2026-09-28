@@ -16,16 +16,22 @@ ifneq ($(strip $(districts)),)
   ARGS += districts=$(districts)
 endif
 ifneq ($(strip $(log)),)
-  ARGS += log=$(log )
+  ARGS += log=$(log)
 endif
 ifneq ($(strip $(report)),)
   ARGS += report=$(report)
 endif
+ifneq ($(strip $(name)),)
+  ARGS += name=$(name)
+endif
+ifneq ($(strip $(map-count)),)
+  ARGS += map-count=$(map-count)
+endif
 
 # ==== Directories ====
-SRC_DIR  := cppsrc
-ALGO_DIR := cppsrc/algo
-UTIL_DIR := cppsrc/util
+SRC_DIR  := src
+ALGO_DIR := src/algo
+UTIL_DIR := src/util
 
 BIN_DIR      := bin
 OBJ_DIR      := bin/obj
